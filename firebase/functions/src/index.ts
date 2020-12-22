@@ -19,6 +19,28 @@ function verifyRoom(roomCode: string): Promise<boolean> {
   });
 }
 
+async function resetGame(roomCode: string): Promise<any> {
+  const verified = await verifyRoom(roomCode);
+  if (verified) {
+
+    const grid = [ 
+      [ [-1, -1, -1], [-1, -1, -1], [-1, -1, -1] ],
+      [ [-1, -1, -1], [-1, -1, -1], [-1, -1, -1] ],
+      [ [-1, -1, -1], [-1, -1, -1], [-1, -1, -1] ],
+    ];
+
+    const roomRef = await admin.database().ref('rooms/' + roomCode);
+    return roomRef.update({
+      nextPlayer: 0,
+      time: Date.now(),
+      grid,
+    });
+
+  } else {
+    return Promise.resolve({ error: 'Room does not exist' });
+  }
+}
+
 export const joinRoom = functions.https.onCall(async (params, context) => {
   const verified = await verifyRoom(params.roomCode);
   if (verified) {
@@ -39,35 +61,33 @@ export const joinRoom = functions.https.onCall(async (params, context) => {
   }
 });
 
-export const newRoom = functions.https.onCall((params, context) => {
-  return new Promise((resolve, reject) => {
-    const roomCode = makeId(4)
+export const newRoom = functions.https.onCall((params, context): Promise<string> => {
+  const roomCode = makeId(4)
 
-    const ref = admin
-      .database()
-      .ref('rooms/' + roomCode)
-      .set({
-        roomCode: roomCode,
-        nextPlayer: 0,
-        time: Date.now(),
-      });
-
-    ref.then((data) => {
-      resolve(roomCode)
-    }).catch(reject);
-  });
+  return admin
+    .database()
+    .ref('rooms/' + roomCode)
+    .update({
+      roomCode: roomCode,
+      time: Date.now(),
+    }).then(() => {
+      return resetGame(roomCode).then(() => { return roomCode; });
+    });
 });
 
-export const makeMove = functions.https.onCall((params, context) => {
-    
-    const roomRef = admin.database().ref('rooms/' + params.roomCode);
 
-    return roomRef.child('nextPlayer').get().then((nextPlayerRef) => {
-      const nextPlayer: number = nextPlayerRef.val();
-      if (nextPlayer === params.player) {
-        return roomRef.child('grid').set([[1,2,3],[23,24,25]])
-      } else {
-        return { error: `Not your turn. nextPlayer:${nextPlayer}`};
-      }
-    });
+
+export const makeMove = functions.https.onCall(async (params, context) => {
+
+  const roomRef = admin.database().ref('rooms/' + params.roomCode);
+  const players: any[] = await (await roomRef.child('players').get()).val();
+
+  const nextPlayerRef = await roomRef.child('nextPlayer').get();
+  const nextPlayer: number = nextPlayerRef.val();
+  if (players[nextPlayer] === params.player) {
+    return roomRef.child(`grid/${params.x}/${params.y}/${params.z}`).set(nextPlayer);
+  } else {
+    return { error: `Not your turn. nextPlayer:${nextPlayer}`};
+  }
+
 });

@@ -53,12 +53,12 @@ export class GameComponent implements OnInit, OnDestroy {
     }
   }
 
-  makeMove(pos: { x: number, y: number, z: number }): Promise<any> {
-    return this.fns.makeMove$({
+  makeMove(pos: { x: number, y: number, z: number }): void {
+    this.fns.makeMove$({
       roomCode: this.roomCode,
       ...pos,
       player: this.name
-    }).toPromise();
+    }).subscribe();
   }
 
   loadRoom(): void {
