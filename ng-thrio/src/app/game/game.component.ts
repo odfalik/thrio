@@ -1,42 +1,77 @@
-import { Component, OnInit } from '@angular/core';
+import { FunctionsService } from './../functions.service';
+import { DbService } from './../db.service';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as THREE from 'three';
+import { EngineService } from '../engine.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnDestroy {
 
-  constructor() {
+  @ViewChild('rendererCanvas', {static: true})
+  public rendererCanvas: ElementRef<HTMLCanvasElement>;
+
+  public roomCode: string;
+  public room: any;
+  private _room: Subscription;
+  public name = localStorage.getItem('name') || 'goober';
+
+  constructor(
+    private engineService: EngineService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private dbs: DbService,
+    private fns: FunctionsService
+  ) {
 
   }
 
   ngOnInit(): void {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.roomCode = this.activatedRoute.snapshot.params.roomCode;
 
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    if (this.roomCode) {
+      this.fns.joinRoom$({ roomCode: this.roomCode.toUpperCase(), name: this.name }).subscribe(joinData => {
+        console.log('joinData', joinData)
+        if (joinData?.error) setTimeout(() => this.leaveRoom(), 3000); // room is full
 
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+        this.dbs.getRoom(this.roomCode).subscribe(room => {
+          if (!room) setTimeout(() => this.leaveRoom(), 3000);  // room doesn't exist
+          else if (!this.room) this.loadRoom();
 
-    camera.position.z = 5;
+          this.room = room;
+          console.log('room', this.room);
+        });
+      });
 
-    const animate = function () {
-      requestAnimationFrame(animate);
+    } else {
+      setTimeout(() => this.leaveRoom(), 3000); // no room code
+    }
+  }
 
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
+  makeMove(pos: { x: number, y: number, z: number }): Promise<any> {
+    return this.fns.makeMove$({
+      roomCode: this.roomCode,
+      ...pos,
+      player: this.name
+    }).toPromise();
+  }
 
-      renderer.render(scene, camera);
-    };
+  loadRoom(): void {
+    this.engineService.createScene(this.rendererCanvas);
+    this.engineService.animate();
+  }
 
-    animate();
+  leaveRoom(): void {
+    this.router.navigate(['/']);
+  }
+
+  ngOnDestroy(): void {
+    if (this._room) this._room.unsubscribe();
   }
 
 }

@@ -1,0 +1,11 @@
+<canvas #rendererCanvas id="renderCanvas"></canvas>
+
+<div class="header">
+  <p>{{ roomCode }}</p>
+  <p *ngFor="let player of room?.players" [class.me]="player===name">{{ player }}</p>
+</div>
+
+<div class="controls">
+  <button (click)="leaveRoom()">exit</button>
+  <button (click)="makeMove({x:1, y:1, z:1})">make move</button>
+</div>

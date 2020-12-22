@@ -1,0 +1,22 @@
+canvas {
+  display: block;
+}
+
+.header, .controls {
+  position: absolute;
+  height: 5em;
+  padding: 2em;
+  color: white;
+}
+
+.header {
+  top: 0;
+
+  .me {
+    color: red;
+  }
+}
+
+.controls {
+  bottom: 0;
+}

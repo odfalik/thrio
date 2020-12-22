@@ -1,0 +1,24 @@
+<main>
+
+  <h1>THRIO</h1>
+
+  <br>
+
+  <button (click)="newRoom()">Start a new game</button>
+
+  <br>
+  <br>
+  or
+  <br>
+  <br>
+
+  <form (submit)="joinRoom()">
+    <label>Enter a room code</label>
+    <input type="text" [(ngModel)]="roomCode" name="roomCode">
+    <button action="submit">Join Room</button>
+  </form>
+
+  <label>Nickname</label>
+  <input type="text" [(ngModel)]="name" name="name">
+
+</main>
