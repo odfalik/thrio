@@ -1,6 +1,7 @@
 import { ElementRef, Injectable, NgZone, OnDestroy } from '@angular/core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GameService } from './game.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,17 +11,22 @@ export class EngineService implements OnDestroy {
   public renderer: THREE.WebGLRenderer;
   public camera: THREE.PerspectiveCamera;
   public scene: THREE.Scene;
-  public light: THREE.DirectionalLight;
 
   public updateFns: (() => void)[];
   balls = [];
 
   private frameId: number = null;
   controls: any;
+  interaction: any;
 
   public constructor(
-    private ngZone: NgZone
-  ) {}
+    private ngZone: NgZone,
+    private gs: GameService
+  ) {
+    this.gs.room$.subscribe(room => {
+      this.updateGrid(room.grid);
+    })
+  }
 
   public ngOnDestroy(): void {
     if (this.frameId != null) {
@@ -64,10 +70,10 @@ export class EngineService implements OnDestroy {
     this.controls.update();
 
     /* Lighting */
-    let light = new THREE.DirectionalLight(0xffffff, 1);
+    let light: THREE.Light = new THREE.DirectionalLight(0xffffff, .8);
     light.position.set(-1, 2, 4);
     this.scene.add(light);
-    light = new THREE.DirectionalLight(0xffffff, 1);
+    light = new THREE.AmbientLight(0xffffff, .3);
     light.position.set(-1, -1, -2);
     this.scene.add(light);
 
@@ -84,7 +90,7 @@ export class EngineService implements OnDestroy {
       this.scene.add(plane);
       plane.position.set(1.5, 1.5, i);
     }
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       const plane = new THREE.Mesh(planeGeom, planeMat);
       this.scene.add(plane);
       plane.position.set(1.5, i, 1.5);
@@ -97,6 +103,26 @@ export class EngineService implements OnDestroy {
       plane.rotateY(Math.PI / 2);
     }
 
+    /* Top squares */
+    const squareMat = new THREE.MeshLambertMaterial({
+      opacity: 0.4,
+      transparent: true,
+      color: 0x00FF00,
+    });
+    const squareGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
+    for (let x = 0; x < 3; x++) {
+      for (let z = 0; z < 3; z++) {
+        const square = new THREE.Mesh(squareGeom, squareMat);
+        this.scene.add(square);
+        square.position.set(x + .5, 3, z + .5);
+        square.rotateX(-Math.PI / 2);
+        square.userData = {
+          square: { x, z },
+          clickable: true
+        };
+      }
+    }
+
     /* Origin dot */
     const dotGeometry = new THREE.Geometry();
     dotGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
@@ -104,6 +130,37 @@ export class EngineService implements OnDestroy {
     const dotMaterial = new THREE.PointsMaterial({ size: .05, color: 0xffffff });
     const dot = new THREE.Points(dotGeometry, dotMaterial);
     this.scene.add(dot);
+  }
+
+  onCanvasClick(e): void {
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    e.preventDefault();
+    mouse.x = (e.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = - (e.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, this.camera);
+    const intersects = raycaster.intersectObjects(this.scene.children);
+    intersects.forEach(intersect => {
+      if (intersect.object.userData.square) {
+        this.gs.makeMove({x: intersect.object.userData.square.x, z: intersect.object.userData.square.z});
+      }
+    });
+  }
+
+  onCanvasMove(e): void {
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    e.preventDefault();
+    mouse.x = (e.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = - (e.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, this.camera);
+    const intersects = raycaster.intersectObjects(this.scene.children);
+
+    if (intersects.some(i => i.object.userData.clickable)) {
+      document.getElementsByTagName('body')[0].style.cursor = 'pointer';
+    } else {
+      document.getElementsByTagName('body')[0].style.cursor = 'default';
+    }
   }
 
   public animate(): void {
@@ -116,10 +173,15 @@ export class EngineService implements OnDestroy {
         });
       }
 
-      // this.canvas.addEventListener('mousemove', )
+      this.canvas.addEventListener('click', this.onCanvasClick.bind(this), false);
+      this.canvas.addEventListener('mousemove', this.onCanvasMove.bind(this), false);
 
       window.addEventListener('resize', () => {
-        this.resize();
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(width, height);
       });
     });
   }
@@ -137,17 +199,7 @@ export class EngineService implements OnDestroy {
     this.renderer.render(this.scene, this.camera);
   }
 
-  public resize(): void {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
-
-    this.renderer.setSize(width, height);
-  }
-
-  public updateGrid(grid: number[][][]) {
+  public updateGrid(grid: number[][][]): void {
     console.log('updateGrid', grid);
 
     this.balls.forEach(ball => {

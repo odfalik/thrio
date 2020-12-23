@@ -51,9 +51,9 @@ export const joinRoom = functions.https.onCall(async (params, context) => {
     if (!players || !Array.isArray(players) || (players.length === 3 && !players.includes(params.name) )) {  // full room
       return { error: 'Room is full' };
     } else if (players.some(player => player === params.name)) {        // already in room
-      return;
+      return 'success';
     } else {
-      return playersRef.set([...players, params.name]);
+      return playersRef.set([...players, params.name]).then(() => 'success');
     }
     
   } else {

@@ -1,13 +1,11 @@
 <canvas #rendererCanvas id="renderCanvas"></canvas>
 
 <div class="header">
-  <p>{{ roomCode }}</p>
-  <p *ngFor="let player of room?.players; let i = index" [class.me]="player===name" [class.next-player]="room.nextPlayer===i">{{ player }}</p>
+  <p>{{ gs.room?.roomCode }}</p>
+  <p *ngFor="let player of gs.room?.players; let i = index" [class.me]="player===gs.name" [class.next-player]="gs.room.nextPlayer===i">{{ player }}</p>
 </div>
 
 <div class="controls">
-  <button (click)="leaveRoom()">exit</button>
-  <button (click)="makeMove({x:move.x, z:move.z})">make move</button>
-  <input type="number" [(ngModel)]="move.x" name="x">
-  <input type="number" [(ngModel)]="move.z" name="z">
+  <button (click)="gs.leaveRoom()">exit</button>
+  <!-- <button (click)="makeMove({x:move.x, z:move.z})">make move</button> -->
 </div>
