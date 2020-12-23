@@ -21,6 +21,11 @@ export class GameComponent implements OnInit, OnDestroy {
   private _room: Subscription;
   public name = localStorage.getItem('name') || 'goober';
 
+  public move = {
+    x: 0,
+    z: 0,
+  };
+
   constructor(
     private engineService: EngineService,
     private activatedRoute: ActivatedRoute,
@@ -45,6 +50,8 @@ export class GameComponent implements OnInit, OnDestroy {
 
           this.room = room;
           console.log('room', this.room);
+
+          this.engineService.updateGrid(room.grid);
         });
       });
 
@@ -53,12 +60,14 @@ export class GameComponent implements OnInit, OnDestroy {
     }
   }
 
-  makeMove(pos: { x: number, y: number, z: number }): void {
+  makeMove(pos: { x: number, z: number }): void {
     this.fns.makeMove$({
       roomCode: this.roomCode,
       ...pos,
       player: this.name
-    }).subscribe();
+    }).subscribe(res => {
+      if (res.error) console.error(res);
+    });
   }
 
   loadRoom(): void {

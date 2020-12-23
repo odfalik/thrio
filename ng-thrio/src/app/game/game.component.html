@@ -2,10 +2,12 @@
 
 <div class="header">
   <p>{{ roomCode }}</p>
-  <p *ngFor="let player of room?.players" [class.me]="player===name">{{ player }}</p>
+  <p *ngFor="let player of room?.players; let i = index" [class.me]="player===name" [class.next-player]="room.nextPlayer===i">{{ player }}</p>
 </div>
 
 <div class="controls">
   <button (click)="leaveRoom()">exit</button>
-  <button (click)="makeMove({x:1, y:1, z:1})">make move</button>
+  <button (click)="makeMove({x:move.x, z:move.z})">make move</button>
+  <input type="number" [(ngModel)]="move.x" name="x">
+  <input type="number" [(ngModel)]="move.z" name="z">
 </div>

@@ -1,0 +1,4 @@
+[build]
+base = "ng-thrio/"
+publish = "ng-thrio/dist"
+command = "ng build --prod"
