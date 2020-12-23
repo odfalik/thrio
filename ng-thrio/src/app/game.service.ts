@@ -49,7 +49,7 @@ export class GameService implements OnDestroy {
       ...pos,
       player: this.name
     }).subscribe(res => {
-      if (res.error) console.error(res);
+      if (res?.error) console.error(res);
     });
   }
 
