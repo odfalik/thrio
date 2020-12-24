@@ -18,6 +18,7 @@ export class EngineService implements OnDestroy {
   private frameId: number = null;
   controls: any;
   interaction: any;
+  mouse = new THREE.Vector2();
 
   public constructor(
     private ngZone: NgZone,
@@ -132,25 +133,32 @@ export class EngineService implements OnDestroy {
     this.scene.add(dot);
   }
 
-  onCanvasClick(e): void {
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    e.preventDefault();
-    mouse.x = (e.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = - (e.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, this.camera);
-    const intersects = raycaster.intersectObjects(this.scene.children);
-    intersects.forEach(intersect => {
-      if (intersect.object.userData.square) {
-        this.gs.makeMove({x: intersect.object.userData.square.x, z: intersect.object.userData.square.z});
-      }
-    });
+  onCanvasDown(e): void {
+    this.mouse.x = (e.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    this.mouse.y = - (e.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+  }
+
+  onCanvasUp(e): void {
+    const upX = (e.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    const upY = - (e.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+    if (this.mouse.x === upX && this.mouse.y === upY) {
+      this.mouse.x = upX;
+      this.mouse.y = upY;
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(this.mouse, this.camera);
+      const intersects = raycaster.intersectObjects(this.scene.children);
+      intersects.forEach(intersect => {
+        if (intersect.object.userData.square) {
+          this.gs.makeMove({x: intersect.object.userData.square.x, z: intersect.object.userData.square.z});
+        }
+      });
+    }
   }
 
   onCanvasMove(e): void {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    e.preventDefault();
     mouse.x = (e.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
     mouse.y = - (e.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, this.camera);
@@ -173,7 +181,10 @@ export class EngineService implements OnDestroy {
         });
       }
 
-      this.canvas.addEventListener('click', this.onCanvasClick.bind(this), false);
+      this.canvas.addEventListener('mousedown', this.onCanvasDown.bind(this), false);
+      this.canvas.addEventListener('pointerdown', this.onCanvasDown.bind(this), false );
+      this.canvas.addEventListener('mousedown', this.onCanvasUp.bind(this), false);
+      this.canvas.addEventListener('pointerup', this.onCanvasUp.bind(this), false );
       this.canvas.addEventListener('mousemove', this.onCanvasMove.bind(this), false);
 
       window.addEventListener('resize', () => {
