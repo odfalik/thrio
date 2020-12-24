@@ -2,12 +2,14 @@
 
 <div class="header">
   <p class="room-code">Room: {{ gs.room?.roomCode }}</p>
-  <p
-    *ngFor="let player of gs.room?.players; let i = index"
-    [class.next-player]="gs.room.nextPlayer === i"
-  >
-    {{ player }}
-  </p>
+  <div class="players">
+    <p
+      *ngFor="let player of gs.room?.players; let i = index"
+      [class.next-player]="gs.room.nextPlayer === i"
+    >
+      {{ player }}
+    </p>
+  </div>
 </div>
 
 <div class="controls">

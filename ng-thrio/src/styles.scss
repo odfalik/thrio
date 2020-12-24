@@ -1,9 +1,78 @@
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline; } article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; } body { line-height: 1; } ol, ul { list-style: none; } blockquote, q { quotes: none; } blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; } table { border-collapse: collapse; border-spacing: 0; }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
+$white: rgb(253, 255, 252);
+$dark: #011627;
+$p1: rgb(46, 194, 179);
+$p2: rgb(231, 29, 54);
+$p3: rgb(255, 159, 28);
+
+html, body {
+  font-family: 'Karla', Helvetica, sans-serif;
+  background: $dark;
+  background: linear-gradient(110deg, #1b303f, $dark);
+  color: $white;
+  height: 100%;
 }
 
 main {
+  display: grid;
+  justify-content: center;
   padding: 2em;
+}
+
+input, button {
+  padding: 1em 1.5em;
+  margin: 0;
+  border: 1px solid rgba(253, 255, 252, 0.5);
+  border-radius: .25em;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  color: $white;
+  text-transform: uppercase;
+  letter-spacing: 0.17em;
+  text-align: center;
+  white-space: nowrap;
+  width: min-content;
+  vertical-align: middle;
+  user-select: none;
+  transition: .15s all;
+
+  &:hover {
+    background: $p1;
+    color: $dark;
+    border: 1px solid $dark;
+  }
+}
+
+*:disabled {
+  cursor: default;
+  pointer-events: none;
+  opacity: 40%;
+}
+
+input {
+  border: none;
+  padding: 1em 1.5em;
+}
+
+
+.field {
+  white-space: nowrap;
+  height: 100%;
+
+  input {
+    height: 100%;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  button {
+    height: 100%;
+    border-left: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }

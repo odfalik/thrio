@@ -1,12 +1,11 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-// import { v4 as uuidv4 } from 'uuid';
 
 admin.initializeApp(functions.config().firebase);
 
 function makeId(len = 3) {
   let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const characters = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   const charactersLength = characters.length;
   for (let i = 0; i < len; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -43,26 +42,22 @@ async function resetGame(roomCode: string): Promise<any> {
 }
 
 export const joinRoom = functions.https.onCall(async (params, context) => {
-  try {
-    const verified = await verifyRoom(params.roomCode);
-    if (verified) {
-      const playersRef = admin.database().ref('rooms/' + params.roomCode + '/players');
-      const playerSnapshot = await playersRef.get();
-      const players: string[] = playerSnapshot.val() || [];
-  
-      if (!players || !Array.isArray(players) || (players.length === 3 && !players.includes(params.name) )) {  // full room
-        return { error: 'Room is full' };
-      } else if (players.some(player => player === params.name)) {        // already in room
-        return 'success';
-      } else {
-        return playersRef.set([...players, params.name]).then(() => 'success');
-      }
-      
+  const verified = await verifyRoom(params.roomCode);
+  if (verified) {
+    const playersRef = admin.database().ref('rooms/' + params.roomCode + '/players');
+    const playerSnapshot = await playersRef.get();
+    const players: string[] = playerSnapshot.val() || [];
+
+    if (!players || !Array.isArray(players) || (players.length === 3 && !players.includes(params.name) )) {  // full room
+      return { error: 'Room is full' };
+    } else if (players.some(player => player === params.name)) {        // already in room
+      return 'success';
     } else {
-      return { error: 'Could not get room ' + params.roomCode };
+      return playersRef.set([...players, params.name]).then(() => 'success');
     }
-  } finally {
-    return { error: 'Error joining room' };
+    
+  } else {
+    return { error: 'Could not get room ' + params.roomCode };
   }
 });
 

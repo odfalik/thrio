@@ -1,24 +1,29 @@
 <main>
 
-  <h1>THRIO</h1>
+  <h1>THRIO<span>.app</span></h1>
 
-  <br>
+  <!-- <canvas #canvas width="300" height="300"></canvas> -->
 
-  <button (click)="newRoom()">Start a new game</button>
+  <div class="options">
 
-  <br>
-  <br>
-  or
-  <br>
-  <br>
+    <button (click)="newRoom()">New game</button>
 
-  <form (submit)="joinRoom()">
-    <label>Enter a room code</label>
-    <input type="text" [(ngModel)]="roomCode" name="roomCode">
-    <button action="submit">Join Room</button>
-  </form>
+    <button>Join a<br/>public game</button>
 
-  <label>Nickname</label>
-  <input type="text" [(ngModel)]="name" name="name">
+    <form (submit)="joinRoom()">
+      <div class="field">
+        <input type="text" [(ngModel)]="roomCode" name="roomCode" placeholder="Enter a room code">
+        <button action="submit" [disabled]="!roomCode">Join Room</button>
+      </div>
+    </form>
+
+
+  </div>
+
+
+  <!-- <div>
+    <label>Nickname</label>
+    <input type="text" [(ngModel)]="name" name="name">
+  </div> -->
 
 </main>

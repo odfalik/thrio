@@ -12,12 +12,25 @@ canvas {
   top: 0;
   pointer-events: none;
 
-  .top-left {
-    pointer-events: none;
+  .players {
+    > * {
+      text-transform: uppercase;
+    }
+
+    > :nth-child(1) {
+      color: #2EC4B6;
+    }
+
+    > :nth-child(2) {
+      color: #E71D36;
+    }
+
+    > :nth-child(3) {
+      color: #FF9F1C;
+    }
 
     .next-player {
-      background: white;
-      color: black;
+      font-weight: bold;
     }
   }
 

@@ -41,7 +41,7 @@ export class EngineService implements OnDestroy {
     /* Renderer */
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
-      // alpha: true, // transparent background
+      alpha: true, // transparent background
       antialias: true, // smooth edges
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -225,9 +225,9 @@ export class EngineService implements OnDestroy {
           const val = grid[x][y][z];
           if (val !== -1) {
             let color;
-            if (val === 0) color = 0xff0000;
-            else if (val === 1) color = 0x00ff00;
-            else if (val === 2) color = 0x0000ff;
+            if (val === 0) color = 0x2EC4B6;
+            else if (val === 1) color = 0xE71D36;
+            else if (val === 2) color = 0xFF9F1C;
 
             const material = new THREE.MeshPhongMaterial({ color });
 
