@@ -25,9 +25,21 @@ export class GameService implements OnDestroy {
   }
 
   tryJoinRoom(roomCode: string): void {
+    // const tokens: [{ roomCode: string, token: string }] = JSON.parse(localStorage.getItem('tokens')) || [];
+    // const token = tokens.find(t => t.roomCode === roomCode);
+
     this.fns.joinRoom$({ roomCode: roomCode.toUpperCase(), name: this.name }).subscribe(joinData => {
+      if (joinData?.error) {
+        this.leaveRoom();
+        return;
+      }
+
       console.log('joinData', joinData);
-      if (joinData?.error) setTimeout(() => this.leaveRoom(), 3000); // room is full
+      // if (joinData.token) {
+      //   if (tokens.length > 10) tokens.shift();
+      //   tokens.push({ roomCode, token: joinData.token })
+      //   localStorage.setItem('tokens', JSON.stringify(tokens));
+      // }
 
       this._room = this.dbs.getRoom(roomCode).subscribe(room => {
         if (!room) setTimeout(() => this.leaveRoom(), 3000);  // room doesn't exist

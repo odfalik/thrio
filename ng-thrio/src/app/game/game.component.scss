@@ -4,22 +4,23 @@ canvas {
 
 .header, .controls {
   position: absolute;
-  height: 5em;
   padding: 2em;
   color: white;
 }
 
 .header {
   top: 0;
+  pointer-events: none;
 
-  .me {
-    color: red;
+  .top-left {
+    pointer-events: none;
+
+    .next-player {
+      background: white;
+      color: black;
+    }
   }
 
-  .next-player {
-    background: white;
-    color: black;
-  }
 }
 
 .controls {

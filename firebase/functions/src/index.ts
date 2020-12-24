@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+// import { v4 as uuidv4 } from 'uuid';
 
 admin.initializeApp(functions.config().firebase);
 
@@ -42,22 +43,26 @@ async function resetGame(roomCode: string): Promise<any> {
 }
 
 export const joinRoom = functions.https.onCall(async (params, context) => {
-  const verified = await verifyRoom(params.roomCode);
-  if (verified) {
-    const playersRef = admin.database().ref('rooms/' + params.roomCode + '/players');
-    const playerSnapshot = await playersRef.get();
-    const players: string[] = playerSnapshot.val() || [];
-
-    if (!players || !Array.isArray(players) || (players.length === 3 && !players.includes(params.name) )) {  // full room
-      return { error: 'Room is full' };
-    } else if (players.some(player => player === params.name)) {        // already in room
-      return 'success';
+  try {
+    const verified = await verifyRoom(params.roomCode);
+    if (verified) {
+      const playersRef = admin.database().ref('rooms/' + params.roomCode + '/players');
+      const playerSnapshot = await playersRef.get();
+      const players: string[] = playerSnapshot.val() || [];
+  
+      if (!players || !Array.isArray(players) || (players.length === 3 && !players.includes(params.name) )) {  // full room
+        return { error: 'Room is full' };
+      } else if (players.some(player => player === params.name)) {        // already in room
+        return 'success';
+      } else {
+        return playersRef.set([...players, params.name]).then(() => 'success');
+      }
+      
     } else {
-      return playersRef.set([...players, params.name]).then(() => 'success');
+      return { error: 'Could not get room ' + params.roomCode };
     }
-    
-  } else {
-    return { error: 'Could not get room ' + params.roomCode };
+  } finally {
+    return { error: 'Error joining room' };
   }
 });
 
