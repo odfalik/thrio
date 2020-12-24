@@ -46,14 +46,14 @@ export const joinRoom = functions.https.onCall(async (params, context) => {
   if (verified) {
     const playersRef = admin.database().ref('rooms/' + params.roomCode + '/players');
     const playerSnapshot = await playersRef.get();
-    const players: string[] = playerSnapshot.val() || [];
+    const players: { name: string }[] = playerSnapshot.val() || [];
 
-    if (!players || !Array.isArray(players) || (players.length === 3 && !players.includes(params.name) )) {  // full room
+    if (!players || !Array.isArray(players) || (players.length === 3 && !players.some(p => p.name === params.name) )) {  // full room
       return { error: 'Room is full' };
-    } else if (players.some(player => player === params.name)) {        // already in room
+    } else if (players.some(player => player.name === params.name)) {        // already in room
       return 'success';
     } else {
-      return playersRef.set([...players, params.name]).then(() => 'success');
+      return playersRef.set([...players, { name: params.name }]).then(() => 'success');
     }
     
   } else {
@@ -70,6 +70,7 @@ export const newRoom = functions.https.onCall((params, context): Promise<string>
     .update({
       roomCode: roomCode,
       time: Date.now(),
+      players: [{ name: params.name, host: true }],
     }).then(() => {
       return resetGame(roomCode).then(() => { return roomCode; });
     });
@@ -81,10 +82,12 @@ export const makeMove = functions.https.onCall(async (params, context) => {
 
   const roomRef = admin.database().ref('rooms/' + params.roomCode);
   const players: any[] = await (await roomRef.child('players').get()).val();
+  const playerIdx = players.findIndex(p => p.name === params.name);
 
   const nextPlayerRef = await roomRef.child('nextPlayer').get();
   const nextPlayer: number = nextPlayerRef.val();
-  if (players[nextPlayer] === params.player) {
+  
+  if (players[nextPlayer] === playerIdx) {
     const grid: number[][][] = (await roomRef.child('grid').get()).val();
     
     let y = -1;

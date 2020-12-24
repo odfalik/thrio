@@ -9,7 +9,7 @@ import { Subject, Subscription } from 'rxjs';
 })
 export class GameService implements OnDestroy {
 
-  public name = localStorage.getItem('name') || 'goober';
+  public name = localStorage.getItem('name') || 'guest';
   public room: any;
   public room$ = new Subject<any>();
   private _room: Subscription;
@@ -26,7 +26,7 @@ export class GameService implements OnDestroy {
   }
 
   tryJoinRoom(roomCode: string): void {
-    // const tokens: [{ roomCode: string, token: string }] = JSON.parse(localStorage.getItem('tokens')) || [];
+    // const tokens: { roomCode: string, token: string }[] = JSON.parse(localStorage.getItem('tokens')) || [];
     // const token = tokens.find(t => t.roomCode === roomCode);
 
     this.fns.joinRoom$({ roomCode: roomCode.toUpperCase(), name: this.name }).subscribe(joinData => {
@@ -47,6 +47,7 @@ export class GameService implements OnDestroy {
         // else if (!this.room) this.loadRoom();
 
         this.room = room;
+        this.room.waiting = new Array(3 - this.room.players?.length);
         this.room$.next(this.room);
       });
     });

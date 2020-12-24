@@ -39,13 +39,13 @@ export class MainMenuComponent implements OnInit {
   // }
 
   joinRoom(roomCode: string = this.roomCode): void {
-    roomCode = roomCode.toUpperCase();
     localStorage.setItem('name', this.name);
+    roomCode = roomCode.toUpperCase();
     this.router.navigate(['/play', roomCode]);
   }
 
   newRoom(): void {
-    this.fns.newRoom$({}).subscribe((roomCode: string) => {
+    this.fns.newRoom$({ name: this.name }).subscribe((roomCode: string) => {
       this.joinRoom(roomCode);
     });
   }

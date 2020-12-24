@@ -13,26 +13,36 @@ canvas {
   pointer-events: none;
 
   .room-code {
-    font-size: 1.5em;
+    font-size: 1em;
     transition: 1s all;
     border-bottom: 1px solid rgba(253, 255, 252, 0.5);
     margin-bottom: 0.25em;
     text-align: center;
 
     &.lg {
-      font-size: 3em;
+      font-size: 3.5em;
     }
   }
 
   .players {
     .player {
+      > * {
+        margin-right: .25em;
+      }
       i {
         display: inline-block;
-        margin-right: .25em;
+        color: rgb(253, 255, 252);
+        font-size: 0.7em;
+
+        &.next-marker { display: none; }
       }
       p {
         text-transform: uppercase;
         display: inline-block;
+      }
+
+      &.next {
+        i.next-marker { display: inline-block; }
       }
     }
 
@@ -53,6 +63,11 @@ canvas {
 
 .controls {
   bottom: 0;
+  pointer-events: none;
+
+  > * {
+    pointer-events: all;
+  }
 }
 
 .vignette {
@@ -63,4 +78,27 @@ canvas {
   height: 100vh;
   box-shadow: 0 0 50px rgba(0,0,0,0.5) inset;
   pointer-events: none
+}
+
+.waiting::after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4,end) 900ms infinite;
+  animation: ellipsis steps(4,end) 900ms infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+  margin-left: -.2em;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 20px;
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 20px;
+  }
 }

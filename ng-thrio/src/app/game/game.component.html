@@ -2,19 +2,28 @@
 <div class="vignette"></div>
 
 <div class="header">
-  <p class="room-code" [class.lg]="gs.room?.players?.length !== 3">{{ gs.room?.roomCode }}</p>
+  <p class="room-code" [class.lg]="gs.room?.players?.length !== 3">
+    {{ gs.room?.roomCode }}
+  </p>
   <div class="players">
-
-    <div *ngFor="let player of gs.room?.players; let i = index" class="player">
-      <i class="fas fa-chevron-right" *ngIf="gs.room.nextPlayer === i" ></i>
+    <div
+      *ngFor="let player of gs.room?.players; let i = index"
+      class="player"
+      [class.next]="gs.room.nextPlayer === i"
+    >
+      <i class="fas fa-chevron-right next-marker"></i>
       <p>
-        {{ player }}
+        {{ player.name }}
       </p>
+      <i class="fas fa-user-cog" *ngIf="player?.host"></i>
     </div>
+
+    <p *ngFor="let i of gs.room?.waiting" class="waiting">waiting for player</p>
   </div>
 </div>
 
 <div class="controls">
-  <!-- <button (click)="gs.leaveRoom()">exit</button> -->
+  <button (click)="gs.leaveRoom()">
+    <i class="fas fa-sign-out-alt fa-flip-horizontal"></i>
+  </button>
 </div>
-
