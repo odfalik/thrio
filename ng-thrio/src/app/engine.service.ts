@@ -91,7 +91,7 @@ export class EngineService implements OnDestroy {
       this.scene.add(plane);
       plane.position.set(1.5, 1.5, i);
     }
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i += 3) {
       const plane = new THREE.Mesh(planeGeom, planeMat);
       this.scene.add(plane);
       plane.position.set(1.5, i, 1.5);
@@ -125,12 +125,12 @@ export class EngineService implements OnDestroy {
     }
 
     /* Origin dot */
-    const dotGeometry = new THREE.Geometry();
-    dotGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    dotGeometry.vertices.push(new THREE.Vector3(1.5, 1.5, 1.5));
-    const dotMaterial = new THREE.PointsMaterial({ size: .05, color: 0xffffff });
-    const dot = new THREE.Points(dotGeometry, dotMaterial);
-    this.scene.add(dot);
+    // const dotGeometry = new THREE.Geometry();
+    // dotGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    // dotGeometry.vertices.push(new THREE.Vector3(1.5, 1.5, 1.5));
+    // const dotMaterial = new THREE.PointsMaterial({ size: .05, color: 0xffffff });
+    // const dot = new THREE.Points(dotGeometry, dotMaterial);
+    // this.scene.add(dot);
   }
 
   onCanvasDown(e): void {
@@ -218,7 +218,7 @@ export class EngineService implements OnDestroy {
     });
     this.balls = [];
 
-    const geometry = new THREE.SphereGeometry(.4, 32, 32);
+    const geometry = new THREE.SphereGeometry(.5, 14, 14);
     for (let x = 0; x < 3; x++) {
       for (let y = 0; y < 3; y++) {
         for (let z = 0; z < 3; z++) {
