@@ -5,6 +5,7 @@ h1 {
 
   span {
     font-size: 1rem;
+    font-weight: normal;
   }
 }
 
@@ -27,7 +28,7 @@ canvas {
 
   text-align: center;
 
-  .button {
-
+  input {
+    text-transform: uppercase;
   }
 }

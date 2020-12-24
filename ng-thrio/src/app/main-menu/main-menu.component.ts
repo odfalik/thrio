@@ -12,6 +12,7 @@ export class MainMenuComponent implements OnInit {
 
   roomCode = '';
   name = localStorage.getItem('name') || '';
+  searching: boolean;
 
   // @ViewChild('canvas', { static: true })
   // canvas: ElementRef<HTMLCanvasElement>;
@@ -38,6 +39,7 @@ export class MainMenuComponent implements OnInit {
   // }
 
   joinRoom(roomCode: string = this.roomCode): void {
+    roomCode = roomCode.toUpperCase();
     localStorage.setItem('name', this.name);
     this.router.navigate(['/play', roomCode]);
   }
@@ -46,6 +48,10 @@ export class MainMenuComponent implements OnInit {
     this.fns.newRoom$({}).subscribe((roomCode: string) => {
       this.joinRoom(roomCode);
     });
+  }
+
+  joinPublic(): void {
+    this.searching = true;
   }
 
   // animateCursor($e) {

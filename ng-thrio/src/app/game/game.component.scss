@@ -5,16 +5,35 @@ canvas {
 .header, .controls {
   position: absolute;
   padding: 2em;
-  color: white;
+  color: rgb(253, 255, 252);
 }
 
 .header {
   top: 0;
   pointer-events: none;
 
+  .room-code {
+    font-size: 1.5em;
+    transition: 1s all;
+    border-bottom: 1px solid rgba(253, 255, 252, 0.5);
+    margin-bottom: 0.25em;
+    text-align: center;
+
+    &.lg {
+      font-size: 3em;
+    }
+  }
+
   .players {
-    > * {
-      text-transform: uppercase;
+    .player {
+      i {
+        display: inline-block;
+        margin-right: .25em;
+      }
+      p {
+        text-transform: uppercase;
+        display: inline-block;
+      }
     }
 
     > :nth-child(1) {
@@ -28,14 +47,20 @@ canvas {
     > :nth-child(3) {
       color: #FF9F1C;
     }
-
-    .next-player {
-      font-weight: bold;
-    }
   }
 
 }
 
 .controls {
   bottom: 0;
+}
+
+.vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  box-shadow: 0 0 50px rgba(0,0,0,0.5) inset;
+  pointer-events: none
 }

@@ -105,12 +105,12 @@ export class EngineService implements OnDestroy {
     }
 
     /* Top squares */
-    const squareMat = new THREE.MeshLambertMaterial({
+    const squareMat = new THREE.MeshBasicMaterial({
       opacity: 0.4,
       transparent: true,
-      color: 0x00FF00,
+      color: 0xFFFFFF,
     });
-    const squareGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
+    const squareGeom = new THREE.PlaneGeometry(0.5, 0.5, 1, 1);
     for (let x = 0; x < 3; x++) {
       for (let z = 0; z < 3; z++) {
         const square = new THREE.Mesh(squareGeom, squareMat);
@@ -187,13 +187,13 @@ export class EngineService implements OnDestroy {
       this.canvas.addEventListener('pointerup', this.onCanvasUp.bind(this), false );
       this.canvas.addEventListener('mousemove', this.onCanvasMove.bind(this), false);
 
-      window.addEventListener('resize', () => {
+      window.addEventListener('resize', (() => {
         const width = window.innerWidth;
         const height = window.innerHeight;
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(width, height);
-      });
+      }).bind(this));
     });
   }
 
@@ -203,9 +203,9 @@ export class EngineService implements OnDestroy {
     });
 
     this.controls.update();
-    if (this.updateFns?.length) {
-      this.updateFns.forEach((fn) => fn());
-    }
+    // if (this.updateFns?.length) {
+    //   this.updateFns.forEach((fn) => fn());
+    // }
 
     this.renderer.render(this.scene, this.camera);
   }
@@ -218,7 +218,7 @@ export class EngineService implements OnDestroy {
     });
     this.balls = [];
 
-    const geometry = new THREE.SphereGeometry(.5, 32, 32);
+    const geometry = new THREE.SphereGeometry(.4, 32, 32);
     for (let x = 0; x < 3; x++) {
       for (let y = 0; y < 3; y++) {
         for (let z = 0; z < 3; z++) {

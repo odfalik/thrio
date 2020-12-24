@@ -15,6 +15,7 @@ export class GameService implements OnDestroy {
   private _room: Subscription;
 
   rendererCanvas: ElementRef<HTMLCanvasElement>;
+  canMove = true;
 
   constructor(
     private router: Router,
@@ -56,6 +57,12 @@ export class GameService implements OnDestroy {
   }
 
   makeMove(pos: { x: number, z: number }): void {
+    if (!this.canMove) return;
+    setTimeout(() => {
+      this.canMove = true;
+    }, 1000);
+    this.canMove = false;
+
     this.fns.makeMove$({
       roomCode: this.room.roomCode,
       ...pos,
