@@ -49,6 +49,8 @@ export class GameService implements OnDestroy {
         this.room = room;
         this.room.waiting = new Array(3 - this.room.players?.length);
         this.room$.next(this.room);
+
+        console.log('ROOM', this.room);
       });
     });
   }
