@@ -1,6 +1,4 @@
 import { GameService } from './../game.service';
-import { FunctionsService } from './../functions.service';
-import { DbService } from './../db.service';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as THREE from 'three';
@@ -26,6 +24,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
     this._params = this.activatedRoute.params.subscribe((params) => {
       const roomCode = params.roomCode;
+
       if (roomCode) {
         this.gs.tryJoinRoom(roomCode);
       } else {

@@ -1,3 +1,4 @@
+import { Room } from './../../../Interfaces';
 import { DbService } from './db.service';
 import { FunctionsService } from './functions.service';
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';
@@ -10,12 +11,13 @@ import { Subject, Subscription } from 'rxjs';
 export class GameService implements OnDestroy {
 
   public name = localStorage.getItem('name') || 'guest';
-  public room: any;
-  public room$ = new Subject<any>();
+  public room: Room;
+  public room$ = new Subject<Room>();
   private _room: Subscription;
 
   rendererCanvas: ElementRef<HTMLCanvasElement>;
   canMove = true;
+  playerIdx: number;
 
   constructor(
     private router: Router,
@@ -26,31 +28,25 @@ export class GameService implements OnDestroy {
   }
 
   tryJoinRoom(roomCode: string): void {
-    // const tokens: { roomCode: string, token: string }[] = JSON.parse(localStorage.getItem('tokens')) || [];
-    // const token = tokens.find(t => t.roomCode === roomCode);
 
     this.fns.joinRoom$({ roomCode: roomCode.toUpperCase(), name: this.name }).subscribe(joinData => {
-      if (joinData?.error) {
+      if (joinData === undefined) {
         this.leaveRoom();
         return;
       }
 
+      this.playerIdx = joinData;
+
       console.log('joinData', joinData);
-      // if (joinData.token) {
-      //   if (tokens.length > 10) tokens.shift();
-      //   tokens.push({ roomCode, token: joinData.token })
-      //   localStorage.setItem('tokens', JSON.stringify(tokens));
-      // }
 
       this._room = this.dbs.getRoom(roomCode).subscribe(room => {
-        if (!room) setTimeout(() => this.leaveRoom(), 3000);  // room doesn't exist
-        // else if (!this.room) this.loadRoom();
+        if (!room) setTimeout(() => this.leaveRoom(), 2000);  // room doesn't exist
 
         this.room = room;
         this.room.waiting = new Array(3 - this.room.players?.length);
         this.room$.next(this.room);
 
-        console.log('ROOM', this.room);
+        console.log('room', this.room);
       });
     });
   }
@@ -60,7 +56,7 @@ export class GameService implements OnDestroy {
   }
 
   makeMove(pos: { x: number, z: number }): void {
-    if (!this.canMove) return;
+    if (!this.canMove || this.room?.nextPlayer !== this.playerIdx) return;
     setTimeout(() => {
       this.canMove = true;
     }, 1000);
@@ -69,7 +65,7 @@ export class GameService implements OnDestroy {
     this.fns.makeMove$({
       roomCode: this.room.roomCode,
       ...pos,
-      name: this.name
+      player: this.name
     }).subscribe(res => {
       if (res?.error) console.error(res);
     });

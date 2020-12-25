@@ -1,60 +1,63 @@
 canvas {
-    display: block;
+  display: block;
+  overflow: hidden;
 }
 
 .header,
 .controls {
-    position: absolute;
-    padding: 2em;
-    color: rgb(253, 255, 252);
+  position: absolute;
+  padding: 2em;
+  color: rgb(253, 255, 252);
 }
 
 .header {
-    top: 0;
-    pointer-events: none;
-    .room-code {
-        font-size: 1em;
-        transition: 1s all;
-        border-bottom: 1px solid rgba(253, 255, 252, 0.5);
-        margin-bottom: 0.25em;
-        text-align: center;
-        &.lg {
-            font-size: 3.5em;
-        }
+  top: 0;
+  pointer-events: none;
+  font-size: 1.3em;
+
+  .room-code {
+    font-size: 1em;
+    transition: 1s all;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid rgba(253, 255, 252, 0.5);
+    margin-bottom: 0.25em;
+    text-align: center;
+    &.lg {
+      font-size: 3em;
     }
-    .players {
-        .player {
-            >* {
-                margin-right: .25em;
-            }
-            i {
-                display: inline-block;
-                color: rgb(253, 255, 252);
-                font-size: 0.7em;
-                &.next-marker {
-                    display: none;
-                }
-            }
-            p {
-                text-transform: uppercase;
-                display: inline-block;
-            }
-            &.next {
-                i.next-marker {
-                    display: inline-block;
-                }
-            }
+  }
+  .players {
+    .player {
+      > * {
+        margin-right: 0.25em;
+      }
+      i {
+        display: inline-block;
+        font-size: 0.7em;
+        &.next-marker {
+          display: none;
         }
-        > :nth-child(1) {
-            color: #2EC4B6;
+      }
+      p {
+        text-transform: uppercase;
+        display: inline-block;
+      }
+      &.next {
+        i.next-marker {
+          display: inline-block;
         }
-        > :nth-child(2) {
-            color: #E71D36;
-        }
-        > :nth-child(3) {
-            color: #FF9F1C;
-        }
+      }
     }
+    > :nth-child(1) {
+      color: #2ec4b6;
+    }
+    > :nth-child(2) {
+      color: #e71d36;
+    }
+    > :nth-child(3) {
+      color: #ff9f1c;
+    }
+  }
 }
 
 .controls {
@@ -69,19 +72,19 @@ canvas {
     margin-right: 1em;
 
     &.fa-sign-out-alt:hover {
-      color: #E71D36;
+      color: #e71d36;
     }
   }
 }
 
 .vignette {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5) inset;
-    pointer-events: none
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5) inset;
+  pointer-events: none;
 }
 
 .waiting::after {
@@ -89,27 +92,21 @@ canvas {
   display: inline-block;
   position: absolute;
   vertical-align: bottom;
-  animation: ellipsis steps(4,end) 1.5s infinite;
-  content: "\2026"; /* ascii code for the ellipsis character */
+  animation: ellipsis steps(6, end) 3s infinite;
+  content: "\2026";
   width: 0px;
 }
 
 @keyframes ellipsis {
-    to {
-        width: 20px;
-    }
-}
-
-@-webkit-keyframes ellipsis {
-    to {
-        width: 20px;
-    }
+  to {
+    width: 20px;
+  }
 }
 
 .gameover {
-    text-align: center;
-    position: absolute;
-    top: 50vh;
-    left: 50vw;
-    font-size: 3em;
+  text-align: center;
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  font-size: 3em;
 }

@@ -26,7 +26,7 @@ export class EngineService implements OnDestroy {
   ) {
     this.gs.room$.subscribe(room => {
       this.updateGrid(room.grid);
-    })
+    });
   }
 
   public ngOnDestroy(): void {
@@ -80,7 +80,7 @@ export class EngineService implements OnDestroy {
 
     /* Grid */
     const planeMat = new THREE.MeshLambertMaterial({
-      opacity: 0.1,
+      opacity: 0.05,
       transparent: true,
       color: 0xFFFFFF,
       side: THREE.DoubleSide,
@@ -91,24 +91,23 @@ export class EngineService implements OnDestroy {
       this.scene.add(plane);
       plane.position.set(1.5, 1.5, i);
     }
-    for (let i = 0; i < 3; i += 3) {
-      const plane = new THREE.Mesh(planeGeom, planeMat);
-      this.scene.add(plane);
-      plane.position.set(1.5, i, 1.5);
-      plane.rotateX(Math.PI / 2);
-    }
     for (let i = 0; i < 4; i++) {
       const plane = new THREE.Mesh(planeGeom, planeMat);
       this.scene.add(plane);
       plane.position.set(i, 1.5, 1.5);
       plane.rotateY(Math.PI / 2);
     }
+    const plane = new THREE.Mesh(planeGeom, planeMat);
+    this.scene.add(plane);
+    plane.position.set(1.5, 0, 1.5);
+    plane.rotateX(Math.PI / 2);
 
     /* Top squares */
     const squareMat = new THREE.MeshBasicMaterial({
       opacity: 0.4,
       transparent: true,
       color: 0xFFFFFF,
+      side: THREE.DoubleSide,
     });
     const squareGeom = new THREE.PlaneGeometry(0.5, 0.5, 1, 1);
     for (let x = 0; x < 3; x++) {

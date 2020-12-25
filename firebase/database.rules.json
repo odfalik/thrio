@@ -2,5 +2,9 @@
   "rules": {
     ".read": "now < 1611036000000",  // 2021-1-19
     ".write": "now < 1611036000000",  // 2021-1-19
+  	"rooms": {
+      ".indexOn": ["status"],
+      ".write": "false"
+    }
   }
 }

@@ -7,8 +7,7 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log",
-    "register-service-account": "export GOOGLE_APPLICATION_CREDENTIALS=../../../thrio-d87c1-f3f8e1866fc4.json"
+    "logs": "firebase functions:log"
   },
   "engines": {
     "node": "12"
