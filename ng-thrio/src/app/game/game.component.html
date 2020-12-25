@@ -1,6 +1,10 @@
 <canvas #rendererCanvas id="renderCanvas"></canvas>
 <div class="vignette"></div>
 
+<div class="gameover" *ngIf="gs.room?.victor">
+  <h3>{{gs.room?.victor}} won</h3>
+</div>
+
 <div class="header">
   <p class="room-code" [class.lg]="gs.room?.players?.length !== 3">
     {{ gs.room?.roomCode }}
