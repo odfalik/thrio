@@ -1,4 +1,4 @@
-import { Room } from './../../../Interfaces';
+import { Room } from '../../../interfaces';
 import { DbService } from './db.service';
 import { FunctionsService } from './functions.service';
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';

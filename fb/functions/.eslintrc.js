@@ -30,6 +30,10 @@ module.exports = {
     "@typescript-eslint/unified-signatures": "warn",
     "comma-dangle": ["warn", "always-multiline"],
     "constructor-super": "warn",
+    "import/no-unresolved": [
+      2, 
+      { "caseSensitive": false }
+    ],
     eqeqeq: ["warn", "always"],
     "import/no-deprecated": "warn",
     "import/no-extraneous-dependencies": "warn",
@@ -55,6 +59,7 @@ module.exports = {
       },
     ],
     "no-throw-literal": "warn",
+    "no-unsafe-finally": "warn",
     "no-unused-labels": "warn",
     "no-var": "warn",
     "no-void": "warn",

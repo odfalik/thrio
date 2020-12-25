@@ -1,6 +1,6 @@
+import { Player, Room } from '../../../interfaces';
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { Player, Room } from "../../../Interfaces";
 
 admin.initializeApp(functions.config().firebase);
 
@@ -18,44 +18,40 @@ async function resetGame(roomCode: string, overwrites: object): Promise<any> {
   const roomRef = await admin.database().ref("rooms/" + roomCode);
   let room: Room = (await roomRef.get()).val();
 
-  if (room) {
-    const grid = [
-      [
-        [-1, -1, -1],
-        [-1, -1, -1],
-        [-1, -1, -1],
-      ],
-      [
-        [-1, -1, -1],
-        [-1, -1, -1],
-        [-1, -1, -1],
-      ],
-      [
-        [-1, -1, -1],
-        [-1, -1, -1],
-        [-1, -1, -1],
-      ],
-    ];
+  const grid = [
+    [
+      [-1, -1, -1],
+      [-1, -1, -1],
+      [-1, -1, -1],
+    ],
+    [
+      [-1, -1, -1],
+      [-1, -1, -1],
+      [-1, -1, -1],
+    ],
+    [
+      [-1, -1, -1],
+      [-1, -1, -1],
+      [-1, -1, -1],
+    ],
+  ];
 
-    room = {
-      ...{
-        nextPlayer: 0,
-        time: Date.now(),
-        grid,
-        victor: undefined,
-      },
-      ...overwrites,
-    };
+  room = {
+    ...{
+      nextPlayer: 0,
+      time: Date.now(),
+      grid,
+      victor: undefined,
+      players: room?.players || []
+    },
+    ...overwrites,
+  };
 
-    return roomRef.update(room);
-  } else {
-    throw new functions.https.HttpsError("not-found", "Room does not exist");
-  }
+  return roomRef.update(room);
 }
 
 export const joinRoom = functions.https.onCall(async (params, context) => {
-  return { test: 'test', params }
-  
+
   const room: Room = (
     await admin
     .database()
