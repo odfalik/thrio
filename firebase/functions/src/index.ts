@@ -87,8 +87,6 @@ export const makeMove = functions.https.onCall(async (params, context) => {
   const nextPlayerRef = await roomRef.child('nextPlayer').get();
   const nextPlayer: number = nextPlayerRef.val();
 
-  console.log('AAA', nextPlayer, playerIdx);
-
   if (nextPlayer === playerIdx) {
     const grid: number[][][] = (await roomRef.child('grid').get()).val();
     
