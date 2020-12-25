@@ -65,7 +65,8 @@ export class GameService implements OnDestroy {
     this.fns.makeMove$({
       roomCode: this.room.roomCode,
       ...pos,
-      player: this.name
+      player: this.name,
+      playerIdx: this.playerIdx,
     }).subscribe(res => {
       if (res?.error) console.error(res);
     });

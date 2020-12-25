@@ -8,7 +8,7 @@ export interface Room {
     time: number,
     grid: number[][][],
     players?: Player[],
-    nextPlayer?: number,
+    nextPlayer: number,
     waiting?: any[],
-    victor?: number,
+    victor?: number | null,
 }

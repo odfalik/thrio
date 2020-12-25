@@ -1,21 +1,11 @@
-import { Player, Room } from '../../../interfaces';
+import { Player, Room } from "../../../interfaces";
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 admin.initializeApp(functions.config().firebase);
 
-function makeId(len = 3) {
-  let result = "";
-  const characters = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const charactersLength = characters.length;
-  for (let i = 0; i < len; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
 async function resetGame(roomCode: string, overwrites: object): Promise<any> {
-  const roomRef = await admin.database().ref("rooms/" + roomCode);
+  const roomRef = admin.database().ref("rooms/" + roomCode);
   let room: Room = (await roomRef.get()).val();
 
   const grid = [
@@ -41,8 +31,8 @@ async function resetGame(roomCode: string, overwrites: object): Promise<any> {
       nextPlayer: 0,
       time: Date.now(),
       grid,
-      victor: undefined,
-      players: room?.players || []
+      victor: null,
+      players: room?.players || [],
     },
     ...overwrites,
   };
@@ -51,14 +41,12 @@ async function resetGame(roomCode: string, overwrites: object): Promise<any> {
 }
 
 export const joinRoom = functions.https.onCall(async (params, context) => {
-
   const room: Room = (
     await admin
-    .database()
-    .ref("rooms/" + params.roomCode)
-    .get()
-    ).val();
-    
+      .database()
+      .ref("rooms/" + params.roomCode)
+      .get()
+  ).val();
 
   if (room) {
     const playersRef = admin.database().ref(`rooms/${params.roomCode}/players`);
@@ -108,17 +96,17 @@ export const makeMove = functions.https.onCall(async (params, context) => {
 
   const room: Room = await roomSnap.val();
 
-  const players: Player[] = room.players || [];
-  const playerIdx = players.findIndex((p) => p.name === params.name);
+  // const players: Player[] = room.players || [];
+  const playerIdx = params.playerIdx;
 
-  const nextPlayer: number | undefined = room.nextPlayer;
+  const nextPlayer: number = room.nextPlayer;
 
   if (nextPlayer === playerIdx) {
     const grid: number[][][] = room.grid;
 
+    // check bottom up (gravity) if space in column
     let y = -1;
     for (let yCheck = 0; yCheck < 3; yCheck++) {
-      // check bottom up (gravity)
       if (grid[params.x][yCheck][params.z] < 0) {
         // unoccupied
         y = yCheck;
@@ -136,13 +124,13 @@ export const makeMove = functions.https.onCall(async (params, context) => {
 
       const roomUpdate: any = {};
       roomUpdate[`grid/${params.x}/${y}/${params.z}`] = nextPlayer;
-      roomUpdate["nextPlayer"] = nextPlayer + 1 === 3 ? 0 : nextPlayer + 1;
+      roomUpdate["nextPlayer"] = victory ? -1 : (nextPlayer + 1 === 3 ? 0 : nextPlayer + 1);
       roomUpdate["victor"] = victory ? playerIdx : null;
 
       return await roomRef.update(roomUpdate);
     }
   } else {
-    throw new functions.https.HttpsError("permission-denied", "Not your turn");
+    throw new functions.https.HttpsError("permission-denied", `Not your turn, ${nextPlayer}:${playerIdx}`);
   }
 });
 
@@ -204,4 +192,14 @@ function checkVictory(
       }
     }
   });
+}
+
+function makeId(len = 3) {
+  let result = "";
+  const characters = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i < len; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 }
