@@ -12,6 +12,7 @@ html, body {
   background: linear-gradient(110deg, #1b303f, $dark);
   color: $white;
   height: 100%;
+  overflow: hidden;
 }
 
 main {
@@ -73,5 +74,14 @@ input {
     border-left: none;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+  }
+}
+
+i.clickable {
+  font-size: 2em;
+  transition: .15s all;
+  &:hover {
+    cursor: pointer;
+    color: rgb(46, 194, 179);
   }
 }

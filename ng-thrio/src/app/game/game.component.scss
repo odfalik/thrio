@@ -68,6 +68,14 @@ canvas {
   > * {
     pointer-events: all;
   }
+
+  i {
+    margin-right: 1em;
+
+    &.fa-sign-out-alt:hover {
+      color: #E71D36;
+    }
+  }
 }
 
 .vignette {
@@ -85,8 +93,7 @@ canvas {
   display: inline-block;
   position: absolute;
   vertical-align: bottom;
-  -webkit-animation: ellipsis steps(4,end) 900ms infinite;
-  animation: ellipsis steps(4,end) 900ms infinite;
+  animation: ellipsis steps(4,end) 1.5s infinite;
   content: "\2026"; /* ascii code for the ellipsis character */
   width: 0px;
 }

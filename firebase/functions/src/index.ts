@@ -34,6 +34,7 @@ async function resetGame(roomCode: string): Promise<any> {
       nextPlayer: 0,
       time: Date.now(),
       grid,
+      victor: null,
     });
 
   } else {
