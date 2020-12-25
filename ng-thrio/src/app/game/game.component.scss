@@ -1,64 +1,60 @@
 canvas {
-  display: block;
+    display: block;
 }
 
-.header, .controls {
-  position: absolute;
-  padding: 2em;
-  color: rgb(253, 255, 252);
+.header,
+.controls {
+    position: absolute;
+    padding: 2em;
+    color: rgb(253, 255, 252);
 }
 
 .header {
-  top: 0;
-  pointer-events: none;
-
-  .room-code {
-    font-size: 1em;
-    transition: 1s all;
-    border-bottom: 1px solid rgba(253, 255, 252, 0.5);
-    margin-bottom: 0.25em;
-    text-align: center;
-
-    &.lg {
-      font-size: 3.5em;
+    top: 0;
+    pointer-events: none;
+    .room-code {
+        font-size: 1em;
+        transition: 1s all;
+        border-bottom: 1px solid rgba(253, 255, 252, 0.5);
+        margin-bottom: 0.25em;
+        text-align: center;
+        &.lg {
+            font-size: 3.5em;
+        }
     }
-  }
-
-  .players {
-    .player {
-      > * {
-        margin-right: .25em;
-      }
-      i {
-        display: inline-block;
-        color: rgb(253, 255, 252);
-        font-size: 0.7em;
-
-        &.next-marker { display: none; }
-      }
-      p {
-        text-transform: uppercase;
-        display: inline-block;
-      }
-
-      &.next {
-        i.next-marker { display: inline-block; }
-      }
+    .players {
+        .player {
+            >* {
+                margin-right: .25em;
+            }
+            i {
+                display: inline-block;
+                color: rgb(253, 255, 252);
+                font-size: 0.7em;
+                &.next-marker {
+                    display: none;
+                }
+            }
+            p {
+                text-transform: uppercase;
+                display: inline-block;
+            }
+            &.next {
+                i.next-marker {
+                    display: inline-block;
+                }
+            }
+        }
+        > :nth-child(1) {
+            color: #2EC4B6;
+        }
+        > :nth-child(2) {
+            color: #E71D36;
+        }
+        > :nth-child(3) {
+            color: #FF9F1C;
+        }
     }
-
-    > :nth-child(1) {
-      color: #2EC4B6;
-    }
-
-    > :nth-child(2) {
-      color: #E71D36;
-    }
-
-    > :nth-child(3) {
-      color: #FF9F1C;
-    }
-  }
-
 }
 
 .controls {
@@ -79,13 +75,13 @@ canvas {
 }
 
 .vignette {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  box-shadow: 0 0 50px rgba(0,0,0,0.5) inset;
-  pointer-events: none
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5) inset;
+    pointer-events: none
 }
 
 .waiting::after {
@@ -99,13 +95,21 @@ canvas {
 }
 
 @keyframes ellipsis {
-  to {
-    width: 20px;
-  }
+    to {
+        width: 20px;
+    }
 }
 
 @-webkit-keyframes ellipsis {
-  to {
-    width: 20px;
-  }
+    to {
+        width: 20px;
+    }
+}
+
+.gameover {
+    text-align: center;
+    position: absolute;
+    top: 50vh;
+    left: 50vw;
+    font-size: 3em;
 }
