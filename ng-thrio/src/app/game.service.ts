@@ -1,4 +1,4 @@
-import { Room } from '../../../interfaces';
+import { Room } from './../../../Interfaces';
 import { DbService } from './db.service';
 import { FunctionsService } from './functions.service';
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';
@@ -29,7 +29,7 @@ export class GameService implements OnDestroy {
 
   tryJoinRoom(roomCode: string): void {
 
-    this.fns.joinRoom$({ roomCode: roomCode.toUpperCase(), name: this.name }).subscribe(joinData => {
+    this.fns.joinRoom$({ roomCode: roomCode.toUpperCase(), name: this.name }).subscribe((joinData: number) => {
       if (joinData === undefined) {
         this.leaveRoom();
         return;
