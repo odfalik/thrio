@@ -13,7 +13,7 @@ canvas {
 .header {
   top: 0;
   pointer-events: none;
-  font-size: 1.3em;
+  font-size: 1.1em;
 
   .room-code {
     font-size: 1em;
@@ -24,6 +24,10 @@ canvas {
     text-align: center;
     &.lg {
       font-size: 3em;
+    }
+    .fa-share {
+      font-size: 0.7em;
+      pointer-events: all;
     }
   }
   .players {
@@ -46,6 +50,7 @@ canvas {
         i.next-marker {
           display: inline-block;
         }
+        font-size: 1.2em;
       }
     }
     > :nth-child(1) {

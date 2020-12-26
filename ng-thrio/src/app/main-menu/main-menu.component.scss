@@ -1,13 +1,24 @@
-h1 {
-  font-size: 5em;
-  font-weight: bold;
-  margin-bottom: 1em;
+header {
+  display: grid;
+  grid-template-columns: auto auto;
+  min-height: 30vh;
 
-  span {
-    font-size: 1rem;
-    font-weight: normal;
+  h1 {
+    font-size: 3em;
+    font-weight: bold;
+
+    span {
+      font-size: 1rem;
+      font-weight: normal;
+    }
+  }
+
+  .top-right {
+    justify-self: end;
+    font-size: 1em;;
   }
 }
+
 
 canvas {
   position: fixed;
@@ -30,5 +41,18 @@ canvas {
 
   input {
     text-transform: uppercase;
+  }
+}
+
+footer {
+  position: fixed;
+  bottom: 2em;
+  text-align: center;
+  opacity: 20%;
+  width: 100%;
+
+  a {
+    font-weight: lighter;
+    color: white;
   }
 }

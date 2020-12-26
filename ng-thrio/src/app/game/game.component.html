@@ -5,9 +5,10 @@
   <h3>{{gs.room?.players[gs.room?.victor].name}} won</h3>
 </div>
 
-<div class="header">
-  <p class="room-code" [class.lg]="gs.room?.players?.length !== 3">
+<div class="header" *ngIf="gs.room">
+  <p class="room-code" [class.lg]="!gs.room?.isFull">
     {{ gs.room?.roomCode }}
+    <i class="fas fa-share clickable" (click)="shareRoom()" *ngIf="canShare"></i>
   </p>
   <div class="players">
     <div
@@ -19,7 +20,7 @@
       <p>
         {{ player.name }}
       </p>
-      <i class="fas fa-user-cog" *ngIf="player?.host"></i>
+      <i class="fas fa-crown" *ngIf="player?.host"></i>
     </div>
 
     <p *ngFor="let i of gs.room?.waiting" class="waiting">waiting for player</p>

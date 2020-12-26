@@ -11,4 +11,5 @@ export interface Room {
     nextPlayer: number,
     waiting?: any[],
     victor?: number | null,
+    isFull?: boolean,
 }

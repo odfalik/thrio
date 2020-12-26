@@ -1,9 +1,16 @@
 <main>
-  <h1>THRIO<span>.app</span></h1>
+  <header>
+    <h1>THRIO<span>.app</span></h1>
+
+    <div class="top-right">
+      <span> {{ authService.user?.displayName }} </span>
+      <i class="fas fa-user-cog clickable"></i>
+    </div>
+  </header>
 
   <!-- <canvas #canvas width="300" height="300"></canvas> -->
 
-  <div class="options">
+  <div class="options" *ngIf="authService.user">
     <button (click)="newRoom()">New game</button>
 
     <button (click)="joinPublic()" [disabled]="searching">
@@ -25,10 +32,14 @@
       </div>
     </form>
 
-    <div>
+    <!-- <div>
       <label class="db">Nickname</label>
       <input type="text" [(ngModel)]="name" name="name">
-    </div>
+    </div> -->
   </div>
 
 </main>
+
+<footer>
+  <a href="https://odedfalik.com" target="_blank">by oded</a>
+</footer>

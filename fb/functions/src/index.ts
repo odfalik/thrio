@@ -41,15 +41,12 @@ async function resetGame(roomCode: string, overwrites: object): Promise<any> {
 }
 
 export const joinRoom = functions.https.onCall(async (params, context) => {
-  const room: Room = (
-    await admin
-      .database()
-      .ref("rooms/" + params.roomCode)
-      .get()
-  ).val();
+  const roomRef = await admin
+    .database()
+    .ref("rooms/" + params.roomCode)
+  const room: Room = (await roomRef.get()).val();
 
   if (room) {
-    const playersRef = admin.database().ref(`rooms/${params.roomCode}/players`);
     const players: Player[] = room.players || [];
 
     const playerIdx = players?.findIndex((p) => p.name === params.name);
@@ -62,9 +59,10 @@ export const joinRoom = functions.https.onCall(async (params, context) => {
     if (inRoom) {
       return playerIdx;
     } else {
-      return await playersRef
-        .set([...players, { name: params.name }])
-        .then(() => playerIdx);
+      return await roomRef.update({
+        players: [...players, { name: params.name }],
+        isFull: players.length === 3, 
+      });
     }
   } else {
     throw new functions.https.HttpsError(
@@ -88,6 +86,7 @@ export const newRoom = functions.https.onCall(
 );
 
 export const makeMove = functions.https.onCall(async (params, context) => {
+
   const roomRef = admin.database().ref("rooms/" + params.roomCode);
   const roomSnap = await roomRef.get();
   if (!roomSnap.exists()) {
