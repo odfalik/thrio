@@ -4,6 +4,7 @@ import { FunctionsService } from './functions.service';
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,13 +24,14 @@ export class GameService implements OnDestroy {
     private router: Router,
     private fns: FunctionsService,
     private dbs: DbService,
+    private authService: AuthService,
   ) {
 
   }
 
   tryJoinRoom(roomCode: string): void {
 
-    this.fns.joinRoom$({ roomCode: roomCode.toUpperCase(), name: this.name }).subscribe((joinData: number) => {
+    this.fns.joinRoom$({ roomCode: roomCode.toUpperCase(), name: this.authService.user.displayName }).subscribe((joinData: number) => {
       if (joinData === undefined) {
         this.leaveRoom();
         return;
@@ -65,7 +67,6 @@ export class GameService implements OnDestroy {
     this.fns.makeMove$({
       roomCode: this.room.roomCode,
       ...pos,
-      player: this.name,
       playerIdx: this.playerIdx,
     }).subscribe(res => {
       if (res?.error) console.error(res);

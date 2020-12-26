@@ -11,8 +11,9 @@ import { AuthService } from '../auth.service';
 export class MainMenuComponent implements OnInit {
 
   roomCode = '';
-  name = localStorage.getItem('name') || '';
+  name = '';
   searching: boolean;
+  showConfig: boolean;
 
   constructor(
     public authService: AuthService,
@@ -27,7 +28,6 @@ export class MainMenuComponent implements OnInit {
   }
 
   joinRoom(roomCode: string = this.roomCode): void {
-    localStorage.setItem('name', this.name);
     roomCode = roomCode.toUpperCase();
     this.router.navigate(['/play', roomCode]);
   }

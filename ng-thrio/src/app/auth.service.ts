@@ -19,11 +19,15 @@ export class AuthService {
       this.user = u;
       console.log('user', u);
 
-      if (!u.displayName) this.changeName('Guest' + Math.floor(Math.random() * Math.floor(10000)));
+      if (u && !u.displayName) this.changeName('Guest' + Math.floor(Math.random() * Math.floor(10000)));
     });
   }
 
   changeName(displayName: string): void {
     this.user.updateProfile({ displayName });
+  }
+
+  signOut(): Promise<void> {
+    return this.auth.signOut();
   }
 }

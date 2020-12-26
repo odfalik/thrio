@@ -4,13 +4,19 @@
 
     <div class="top-right">
       <span> {{ authService.user?.displayName }} </span>
-      <i class="fas fa-user-cog clickable"></i>
+      <i class="fas clickable" [ngClass]="showConfig?'fa-times':'fa-user-cog'" (click)="showConfig=!showConfig"></i>
     </div>
   </header>
 
-  <!-- <canvas #canvas width="300" height="300"></canvas> -->
+  <div *ngIf="showConfig; else">
+    <label class="db">Nickname</label>
+    <input type="text" [(ngModel)]="name" name="name" (blur)="authService.changeName(name)">
+    <br />
+    <button (click)="authService.signOut()">Sign out</button>
+  </div>
 
-  <div class="options" *ngIf="authService.user">
+  <div class="options" *ngIf="authService.user && !showConfig">
+
     <button (click)="newRoom()">New game</button>
 
     <button (click)="joinPublic()" [disabled]="searching">
@@ -32,10 +38,6 @@
       </div>
     </form>
 
-    <!-- <div>
-      <label class="db">Nickname</label>
-      <input type="text" [(ngModel)]="name" name="name">
-    </div> -->
   </div>
 
 </main>
