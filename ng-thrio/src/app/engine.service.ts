@@ -123,12 +123,12 @@ export class EngineService implements OnDestroy {
     }
 
     /* Origin dot */
-    const dotGeometry = new THREE.Geometry();
-    dotGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    dotGeometry.vertices.push(new THREE.Vector3(1.5, 1.5, 1.5));
-    const dotMaterial = new THREE.PointsMaterial({ size: .05, color: 0xffffff });
-    const dot = new THREE.Points(dotGeometry, dotMaterial);
-    this.scene.add(dot);
+    // const dotGeometry = new THREE.Geometry();
+    // dotGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    // dotGeometry.vertices.push(new THREE.Vector3(1.5, 1.5, 1.5));
+    // const dotMaterial = new THREE.PointsMaterial({ size: .05, color: 0xffffff });
+    // const dot = new THREE.Points(dotGeometry, dotMaterial);
+    // this.scene.add(dot);
   }
 
   onCanvasDown(e): void {

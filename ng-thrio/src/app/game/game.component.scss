@@ -112,4 +112,6 @@ canvas {
   top: 50vh;
   left: 50vw;
   font-size: 3em;
+  transform: translateX(-50%);
+  max-width: 90vw;
 }

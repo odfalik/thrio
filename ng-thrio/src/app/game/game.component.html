@@ -8,7 +8,7 @@
 <div class="header" *ngIf="gs.room">
   <p class="room-code" [class.lg]="!gs.room?.isFull">
     {{ gs.room?.roomCode }}
-    <i class="fas fa-share clickable" (click)="shareRoom()" *ngIf="canShare"></i>
+    <i class="fas fa-share clickable" (click)="shareRoom()" *ngIf="canShare && !gs.room.isFull"></i>
   </p>
   <div class="players">
     <div
