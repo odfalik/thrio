@@ -60,6 +60,8 @@ export class GameService implements OnDestroy {
   }
 
   leaveRoom(): void {
+    delete this.room;
+    this.ngOnDestroy();
     this.router.navigate(['/']);
   }
 
