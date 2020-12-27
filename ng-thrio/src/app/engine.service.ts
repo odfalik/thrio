@@ -108,7 +108,7 @@ export class EngineService implements OnDestroy {
       transparent: true,
       color: 0xFFFFFF,
     });
-    const squareGeom = new THREE.ConeGeometry(0.3, .3, 3, 1);
+    const squareGeom = new THREE.ConeGeometry(0.3, .3, 4, 1);
     for (let x = 0; x < 3; x++) {
       for (let z = 0; z < 3; z++) {
         const square = new THREE.Mesh(squareGeom, squareMat);
