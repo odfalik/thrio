@@ -1,16 +1,19 @@
-import { Room } from "../../../interfaces";
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import { Room } from '../../../interfaces';
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
 
 admin.initializeApp(functions.config().firebase);
 
 export const newRoom = functions.https.onCall(
-  async (params, context): Promise<string> => {
+  async (
+    params: { public: boolean; dimensions: number },
+    context
+  ): Promise<string> => {
     const roomCode = makeId(4);
     if (!context.auth)
       throw new functions.https.HttpsError(
-        "unauthenticated",
-        "Need auth to create a room"
+        'unauthenticated',
+        'Need auth to create a room'
       );
     const hostName = (await admin.auth().getUser(context.auth.uid)).displayName;
 
@@ -34,7 +37,7 @@ async function resetGame(
   publicOverwrites: any,
   secretOverwrites: any
 ): Promise<any> {
-  const roomRef = admin.database().ref("rooms/" + roomCode);
+  const roomRef = admin.database().ref('rooms/' + roomCode);
   let room: Room = (await roomRef.get()).val();
 
   const grid = [
@@ -59,7 +62,6 @@ async function resetGame(
     timestamp: Date.now(),
     public: {
       nextPlayer: room?.public?.victor || 0,
-      time: Date.now(),
       grid,
       victor: null,
       ...publicOverwrites,
@@ -72,111 +74,116 @@ async function resetGame(
   return roomRef.set(room);
 }
 
-export const joinRoom = functions.https.onCall(async (params, context) => {
-  if (!context.auth)
-    throw new functions.https.HttpsError(
-      "unauthenticated",
-      "Cannot join without auth"
-    );
+export const joinRoom = functions.https.onCall(
+  async (params: { roomCode: string }, context) => {
+    if (!context.auth)
+      throw new functions.https.HttpsError(
+        'unauthenticated',
+        'Cannot join without auth'
+      );
 
-  const roomRef = await admin.database().ref("rooms/" + params.roomCode);
-  const room: Room = (await roomRef.get()).val();
+    const roomRef = await admin.database().ref('rooms/' + params.roomCode);
+    const room: Room = (await roomRef.get()).val();
 
-  if (room) {
-    const playerIdx = room.secret?.players?.findIndex(
-      (p) => p.uid === context.auth?.uid
-    );
-    const inRoom = playerIdx !== undefined && playerIdx !== -1;
+    if (room) {
+      const playerIdx = room.secret?.players?.findIndex(
+        (p) => p.uid === context.auth?.uid
+      );
+      const inRoom = playerIdx !== undefined && playerIdx !== -1;
 
-    if (!inRoom && room.public.players?.length === 3) {
-      throw new functions.https.HttpsError("unavailable", "Room is full");
-    }
+      if (!inRoom && room.public.players?.length === 3) {
+        throw new functions.https.HttpsError('unavailable', 'Room is full');
+      }
 
-    if (inRoom) {
-      return playerIdx;
-    } else {
-      return await roomRef.update({
-        secret: {
-          players: [
-            ...(room.secret ? room.secret.players : []),
-            { uid: context.auth.uid },
-          ],
-        },
-        public: {
+      if (inRoom) {
+        return playerIdx;
+      } else {
+
+        const roomUpdate: any = {};
+        roomUpdate['secret/players'] = [
+          ...(room.secret ? room.secret.players : []),
+          { uid: context.auth.uid },
+        ];
+        roomUpdate['public'] = {
           players: [
             ...(room.public.players ? room.public.players : []),
             {
-              name: (await admin.auth().getUser(context.auth.uid)).displayName,
+              name: (await admin.auth().getUser(context.auth.uid))
+                .displayName,
             },
           ],
           isFull: room.public.players
             ? room.public.players.length === 3
             : false,
-        },
-      });
-    }
-  } else {
-    throw new functions.https.HttpsError(
-      "unavailable",
-      "Could not get room " + params.roomCode
-    );
-  }
-});
-
-export const makeMove = functions.https.onCall(async (params, context) => {
-  const roomRef = admin.database().ref("rooms/" + params.roomCode);
-  const roomSnap = await roomRef.get();
-  if (!roomSnap.exists()) {
-    throw new functions.https.HttpsError("not-found", "Room does not exist");
-  }
-
-  const room: Room = await roomSnap.val();
-
-  const playerIdx = room.secret?.players.findIndex(
-    (p) => p.uid === context.auth?.uid
-  );
-
-  const nextPlayer: number = room.public.nextPlayer;
-
-  if (nextPlayer === playerIdx) {
-    const grid: number[][][] = room.public.grid;
-
-    // check bottom up (gravity) if space in column
-    let y = -1;
-    for (let yCheck = 0; yCheck < 3; yCheck++) {
-      if (grid[params.x][yCheck][params.z] < 0) {
-        // unoccupied
-        y = yCheck;
-        break;
+        };
+        
+        return roomRef.update(roomUpdate);
       }
-    }
-
-    if (y === -1) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        "Invalid move -- column is full"
-      );
     } else {
-      const victory = checkVictory(playerIdx, grid, params.x, y, params.z);
-
-      const roomUpdate: any = {};
-      roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = nextPlayer;
-      roomUpdate["public/nextPlayer"] = victory
-        ? -1
-        : nextPlayer + 1 === 3
-        ? 0
-        : nextPlayer + 1;
-      roomUpdate["public/victor"] = victory ? playerIdx : null;
-
-      return await roomRef.update(roomUpdate);
+      throw new functions.https.HttpsError(
+        'unavailable',
+        'Could not get room ' + params.roomCode
+      );
     }
-  } else {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      `Not your turn, ${nextPlayer}:${playerIdx}`
-    );
   }
-});
+);
+
+export const makeMove = functions.https.onCall(
+  async (params: { roomCode: string; x: number; z: number }, context) => {
+    const roomRef = admin.database().ref('rooms/' + params.roomCode);
+    const roomSnap = await roomRef.get();
+    if (!roomSnap.exists()) {
+      throw new functions.https.HttpsError('not-found', 'Room does not exist');
+    }
+
+    const room: Room = await roomSnap.val();
+
+    const playerIdx = room.secret?.players.findIndex(
+      (p) => p.uid === context.auth?.uid
+    );
+
+    const nextPlayer: number = room.public.nextPlayer;
+
+    if (nextPlayer === playerIdx) {
+      const grid: number[][][] = room.public.grid;
+
+      // check bottom up (gravity) if space in column
+      let y = -1;
+      for (let yCheck = 0; yCheck < 3; yCheck++) {
+        if (grid[params.x][yCheck][params.z] < 0) {
+          // unoccupied
+          y = yCheck;
+          break;
+        }
+      }
+
+      if (y === -1) {
+        throw new functions.https.HttpsError(
+          'invalid-argument',
+          'Invalid move -- column is full'
+        );
+      } else {
+        const victory = checkVictory(playerIdx, grid, params.x, y, params.z);
+
+        const roomUpdate: any = {};
+        roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = nextPlayer;
+        roomUpdate['public/nextPlayer'] = victory
+          ? -1
+          : nextPlayer + 1 === 3
+          ? 0
+          : nextPlayer + 1;
+        roomUpdate['public/victor'] = victory ? playerIdx : null;
+
+        return await roomRef.update(roomUpdate);
+      }
+    } else {
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        `Not your turn, ${nextPlayer}:${playerIdx}`
+      );
+    }
+  }
+);
 
 function checkVictory(
   player: number,
@@ -239,8 +246,8 @@ function checkVictory(
 }
 
 function makeId(len = 3) {
-  let result = "";
-  const characters = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let result = '';
+  const characters = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   const charactersLength = characters.length;
   for (let i = 0; i < len; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -251,10 +258,11 @@ function makeId(len = 3) {
 export const dailyJob = functions.https.onRequest((req, res) => {
   return admin
     .database()
-    .ref("rooms")
-    .orderByChild("timestamp")
+    .ref('rooms')
+    .orderByChild('timestamp')
     .endAt(Date.now() - 86400000)
-    .ref.remove().then(() => {
+    .ref.remove()
+    .then(() => {
       res.status(200).send('OK');
     });
 });

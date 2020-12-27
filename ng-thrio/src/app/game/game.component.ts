@@ -46,7 +46,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   shareRoom(): void {
     navigator.share({
-      url: `https://thrio.app/play/${this.gs.room?.roomCode}`,
+      url: `https://thrio.app/play/${this.gs.room.roomCode}`,
       title: 'Play Thrio with me!',
       text: 'You\'ve been invited to a Thrio game'
     });
