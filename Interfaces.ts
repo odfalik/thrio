@@ -4,6 +4,7 @@ export interface Player {
 }
 
 export interface Room {
+    time: number,
     public: RoomPublic,
     secret?: {
         players: { uid: string }[]
@@ -12,7 +13,6 @@ export interface Room {
 
 export interface RoomPublic {
     roomCode?: string,
-    time: number,
     grid: number[][][],
     players?: Player[],
     nextPlayer: number,

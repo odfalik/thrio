@@ -56,9 +56,9 @@ async function resetGame(
   ];
 
   room = {
+    timestamp: Date.now(),
     public: {
-      nextPlayer: room?.public?.victor || 0,
-      time: Date.now(),
+      nextPla staleRooms.ref.remove();yer: room?.public?.victor || 0,
       grid,
       victor: null,
       ...publicOverwrites,
@@ -246,3 +246,9 @@ function makeId(len = 3) {
   }
   return result;
 }
+
+export const dailyJob = functions.pubsub
+  .schedule("30 5 * * *")
+  .onRun((context) => {
+    admin.database().ref('rooms').orderByChild('timestamp').endAt(Date.now() - 86400000).ref.remove();
+  });
