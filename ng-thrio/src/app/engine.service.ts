@@ -139,7 +139,7 @@ export class EngineService implements OnDestroy {
   onCanvasUp(e): void {
     const upX = (e.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
     const upY = - (e.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
-    if (this.mouse.x === upX && this.mouse.y === upY) {
+    if (Math.abs(this.mouse.x - upX) < 20 && Math.abs(this.mouse.y - upY) < 20) {
       this.mouse.x = upX;
       this.mouse.y = upY;
 
