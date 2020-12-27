@@ -64,7 +64,7 @@ export class GameService implements OnDestroy {
   }
 
   makeMove(pos: { x: number, z: number }): void {
-    if (!this.canMove || this.room?.nextPlayer !== this.playerIdx) return;
+    if (!this.canMove) return;
     setTimeout(() => {
       this.canMove = true;
     }, 1000);
