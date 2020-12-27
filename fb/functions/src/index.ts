@@ -105,7 +105,7 @@ export const joinRoom = functions.https.onCall(
             { uid: context.auth.uid },
           ])
           .then(async () => {
-            return roomRef.child('public').update({
+            const publicUpdate = {
               players: [  // Add new player
                 ...(room.public.players ? room.public.players : []),
                 {
@@ -116,7 +116,9 @@ export const joinRoom = functions.https.onCall(
               isFull: room.public.players
                 ? room.public.players.length === 3 - 1
                 : false,
-            }).then(() => playerIdx);
+            }
+
+            return roomRef.child('public').update(publicUpdate).then(() => publicUpdate.players.length - 1);
           });
       }
     } else {
