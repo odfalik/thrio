@@ -98,26 +98,26 @@ export const joinRoom = functions.https.onCall(
       if (inRoom) {
         return playerIdx;
       } else {
-
-        const roomUpdate: any = {};
-        roomUpdate['secret/players'] = [
-          ...(room.secret ? room.secret.players : []),
-          { uid: context.auth.uid },
-        ];
-        roomUpdate['public'] = {
-          players: [
-            ...(room.public.players ? room.public.players : []),
-            {
-              name: (await admin.auth().getUser(context.auth.uid))
-                .displayName,
-            },
-          ],
-          isFull: room.public.players
-            ? room.public.players.length === 3
-            : false,
-        };
-        
-        return roomRef.update(roomUpdate);
+        return roomRef
+          .child('secret/players')
+          .update([
+            ...(room.secret ? room.secret.players : []),
+            { uid: context.auth.uid },
+          ])
+          .then(async () => {
+            return roomRef.child('public').update({
+              players: [
+                ...(room.public.players ? room.public.players : []),
+                {
+                  name: context.auth ? ((await admin.auth().getUser(context.auth.uid))
+                    .displayName) : 'Guest',
+                },
+              ],
+              isFull: room.public.players
+                ? room.public.players.length === 3
+                : false,
+            }).then(() => playerIdx);
+          });
       }
     } else {
       throw new functions.https.HttpsError(
