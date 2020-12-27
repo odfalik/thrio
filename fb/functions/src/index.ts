@@ -192,15 +192,17 @@ function checkVictory(
   y: number,
   z: number
 ): boolean {
-  const vectors: { x: number; y: number; z: number }[] = [
-    { x: 0, y: 0, z: 1 },
-    { x: 0, y: 1, z: 0 },
-    { x: 0, y: 1, z: 1 },
-    { x: 1, y: 0, z: 0 },
-    { x: 1, y: 0, z: 1 },
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 1 },
-  ];
+    
+  const vectors: { x: number; y: number; z: number }[] = [];
+  vectors.push({ x: 0, y: 0, z: 1 }); // 1D
+  for (let _z = -1; _z <= 1; _z++) {  // 2D
+    vectors.push({ x: 1, y: 0, z: _z });
+  }
+  for (let _x = -1; _x <= 1; _x++) {  // Top hemisphere
+    for (let _z = -1; _z <= 1; _z++) {
+      vectors.push({ x: _x, y: 1, z: _z });
+    }
+  }
 
   return vectors?.some((v) => {
     let counter = 1;
