@@ -4,7 +4,7 @@ export interface Player {
 }
 
 export interface Room {
-    time: number,
+    timestamp: number,
     public: RoomPublic,
     secret?: {
         players: { uid: string }[]

@@ -58,7 +58,8 @@ async function resetGame(
   room = {
     timestamp: Date.now(),
     public: {
-      nextPla staleRooms.ref.remove();yer: room?.public?.victor || 0,
+      nextPlayer: room?.public?.victor || 0,
+      time: Date.now(),
       grid,
       victor: null,
       ...publicOverwrites,
@@ -247,8 +248,13 @@ function makeId(len = 3) {
   return result;
 }
 
-export const dailyJob = functions.pubsub
-  .schedule("30 5 * * *")
-  .onRun((context) => {
-    admin.database().ref('rooms').orderByChild('timestamp').endAt(Date.now() - 86400000).ref.remove();
-  });
+export const dailyJob = functions.https.onRequest((req, res) => {
+  return admin
+    .database()
+    .ref("rooms")
+    .orderByChild("timestamp")
+    .endAt(Date.now() - 86400000)
+    .ref.remove().then(() => {
+      res.status(200).send('OK');
+    });
+});
