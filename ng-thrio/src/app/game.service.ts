@@ -1,19 +1,20 @@
-import { Room } from './../../../Interfaces';
+import { Room, RoomPublic } from './../../../Interfaces';
 import { DbService } from './db.service';
 import { FunctionsService } from './functions.service';
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { filter, first } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService implements OnDestroy {
 
-  public name = localStorage.getItem('name') || 'guest';
-  public room: Room;
-  public room$ = new Subject<Room>();
+  public room: RoomPublic;
+  public room$ = new Subject<RoomPublic>();
   private _room: Subscription;
 
   rendererCanvas: ElementRef<HTMLCanvasElement>;
@@ -25,32 +26,37 @@ export class GameService implements OnDestroy {
     private fns: FunctionsService,
     private dbs: DbService,
     private authService: AuthService,
+    public auth: AngularFireAuth,
   ) {
 
   }
 
   tryJoinRoom(roomCode: string): void {
 
-    this.fns.joinRoom$({ roomCode: roomCode.toUpperCase(), name: this.authService.user.displayName }).subscribe((joinData: number) => {
-      if (joinData === undefined) {
-        this.leaveRoom();
-        return;
-      }
+    this.auth.user.pipe(filter(u => !!u.displayName), first()).subscribe(u => {
 
-      this.playerIdx = joinData;
+      this.fns.joinRoom$({ roomCode: roomCode.toUpperCase() }).subscribe((joinData: number) => {
+        if (joinData === undefined) {
+          this.leaveRoom();
+          return;
+        }
 
-      console.log('joinData', joinData);
+        this.playerIdx = joinData;
 
-      this._room = this.dbs.getRoom(roomCode).subscribe(room => {
-        if (!room) setTimeout(() => this.leaveRoom(), 2000);  // room doesn't exist
+        console.log('joinData', joinData);
 
-        this.room = room;
-        this.room.waiting = new Array(3 - this.room.players?.length);
-        this.room$.next(this.room);
+        this._room = this.dbs.getRoom(roomCode).subscribe(room => {
+          if (!room) setTimeout(() => this.leaveRoom(), 2000);  // room doesn't exist
 
-        console.log('room', this.room);
+          this.room = room;
+          this.room.waiting = new Array(3 - this.room.players?.length);
+          this.room$.next(this.room);
+
+          console.log('room', this.room);
+        });
       });
-    });
+    })
+
   }
 
   leaveRoom(): void {

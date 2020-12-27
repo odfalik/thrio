@@ -1,10 +1,39 @@
-import { Player, Room } from "../../../interfaces";
+import { Room } from "../../../interfaces";
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 admin.initializeApp(functions.config().firebase);
 
-async function resetGame(roomCode: string, overwrites: object): Promise<any> {
+export const newRoom = functions.https.onCall(
+  async (params, context): Promise<string> => {
+    const roomCode = makeId(4);
+    if (!context.auth)
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "Need auth to create a room"
+      );
+    const hostName = (await admin.auth().getUser(context.auth.uid)).displayName;
+
+    return resetGame(
+      roomCode,
+      {
+        roomCode: roomCode,
+        players: [{ name: hostName, host: true }],
+      },
+      {
+        players: [{ uid: context.auth.uid }],
+      }
+    ).then(() => {
+      return roomCode;
+    });
+  }
+);
+
+async function resetGame(
+  roomCode: string,
+  publicOverwrites: any,
+  secretOverwrites: any
+): Promise<any> {
   const roomRef = admin.database().ref("rooms/" + roomCode);
   let room: Room = (await roomRef.get()).val();
 
@@ -27,32 +56,38 @@ async function resetGame(roomCode: string, overwrites: object): Promise<any> {
   ];
 
   room = {
-    ...{
-      nextPlayer: 0,
+    public: {
+      nextPlayer: room?.public?.victor || 0,
       time: Date.now(),
       grid,
       victor: null,
-      players: room?.players || [],
+      ...publicOverwrites,
     },
-    ...overwrites,
+    secret: {
+      ...secretOverwrites,
+    },
   };
 
-  return roomRef.update(room);
+  return roomRef.set(room);
 }
 
 export const joinRoom = functions.https.onCall(async (params, context) => {
-  const roomRef = await admin
-    .database()
-    .ref("rooms/" + params.roomCode)
+  if (!context.auth)
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "Cannot join without auth"
+    );
+
+  const roomRef = await admin.database().ref("rooms/" + params.roomCode);
   const room: Room = (await roomRef.get()).val();
 
   if (room) {
-    const players: Player[] = room.players || [];
-
-    const playerIdx = players?.findIndex((p) => p.name === params.name);
+    const playerIdx = room.secret?.players?.findIndex(
+      (p) => p.uid === context.auth?.uid
+    );
     const inRoom = playerIdx !== undefined && playerIdx !== -1;
 
-    if (!inRoom && players.length === 3) {
+    if (!inRoom && room.public.players?.length === 3) {
       throw new functions.https.HttpsError("unavailable", "Room is full");
     }
 
@@ -60,8 +95,23 @@ export const joinRoom = functions.https.onCall(async (params, context) => {
       return playerIdx;
     } else {
       return await roomRef.update({
-        players: [...players, { name: params.name }],
-        isFull: players.length === 3, 
+        secret: {
+          players: [
+            ...(room.secret ? room.secret.players : []),
+            { uid: context.auth.uid },
+          ],
+        },
+        public: {
+          players: [
+            ...(room.public.players ? room.public.players : []),
+            {
+              name: (await admin.auth().getUser(context.auth.uid)).displayName,
+            },
+          ],
+          isFull: room.public.players
+            ? room.public.players.length === 3
+            : false,
+        },
       });
     }
   } else {
@@ -72,21 +122,7 @@ export const joinRoom = functions.https.onCall(async (params, context) => {
   }
 });
 
-export const newRoom = functions.https.onCall(
-  (params, context): Promise<string> => {
-    const roomCode = makeId(4);
-
-    return resetGame(roomCode, {
-      roomCode: roomCode,
-      players: [{ name: params.name, host: true }],
-    }).then(() => {
-      return roomCode;
-    });
-  }
-);
-
 export const makeMove = functions.https.onCall(async (params, context) => {
-
   const roomRef = admin.database().ref("rooms/" + params.roomCode);
   const roomSnap = await roomRef.get();
   if (!roomSnap.exists()) {
@@ -95,13 +131,14 @@ export const makeMove = functions.https.onCall(async (params, context) => {
 
   const room: Room = await roomSnap.val();
 
-  // const players: Player[] = room.players || [];
-  const playerIdx = params.playerIdx;
+  const playerIdx = room.secret?.players.findIndex(
+    (p) => p.uid === context.auth?.uid
+  );
 
-  const nextPlayer: number = room.nextPlayer;
+  const nextPlayer: number = room.public.nextPlayer;
 
   if (nextPlayer === playerIdx) {
-    const grid: number[][][] = room.grid;
+    const grid: number[][][] = room.public.grid;
 
     // check bottom up (gravity) if space in column
     let y = -1;
@@ -122,14 +159,21 @@ export const makeMove = functions.https.onCall(async (params, context) => {
       const victory = checkVictory(playerIdx, grid, params.x, y, params.z);
 
       const roomUpdate: any = {};
-      roomUpdate[`grid/${params.x}/${y}/${params.z}`] = nextPlayer;
-      roomUpdate["nextPlayer"] = victory ? -1 : (nextPlayer + 1 === 3 ? 0 : nextPlayer + 1);
-      roomUpdate["victor"] = victory ? playerIdx : null;
+      roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = nextPlayer;
+      roomUpdate["public/nextPlayer"] = victory
+        ? -1
+        : nextPlayer + 1 === 3
+        ? 0
+        : nextPlayer + 1;
+      roomUpdate["public/victor"] = victory ? playerIdx : null;
 
       return await roomRef.update(roomUpdate);
     }
   } else {
-    throw new functions.https.HttpsError("permission-denied", `Not your turn, ${nextPlayer}:${playerIdx}`);
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      `Not your turn, ${nextPlayer}:${playerIdx}`
+    );
   }
 });
 
