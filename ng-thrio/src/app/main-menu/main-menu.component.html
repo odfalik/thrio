@@ -8,11 +8,11 @@
     </div>
   </header>
 
-  <div *ngIf="showConfig; else">
+  <div class="options" *ngIf="showConfig; else">
     <label class="db">Nickname</label>
     <input type="text" [(ngModel)]="name" name="name" (blur)="authService.changeName(name)">
     <br />
-    <button (click)="authService.signOut()">Sign out</button>
+    <!-- <button (click)="authService.signOut()">Sign out</button> -->
   </div>
 
   <div class="options" *ngIf="authService.user && !showConfig">
