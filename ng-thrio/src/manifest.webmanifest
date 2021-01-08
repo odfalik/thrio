@@ -1,11 +1,12 @@
 {
-  "name": "ng-thrio",
-  "short_name": "ng-thrio",
+  "name": "thrio",
+  "short_name": "thrio",
   "theme_color": "#2ec2b3",
   "background_color": "#011627",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
+  "gcm_sender_id": "712157473899",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",

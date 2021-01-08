@@ -201,8 +201,8 @@ export const makeMove = functions.https.onCall(
         if (nextPlayerToken && nextPlayerToken !== 'declined') {
             admin.messaging().sendToDevice(nextPlayerToken, {
               notification: {
-                title: `It's your turn in Thrio`,
-                body: `The other players in ${room.public.roomCode} are waiting on you!`,
+                title: `It's your turn`,
+                body: `The other players in ${room.public.roomCode} are waiting on you`,
               },
             });
           }
