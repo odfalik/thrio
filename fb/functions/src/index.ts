@@ -189,7 +189,8 @@ export const makeMove = functions.https.onCall(
 
         await roomRef.update(roomUpdate);
 
-        const nextPlayerUid = room.secret?.players[nextPlayerIdx];
+        /* Notify next player it's their turn */
+        const nextPlayerUid = room.secret?.players[nextPlayerIdx]?.uid;
         if (nextPlayerUid) {
           const nextPlayerToken = (
             await admin

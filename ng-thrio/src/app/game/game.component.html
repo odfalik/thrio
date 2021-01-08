@@ -4,22 +4,23 @@
   <h4>Loading...</h4>
 </div>
 
-
-<!-- *ngIf="gs.pushRequest" -->
 <div class="notif">
-  Do you want to be notified when it's your turn again?
+  <p>Do you want to be notified when it's your turn again?</p>
   <button (click)="gs.requestPermission()">Yes</button>
 </div>
 
 <div class="gameover" *ngIf="gs.room?.players[gs.room?.victor]">
-  <h3>{{gs.room?.players[gs.room?.victor].name}} won</h3>
+  <h3>{{ gs.room?.players[gs.room?.victor].name }} won</h3>
 </div>
 
 <div class="header" *ngIf="gs.room">
-
   <p class="room-code" [class.lg]="!gs.room?.isFull">
-    <span *ngIf="gs.spectating" >SPECTATING</span> {{ gs.room?.roomCode }}
-    <i class="fas fa-share clickable" (click)="shareRoom()" *ngIf="canShare && !gs.room.isFull"></i>
+    <span *ngIf="gs.spectating">SPECTATING</span> {{ gs.room?.roomCode }}
+    <i
+      class="fas fa-share clickable"
+      (click)="shareRoom()"
+      *ngIf="canShare && !gs.room.isFull"
+    ></i>
   </p>
   <div class="players">
     <div
@@ -39,5 +40,8 @@
 </div>
 
 <div class="controls">
-  <i class="fas fa-sign-out-alt fa-flip-horizontal clickable" (click)="gs.leaveRoom()"></i>
+  <i
+    class="fas fa-sign-out-alt fa-flip-horizontal clickable"
+    (click)="gs.leaveRoom()"
+  ></i>
 </div>

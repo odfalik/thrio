@@ -94,8 +94,9 @@ export class GameService implements OnDestroy {
         ...pos,
         playerIdx: this.playerIdx,
       })
-      .subscribe((res) => {
-        this.pushRequest = true;
+      .subscribe(async (res) => {
+        const token = await this.afMessaging.getToken.pipe(first()).toPromise();
+        if (!token) this.pushRequest = true;
       });
   }
 
@@ -103,9 +104,10 @@ export class GameService implements OnDestroy {
     this.afMessaging.requestToken.subscribe(
       (token) => {
         this.fns.saveToken$({ token });
+        this.pushRequest = false;
       },
       (error) => {
-        console.error(error);
+        this.pushRequest = false;
       }
     );
   }
