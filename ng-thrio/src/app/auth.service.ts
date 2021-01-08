@@ -32,6 +32,7 @@ export class AuthService {
       if (this._dbUser) this._dbUser.unsubscribe();
       this._dbUser = this.dbService.getUser(u.uid).subscribe((dbUser: User) => {
         this.dbUser = dbUser;
+        console.log('eeeee', this.dbUser?.token)
       });
 
       if (u && !u.displayName) this.changeName('Guest' + Math.floor(Math.random() * Math.floor(10000)));
@@ -43,7 +44,6 @@ export class AuthService {
   }
 
   requestPermission(): void {
-    if (!this.dbUser?.token) {
       this.afMessaging.requestToken.subscribe(
         (token) => {
           this.fns.saveToken$({ token }).subscribe(() => {
@@ -56,7 +56,6 @@ export class AuthService {
           });
         }
       );
-    }
   }
 
   signOut(): Promise<void> {

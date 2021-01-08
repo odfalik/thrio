@@ -198,7 +198,7 @@ export const makeMove = functions.https.onCall(
               .ref('users/' + nextPlayerUid + '/token')
               .get()
           ).val();
-          if (nextPlayerToken) {
+          if (nextPlayerToken && nextPlayerToken !== 'declined') {
             admin.messaging().sendToDevice(nextPlayerToken, {
               notification: {
                 title: `It's your turn in Thrio`,

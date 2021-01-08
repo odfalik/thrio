@@ -4,17 +4,17 @@
   <h4>Loading...</h4>
 </div>
 
-<div class="notif" *ngIf="authService.dbUser?.token === undefined">
-  <p>Would you like to enable <br /> turn notifications?</p>
+<div class="notif" *ngIf="!authService.dbUser?.token">
+  <p>
+    Would you like to enable <br />
+    turn notifications?
+  </p>
   <div class="options">
     <i
       class="fas fa-check clickable"
       (click)="authService.requestPermission()"
     ></i>
-    <i
-      class="fas fa-times clickable"
-      (click)="gs.pushRequest = false"
-    ></i>
+    <i class="fas fa-times clickable" (click)="gs.pushRequest = false"></i>
   </div>
 </div>
 
