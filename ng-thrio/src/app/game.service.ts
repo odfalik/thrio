@@ -101,15 +101,18 @@ export class GameService implements OnDestroy {
   }
 
   requestPermission(): void {
-    this.afMessaging.requestToken.subscribe(
-      (token) => {
-        this.fns.saveToken$({ token });
-        this.pushRequest = false;
-      },
-      (error) => {
-        this.pushRequest = false;
-      }
-    );
+    if (!this.authService.dbUser?.token) {
+      this.afMessaging.requestToken.subscribe(
+        (token) => {
+          this.fns.saveToken$({ token }).subscribe(() => {
+            this.pushRequest = false;
+          });
+        },
+        (error) => {
+          this.pushRequest = false;
+        }
+      );
+    }
   }
 
   ngOnDestroy(): void {

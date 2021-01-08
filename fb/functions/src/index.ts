@@ -281,7 +281,7 @@ function checkVictory(
 }
 
 export const saveToken = functions.https.onCall(
-  async (params: { token: string }, context) => {
+  (params: { token: string }, context) => {
     return admin
       .database()
       .ref('users/' + context.auth?.uid + '/token')

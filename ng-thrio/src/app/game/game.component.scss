@@ -46,6 +46,9 @@ canvas {
         text-transform: uppercase;
         display: inline-block;
       }
+      &.me {
+        font-weight: bold;
+      }
       &.next {
         i.next-marker {
           display: inline-block;

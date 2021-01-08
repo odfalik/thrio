@@ -5,8 +5,17 @@
 </div>
 
 <div class="notif">
-  <p>Do you want to be notified when it's your turn again?</p>
-  <button (click)="gs.requestPermission()">Yes</button>
+  <p>Would you like to enable <br /> turn notifications?</p>
+  <div class="options">
+    <i
+      class="fas fa-check clickable"
+      (click)="gs.requestPermission()"
+    ></i>
+    <i
+      class="fas fa-times clickable"
+      (click)="gs.pushRequest = false"
+    ></i>
+  </div>
 </div>
 
 <div class="gameover" *ngIf="gs.room?.players[gs.room?.victor]">
@@ -27,6 +36,7 @@
       *ngFor="let player of gs.room?.players; let i = index"
       class="player"
       [class.next]="gs.room?.nextPlayerIdx === i"
+      [class.me]="gs.playerIdx === i"
     >
       <i class="fas fa-chevron-right next-marker"></i>
       <p>

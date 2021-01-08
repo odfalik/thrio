@@ -90,23 +90,26 @@ i.clickable {
 
 .notif {
   padding: 20px;
-  background-color: rgba(66, 133, 32, 0.1);
+  background: rgba(253, 255, 252, 0.1);
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  // color: #011627;
   position: fixed;
-  bottom: 2em;
+  bottom: 4em;
   right: 0;
   max-width: 100%;
 
-  .closebtn {
-    margin-left: 15px;
-    font-weight: bold;
-    float: right;
-    font-size: 22px;
-    line-height: 20px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  .closebtn:hover {
-    color: black;
+  .options {
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 1em;
+    grid-gap: 5em;
+    justify-content: center;
+
+    .fa-times {
+      opacity: 60%;
+    }
   }
 }
 

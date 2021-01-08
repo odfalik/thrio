@@ -28,3 +28,7 @@ export interface RoomConfig {
     players: number,
     timer: string,
 }
+
+export interface User {
+    token?: string;
+}
