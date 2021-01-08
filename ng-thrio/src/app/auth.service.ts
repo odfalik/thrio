@@ -30,11 +30,13 @@ export class AuthService {
       // console.log('user', u);
 
       if (this._dbUser) this._dbUser.unsubscribe();
-      this._dbUser = this.dbService.getUser(u.uid).subscribe((dbUser: User) => {
-        this.dbUser = dbUser;
-      });
+      if (this.user) {
+        this._dbUser = this.dbService.getUser(this.user.uid).subscribe((dbUser: User) => {
+          this.dbUser = dbUser;
+        });
 
-      if (u && !u.displayName) this.changeName('Guest' + Math.floor(Math.random() * Math.floor(10000)));
+        if (!this.user.displayName) this.changeName('Guest' + Math.floor(Math.random() * Math.floor(10000)));
+      }
     });
   }
 
