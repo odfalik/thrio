@@ -24,7 +24,7 @@ export const newRoom = functions.https.onCall(
         players: [{ name: hostName, host: true }],
         config: {
           ...params,
-        }
+        },
       },
       {
         players: [{ uid: context.auth.uid }],
@@ -64,7 +64,7 @@ async function resetGame(
   room = {
     timestamp: Date.now(),
     public: {
-      nextPlayer: room?.public?.victor || 0,
+      nextPlayerIdx: room?.public?.victor || 0,
       grid,
       victor: null,
       ...publicOverwrites,
@@ -95,7 +95,10 @@ export const joinRoom = functions.https.onCall(
       const inRoom = playerIdx !== undefined && playerIdx !== -1;
 
       if (!inRoom && room.public.players?.length === 3) {
-        throw new functions.https.HttpsError('invalid-argument', 'Room is full');
+        throw new functions.https.HttpsError(
+          'invalid-argument',
+          'Room is full'
+        );
       }
 
       if (inRoom) {
@@ -109,19 +112,24 @@ export const joinRoom = functions.https.onCall(
           ])
           .then(async () => {
             const publicUpdate = {
-              players: [  // Add new player
+              players: [
+                // Add new player
                 ...(room.public.players ? room.public.players : []),
                 {
-                  name: context.auth ? ((await admin.auth().getUser(context.auth.uid))
-                    .displayName) : 'Guest',
+                  name: context.auth
+                    ? (await admin.auth().getUser(context.auth.uid)).displayName
+                    : 'Guest',
                 },
               ],
               isFull: room.public.players
                 ? room.public.players.length === 3 - 1
                 : false,
-            }
+            };
 
-            return roomRef.child('public').update(publicUpdate).then(() => publicUpdate.players.length - 1);
+            return roomRef
+              .child('public')
+              .update(publicUpdate)
+              .then(() => publicUpdate.players.length - 1);
           });
       }
     } else {
@@ -147,9 +155,9 @@ export const makeMove = functions.https.onCall(
       (p) => p.uid === context.auth?.uid
     );
 
-    const nextPlayer: number = room.public.nextPlayer;
+    const nextPlayerIdx: number = room.public.nextPlayerIdx;
 
-    if (nextPlayer === playerIdx) {
+    if (nextPlayerIdx === playerIdx) {
       const grid: number[][][] = room.public.grid;
 
       // check bottom up (gravity) if space in column
@@ -171,20 +179,38 @@ export const makeMove = functions.https.onCall(
         const victory = checkVictory(playerIdx, grid, params.x, y, params.z);
 
         const roomUpdate: any = {};
-        roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = nextPlayer;
-        roomUpdate['public/nextPlayer'] = victory
+        roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = nextPlayerIdx;
+        roomUpdate['public/nextPlayerIdx'] = victory
           ? -1
-          : nextPlayer + 1 === 3
+          : nextPlayerIdx + 1 === 3
           ? 0
-          : nextPlayer + 1;
+          : nextPlayerIdx + 1;
         roomUpdate['public/victor'] = victory ? playerIdx : null;
 
-        return await roomRef.update(roomUpdate);
+        await roomRef.update(roomUpdate);
+
+        const nextPlayerUid = room.secret?.players[nextPlayerIdx];
+        if (nextPlayerUid) {
+          const nextPlayerToken = (
+            await admin
+              .database()
+              .ref('users/' + nextPlayerUid + '/token')
+              .get()
+          ).val();
+          if (nextPlayerToken) {
+            admin.messaging().sendToDevice(nextPlayerToken, {
+              notification: {
+                title: `It's your turn in Thrio`,
+                body: `The other players in ${room.public.roomCode} are waiting on you!`
+              },
+            });
+          }
+        }
       }
     } else {
       throw new functions.https.HttpsError(
         'permission-denied',
-        `Not your turn, ${nextPlayer}:${playerIdx}`
+        `Not your turn, ${nextPlayerIdx}:${playerIdx}`
       );
     }
   }
@@ -197,13 +223,14 @@ function checkVictory(
   y: number,
   z: number
 ): boolean {
-    
   const vectors: { x: number; y: number; z: number }[] = [];
   vectors.push({ x: 0, y: 0, z: 1 }); // 1D
-  for (let _z = -1; _z <= 1; _z++) {  // 2D
+  for (let _z = -1; _z <= 1; _z++) {
+    // 2D
     vectors.push({ x: 1, y: 0, z: _z });
   }
-  for (let _x = -1; _x <= 1; _x++) {  // Top hemisphere
+  for (let _x = -1; _x <= 1; _x++) {
+    // Top hemisphere
     for (let _z = -1; _z <= 1; _z++) {
       vectors.push({ x: _x, y: 1, z: _z });
     }
@@ -251,6 +278,15 @@ function checkVictory(
     }
   });
 }
+
+export const saveToken = functions.https.onCall(
+  async (params: { token: string }, context) => {
+    return admin
+      .database()
+      .ref('users/' + context.auth?.uid + '/token')
+      .set(params.token);
+  }
+);
 
 function makeId(len = 3) {
   let result = '';

@@ -7,6 +7,7 @@ import { Subject, Subscription } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { catchError, filter, first } from 'rxjs/operators';
+import { AngularFireMessaging } from '@angular/fire/messaging';
 
 @Injectable({
   providedIn: 'root',
@@ -20,13 +21,15 @@ export class GameService implements OnDestroy {
   canMove = true;
   playerIdx: number;
   spectating: boolean;
+  pushRequest: boolean;
 
   constructor(
     private router: Router,
     private fns: FunctionsService,
     private dbs: DbService,
     private authService: AuthService,
-    public auth: AngularFireAuth
+    public auth: AngularFireAuth,
+    private afMessaging: AngularFireMessaging
   ) {}
 
   tryJoinRoom(roomCode: string): void {
@@ -76,7 +79,7 @@ export class GameService implements OnDestroy {
   makeMove(pos: { x: number; z: number }): void {
     if (
       !this.canMove ||
-      this.room?.nextPlayer !== this.playerIdx ||
+      this.room?.nextPlayerIdx !== this.playerIdx ||
       this.spectating
     )
       return;
@@ -92,8 +95,19 @@ export class GameService implements OnDestroy {
         playerIdx: this.playerIdx,
       })
       .subscribe((res) => {
-        if (res?.error) console.error(res);
+        this.pushRequest = true;
       });
+  }
+
+  requestPermission(): void {
+    this.afMessaging.requestToken.subscribe(
+      (token) => {
+        this.fns.saveToken$({ token });
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   }
 
   ngOnDestroy(): void {

@@ -8,6 +8,8 @@ ng-thrio/out-tsc
 
 # IDE - VSCode
 .vscode/*
+.vscode
+.prettierrc
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json

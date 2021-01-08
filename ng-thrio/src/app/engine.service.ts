@@ -250,7 +250,7 @@ export class EngineService implements OnDestroy {
       this.scene.remove(sel);
     });
     this.selectors = [];
-    if (room.nextPlayer === this.gs.playerIdx) {
+    if (room.nextPlayerIdx === this.gs.playerIdx) {
       const selectorMat = new THREE.MeshBasicMaterial({
         opacity: 0.4,
         transparent: true,

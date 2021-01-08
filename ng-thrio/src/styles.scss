@@ -88,6 +88,29 @@ i.clickable {
   display: block;
 }
 
+.notif {
+  padding: 20px;
+  background-color: rgba(66, 133, 32, 0.1);
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 80vw;
+
+  .closebtn {
+    margin-left: 15px;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .closebtn:hover {
+    color: black;
+  }
+}
+
+
 
 .slider {
   -webkit-appearance: none;  /* Override default CSS styles */

@@ -4,6 +4,13 @@
   <h4>Loading...</h4>
 </div>
 
+
+<!-- *ngIf="gs.pushRequest" -->
+<div class="notif">
+  Do you want to be notified when it's your turn again?
+  <button (click)="gs.requestPermission()">Yes</button>
+</div>
+
 <div class="gameover" *ngIf="gs.room?.players[gs.room?.victor]">
   <h3>{{gs.room?.players[gs.room?.victor].name}} won</h3>
 </div>
@@ -18,7 +25,7 @@
     <div
       *ngFor="let player of gs.room?.players; let i = index"
       class="player"
-      [class.next]="gs.room?.nextPlayer === i"
+      [class.next]="gs.room?.nextPlayerIdx === i"
     >
       <i class="fas fa-chevron-right next-marker"></i>
       <p>

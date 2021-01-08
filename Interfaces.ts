@@ -13,7 +13,7 @@ export interface Room {
 
 export interface RoomPublic {
     grid: number[][][],
-    nextPlayer: number,
+    nextPlayerIdx: number,
     roomCode?: string,
     players?: Player[],
     waiting?: any[],

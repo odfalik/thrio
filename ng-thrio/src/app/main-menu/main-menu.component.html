@@ -31,10 +31,10 @@
       <button (click)="mode = 'newRoom'">New game</button>
     </div>
 
-    <button (click)="joinPublic()" [disabled]="searching">
+    <!-- <button (click)="joinPublic()" [disabled]="searching">
       <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
       Join a<br />public game
-    </button>
+    </button> -->
 
     <form (submit)="joinRoom()">
       <div class="field">

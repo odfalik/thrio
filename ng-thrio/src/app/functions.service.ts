@@ -8,11 +8,17 @@ import { RoomConfig } from '../../../Interfaces';
 })
 export class FunctionsService {
   joinRoom$ = this.fns.httpsCallable('joinRoom');
+
   newRoom$: (data: {
     name: string;
     config: RoomConfig;
   }) => Observable<any> = this.fns.httpsCallable('newRoom');
+
   makeMove$ = this.fns.httpsCallable('makeMove');
+
+  saveToken$: (data: {
+    token: string,
+  }) => Observable<void> = this.fns.httpsCallable('saveToken');
 
   constructor(private fns: AngularFireFunctions) {}
 }

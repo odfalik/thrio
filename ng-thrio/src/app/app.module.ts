@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireFunctionsModule } from '@angular/fire/functions';
+import { AngularFireMessagingModule } from '@angular/fire/messaging';
 import { FormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { SwitchComponent } from './switch/switch.component';
@@ -18,7 +19,7 @@ import { SwitchComponent } from './switch/switch.component';
     AppComponent,
     GameComponent,
     MainMenuComponent,
-    SwitchComponent
+    SwitchComponent,
   ],
   imports: [
     BrowserModule,
@@ -26,6 +27,7 @@ import { SwitchComponent } from './switch/switch.component';
     FormsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig, 'thrio'),
     AngularFireFunctionsModule,
+    AngularFireMessagingModule,
     AppRoutingModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
