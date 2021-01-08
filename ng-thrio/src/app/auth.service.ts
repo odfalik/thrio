@@ -32,7 +32,6 @@ export class AuthService {
       if (this._dbUser) this._dbUser.unsubscribe();
       this._dbUser = this.dbService.getUser(u.uid).subscribe((dbUser: User) => {
         this.dbUser = dbUser;
-        console.log('eeeee', this.dbUser?.token)
       });
 
       if (u && !u.displayName) this.changeName('Guest' + Math.floor(Math.random() * Math.floor(10000)));
@@ -51,7 +50,7 @@ export class AuthService {
           });
         },
         (error) => {
-          this.fns.saveToken$({ token: false }).subscribe(() => {
+          this.fns.saveToken$({ token: 'declined' }).subscribe(() => {
             this.pushRequest = false;
           });
         }

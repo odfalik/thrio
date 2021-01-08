@@ -1,8 +1,7 @@
-import { User } from './../../../interfaces';
+import { User } from '../../../interfaces';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
