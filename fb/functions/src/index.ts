@@ -201,7 +201,7 @@ export const makeMove = functions.https.onCall(
             admin.messaging().sendToDevice(nextPlayerToken, {
               notification: {
                 title: `It's your turn in Thrio`,
-                body: `The other players in ${room.public.roomCode} are waiting on you!`
+                body: `The other players in ${room.public.roomCode} are waiting on you!`,
               },
             });
           }
