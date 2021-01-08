@@ -4,9 +4,8 @@ import { FunctionsService } from './functions.service';
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
-import { AuthService } from './auth.service';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { catchError, filter, first } from 'rxjs/operators';
+import { filter, first } from 'rxjs/operators';
 import { AngularFireMessaging } from '@angular/fire/messaging';
 
 @Injectable({
@@ -27,9 +26,8 @@ export class GameService implements OnDestroy {
     private router: Router,
     private fns: FunctionsService,
     private dbs: DbService,
-    private authService: AuthService,
     public auth: AngularFireAuth,
-    private afMessaging: AngularFireMessaging
+    private afMessaging: AngularFireMessaging,
   ) {}
 
   tryJoinRoom(roomCode: string): void {
@@ -98,21 +96,6 @@ export class GameService implements OnDestroy {
         const token = await this.afMessaging.getToken.pipe(first()).toPromise();
         if (!token) this.pushRequest = true;
       });
-  }
-
-  requestPermission(): void {
-    if (!this.authService.dbUser?.token) {
-      this.afMessaging.requestToken.subscribe(
-        (token) => {
-          this.fns.saveToken$({ token }).subscribe(() => {
-            this.pushRequest = false;
-          });
-        },
-        (error) => {
-          this.pushRequest = false;
-        }
-      );
-    }
   }
 
   ngOnDestroy(): void {

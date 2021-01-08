@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as THREE from 'three';
 import { EngineService } from '../engine.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-game',
@@ -25,6 +26,7 @@ export class GameComponent implements OnInit, OnDestroy {
   constructor(
     private activatedRoute: ActivatedRoute,
     public gs: GameService,
+    public authService: AuthService,
     public engineService: EngineService
   ) {
     this._params = this.activatedRoute.params.subscribe((params) => {
