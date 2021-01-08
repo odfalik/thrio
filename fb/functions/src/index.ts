@@ -22,6 +22,9 @@ export const newRoom = functions.https.onCall(
       {
         roomCode: roomCode,
         players: [{ name: hostName, host: true }],
+        config: {
+          ...params,
+        }
       },
       {
         players: [{ uid: context.auth.uid }],
@@ -92,7 +95,7 @@ export const joinRoom = functions.https.onCall(
       const inRoom = playerIdx !== undefined && playerIdx !== -1;
 
       if (!inRoom && room.public.players?.length === 3) {
-        throw new functions.https.HttpsError('unavailable', 'Room is full');
+        throw new functions.https.HttpsError('invalid-argument', 'Room is full');
       }
 
       if (inRoom) {

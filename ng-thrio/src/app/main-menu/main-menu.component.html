@@ -1,23 +1,35 @@
-<main>
-  <header>
-    <h1>THRIO<span>.app</span></h1>
+<header>
+  <h1>THRIO<span>.app</span></h1>
 
-    <div class="top-right">
-      <span> {{ authService.user?.displayName }} </span>
-      <i class="fas clickable" [ngClass]="showConfig?'fa-times':'fa-user-cog'" (click)="showConfig=!showConfig"></i>
+  <div class="top-right">
+    <span> {{ authService.user?.displayName }} </span>
+    <i
+      class="fas clickable"
+      [ngClass]="mode === 'settings' ? 'fa-times' : 'fa-user-cog'"
+      (click)="mode = mode === 'settings' ? 'menu' : 'settings'"
+    ></i>
+  </div>
+</header>
+
+<main [ngSwitch]="mode">
+
+
+  <div *ngSwitchCase="'settings'" [@fade]>
+    <div>
+      <label class="db">Nickname</label>
+      <input
+        type="text"
+        [(ngModel)]="name"
+        name="name"
+        (blur)="authService.changeName(name)"
+      />
     </div>
-  </header>
-
-  <div class="options" *ngIf="showConfig; else">
-    <label class="db">Nickname</label>
-    <input type="text" [(ngModel)]="name" name="name" (blur)="authService.changeName(name)">
-    <br />
-    <!-- <button (click)="authService.signOut()">Sign out</button> -->
   </div>
 
-  <div class="options" *ngIf="authService.user && !showConfig">
-
-    <button (click)="newRoom()">New game</button>
+  <div *ngSwitchCase="'menu'" [@fade]>
+    <div>
+      <button (click)="mode = 'newRoom'">New game</button>
+    </div>
 
     <button (click)="joinPublic()" [disabled]="searching">
       <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
@@ -34,10 +46,24 @@
           autocomplete="off"
           spellcheck="false"
         />
-        <button action="submit" [disabled]="!roomCode">Join Room</button>
+        <button action="submit" [disabled]="!roomCode">Join Game</button>
       </div>
     </form>
+  </div>
 
+  <div *ngSwitchCase="'newRoom'">
+    <div>
+      <label>Public</label>
+      <br />
+      <switch [(switch)]="config.public"></switch>
+      <br />
+
+      <!-- <label>Size</label>
+      <input type="range" min="1" max="100" value="50" class="slider" id="myRange"> -->
+
+
+    </div>
+    <button (click)="newRoom()">Create room</button>
   </div>
 
 </main>

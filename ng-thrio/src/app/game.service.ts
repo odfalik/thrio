@@ -1,4 +1,4 @@
-import { Room, RoomPublic } from './../../../Interfaces';
+import { RoomPublic } from './../../../Interfaces';
 import { DbService } from './db.service';
 import { FunctionsService } from './functions.service';
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';
@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { filter, first } from 'rxjs/operators';
+import { catchError, filter, first } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +19,7 @@ export class GameService implements OnDestroy {
   rendererCanvas: ElementRef<HTMLCanvasElement>;
   canMove = true;
   playerIdx: number;
+  spectating: boolean;
 
   constructor(
     private router: Router,
@@ -35,29 +36,35 @@ export class GameService implements OnDestroy {
         first()
       )
       .subscribe((u) => {
-        this.fns
-          .joinRoom$({ roomCode: roomCode.toUpperCase() })
-          .subscribe((joinData: number) => {
+        this.fns.joinRoom$({ roomCode: roomCode.toUpperCase() }).subscribe(
+          (joinData: number) => {
             if (joinData === undefined) {
               this.leaveRoom();
-              return;
+            } else {
+              this.playerIdx = joinData;
+              console.log('joinData', joinData);
+              this.subToRoom(roomCode);
             }
-
-            this.playerIdx = joinData;
-
-            console.log('joinData', joinData);
-
-            this._room = this.dbs.getRoom(roomCode).subscribe((room) => {
-              if (!room) setTimeout(() => this.leaveRoom(), 2000); // room doesn't exist
-
-              this.room = room;
-              this.room.waiting = new Array(3 - this.room.players?.length);
-              this.room$.next(this.room);
-
-              console.log('room', this.room);
-            });
-          });
+          },
+          (err) => {
+            this.subToRoom(roomCode, true);
+          }
+        );
       });
+  }
+
+  subToRoom(roomCode: string, spectating = false): void {
+    if (this._room) this._room.unsubscribe();
+    this._room = this.dbs.getRoom(roomCode).subscribe((room) => {
+      if (!room) setTimeout(() => this.leaveRoom(), 2000); // room doesn't exist
+
+      this.spectating = spectating;
+      this.room = room;
+      this.room.waiting = new Array(3 - this.room.players?.length);
+      this.room$.next(this.room);
+
+      console.log('room', this.room);
+    });
   }
 
   leaveRoom(): void {
@@ -67,7 +74,12 @@ export class GameService implements OnDestroy {
   }
 
   makeMove(pos: { x: number; z: number }): void {
-    if (!this.canMove || this.room?.nextPlayer !== this.playerIdx) return;
+    if (
+      !this.canMove ||
+      this.room?.nextPlayer !== this.playerIdx ||
+      this.spectating
+    )
+      return;
     setTimeout(() => {
       this.canMove = true;
     }, 1000);

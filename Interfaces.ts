@@ -12,11 +12,19 @@ export interface Room {
 }
 
 export interface RoomPublic {
-    roomCode?: string,
     grid: number[][][],
-    players?: Player[],
     nextPlayer: number,
+    roomCode?: string,
+    players?: Player[],
     waiting?: any[],
     victor?: number | null,
     isFull?: boolean,
+    config?: RoomConfig,
+}
+
+export interface RoomConfig {
+    public: boolean,
+    dimensions: number,
+    players: number,
+    timer: string,
 }

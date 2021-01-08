@@ -1,20 +1,24 @@
 <canvas #rendererCanvas id="renderCanvas"></canvas>
-<div class="vignette"></div>
+
+<div class="vignette" [class.loading]="!gs.room">
+  <h4>Loading...</h4>
+</div>
 
 <div class="gameover" *ngIf="gs.room?.players[gs.room?.victor]">
   <h3>{{gs.room?.players[gs.room?.victor].name}} won</h3>
 </div>
 
 <div class="header" *ngIf="gs.room">
+
   <p class="room-code" [class.lg]="!gs.room?.isFull">
-    {{ gs.room?.roomCode }}
+    <span *ngIf="gs.spectating" >SPECTATING</span> {{ gs.room?.roomCode }}
     <i class="fas fa-share clickable" (click)="shareRoom()" *ngIf="canShare && !gs.room.isFull"></i>
   </p>
   <div class="players">
     <div
       *ngFor="let player of gs.room?.players; let i = index"
       class="player"
-      [class.next]="gs.room.nextPlayer === i"
+      [class.next]="gs.room?.nextPlayer === i"
     >
       <i class="fas fa-chevron-right next-marker"></i>
       <p>
@@ -29,6 +33,4 @@
 
 <div class="controls">
   <i class="fas fa-sign-out-alt fa-flip-horizontal clickable" (click)="gs.leaveRoom()"></i>
-  <!-- <i class="fas fa-cog clickable"></i> -->
-
 </div>

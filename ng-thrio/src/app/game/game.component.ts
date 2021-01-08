@@ -6,7 +6,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import * as THREE from 'three';
 import { EngineService } from '../engine.service';
 import { Subscription } from 'rxjs';

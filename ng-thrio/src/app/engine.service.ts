@@ -259,15 +259,17 @@ export class EngineService implements OnDestroy {
       const selectorGeom = new THREE.ConeGeometry(0.3, 0.3, 4, 1);
       for (let x = 0; x < 3; x++) {
         for (let z = 0; z < 3; z++) {
-          const selector = new THREE.Mesh(selectorGeom, selectorMat);
-          this.scene.add(selector);
-          selector.position.set(x + 0.5, 3.3, z + 0.5);
-          selector.rotateX(-Math.PI);
-          selector.userData = {
-            selector: { x, z },
-            clickable: true,
-          };
-          this.selectors.push(selector);
+          if (room.grid[x][2][z] === -1) {
+            const selector = new THREE.Mesh(selectorGeom, selectorMat);
+            this.scene.add(selector);
+            selector.position.set(x + 0.5, 3.3, z + 0.5);
+            selector.rotateX(-Math.PI);
+            selector.userData = {
+              selector: { x, z },
+              clickable: true,
+            };
+            this.selectors.push(selector);
+          }
         }
       }
     }
