@@ -1,4 +1,4 @@
-import { Room } from '../../../interfaces';
+import { Room, RoomConfig } from '../../../interfaces';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
@@ -6,7 +6,7 @@ admin.initializeApp(functions.config().firebase);
 
 export const newRoom = functions.https.onCall(
   async (
-    params: { public: boolean; dimensions: number },
+    config: RoomConfig,
     context
   ): Promise<string> => {
     const roomCode = makeId(4);
@@ -23,7 +23,7 @@ export const newRoom = functions.https.onCall(
         roomCode: roomCode,
         players: [{ name: hostName, host: true }],
         config: {
-          ...params,
+          ...config,
         },
       },
       {
@@ -78,17 +78,33 @@ async function resetGame(
 }
 
 export const joinRoom = functions.https.onCall(
-  async (params: { roomCode: string }, context) => {
+  async (params: { roomCode?: string }, context) => {
     if (!context.auth)
       throw new functions.https.HttpsError(
         'unauthenticated',
         'Cannot join without auth'
       );
 
+    if (!params?.roomCode) {
+      const availableRooms: Room[] = (await admin.database().ref('rooms').orderByChild('public/config/public').equalTo(true).get()).val();
+      const availableRoom = availableRooms.find(room => room.public.status === 'waiting')
+      if (!availableRooms?.length) throw new functions.https.HttpsError('not-found', 'No available rooms found');
+      else {
+        params.roomCode = availableRooms[0].public.roomCode;
+      }
+    }
+
     const roomRef = await admin.database().ref('rooms/' + params.roomCode);
     const room: Room = (await roomRef.get()).val();
 
     if (room) {
+      if (!context.auth) {
+        throw new functions.https.HttpsError(
+          'permission-denied',
+          'User does not exist'
+        );
+      }
+
       const playerIdx = room.secret?.players?.findIndex(
         (p) => p.uid === context.auth?.uid
       );
@@ -104,33 +120,36 @@ export const joinRoom = functions.https.onCall(
       if (inRoom) {
         return playerIdx;
       } else {
-        return roomRef
+        await roomRef
           .child('secret/players')
           .update([
             ...(room.secret ? room.secret.players : []),
             { uid: context.auth.uid },
-          ])
-          .then(async () => {
-            const publicUpdate = {
-              players: [
-                // Add new player
-                ...(room.public.players ? room.public.players : []),
-                {
-                  name: context.auth
-                    ? (await admin.auth().getUser(context.auth.uid)).displayName
-                    : 'Guest',
-                },
-              ],
-              isFull: room.public.players
-                ? room.public.players.length === 3 - 1
-                : false,
-            };
+          ]);
 
-            return roomRef
-              .child('public')
-              .update(publicUpdate)
-              .then(() => publicUpdate.players.length - 1);
-          });
+        let newPlayerName = (await admin.auth().getUser(context.auth.uid)).displayName || 'Guest';
+        /* Check if another player with same name is in room */
+        if (room.public.players?.some(p => p.name === newPlayerName)) {
+          newPlayerName += '2';
+        }
+
+        const publicUpdate = {
+          players: [
+            // Add new player
+            ...(room.public.players ? room.public.players : []),
+            {
+              name: newPlayerName.trim()
+            },
+          ],
+          isFull: room.public.players
+            ? room.public.players.length === 3 - 1
+            : false,
+        };
+
+        return roomRef
+          .child('public')
+          .update(publicUpdate)
+          .then(() => publicUpdate.players.length - 1);
       }
     } else {
       throw new functions.https.HttpsError(
@@ -190,7 +209,7 @@ export const makeMove = functions.https.onCall(
         await roomRef.update(roomUpdate);
 
         /* Notify next player it's their turn */
-        const nextPlayerUid = room.secret?.players[nextPlayerIdx]?.uid;
+        /* const nextPlayerUid = room.secret?.players[nextPlayerIdx]?.uid;
         if (nextPlayerUid) {
           const nextPlayerToken = (
             await admin
@@ -198,7 +217,7 @@ export const makeMove = functions.https.onCall(
               .ref('users/' + nextPlayerUid + '/token')
               .get()
           ).val();
-        if (nextPlayerToken && nextPlayerToken !== 'declined') {
+          if (nextPlayerToken && nextPlayerToken !== 'declined') {
             admin.messaging().sendToDevice(nextPlayerToken, {
               notification: {
                 title: `It's your turn`,
@@ -206,7 +225,7 @@ export const makeMove = functions.https.onCall(
               },
             });
           }
-        }
+        } */
       }
     } else {
       throw new functions.https.HttpsError(
@@ -304,7 +323,7 @@ export const dailyJob = functions.https.onRequest((req, res) => {
     .database()
     .ref('rooms')
     .orderByChild('timestamp')
-    .endAt(Date.now() - 86400000)
+    .endAt(Date.now() - 2*86400000) // Delete 2-day-old rooms
     .ref.remove()
     .then(() => {
       res.status(200).send('OK');

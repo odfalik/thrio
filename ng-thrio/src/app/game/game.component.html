@@ -1,13 +1,13 @@
 <canvas #rendererCanvas id="renderCanvas"></canvas>
 
 <div class="vignette" [class.loading]="!gs.room">
-  <h4>Loading...</h4>
+  <h4 class="waiting">Loading</h4>
 </div>
 
-<div class="notif" *ngIf="!authService.dbUser?.token">
+<!-- <div class="notif" *ngIf="!authService.dbUser?.token">
   <p>
-    Would you like to enable <br />
-    turn notifications?
+    Would you like to be notified <br />
+    when it's your turn again?
   </p>
   <div class="options">
     <i
@@ -16,7 +16,7 @@
     ></i>
     <i class="fas fa-times clickable" (click)="gs.pushRequest = false"></i>
   </div>
-</div>
+</div> -->
 
 <div class="gameover" *ngIf="gs.room?.players[gs.room?.victor]">
   <h3>{{ gs.room?.players[gs.room?.victor].name }} won</h3>

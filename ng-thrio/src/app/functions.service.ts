@@ -7,12 +7,9 @@ import { RoomConfig } from '../../../Interfaces';
   providedIn: 'root',
 })
 export class FunctionsService {
-  joinRoom$ = this.fns.httpsCallable('joinRoom');
+  joinRoom$: (params?: { roomCode: string }) => Observable<{roomCode: string, playerIdx: number}> = this.fns.httpsCallable('joinRoom');
 
-  newRoom$: (data: {
-    name: string;
-    config: RoomConfig;
-  }) => Observable<any> = this.fns.httpsCallable('newRoom');
+  newRoom$: (data: RoomConfig) => Observable<any> = this.fns.httpsCallable('newRoom');
 
   makeMove$ = this.fns.httpsCallable('makeMove');
 

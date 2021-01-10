@@ -1,41 +1,30 @@
 <header>
-  <h1>THRIO<span>.app</span></h1>
+  <div class="top-left">
+    <h1 routerLink="/" (click)="mode = 'menu'">THRIO<span>.app</span></h1>
+    <a class="back-btn" (click)="mode = 'menu'" *ngIf="mode !== 'menu'" [@slideB]>
+      <i class="fas fa-caret-left"></i>main menu</a
+    >
+  </div>
 
-  <div class="top-right">
+  <div
+    class="top-right"
+    (click)="mode = mode === 'settings' ? 'menu' : 'settings'"
+  >
     <span> {{ authService.user?.displayName }} </span>
-    <i
-      class="fas clickable"
-      [ngClass]="mode === 'settings' ? 'fa-times' : 'fa-user-cog'"
-      (click)="mode = mode === 'settings' ? 'menu' : 'settings'"
-    ></i>
+    <i class="fas fa-user-cog clickable"></i>
   </div>
 </header>
 
 <main [ngSwitch]="mode">
 
-
-  <div *ngSwitchCase="'settings'" [@fade]>
-    <div>
-      <label class="db">Nickname</label>
-      <input
-        type="text"
-        [(ngModel)]="name"
-        name="name"
-        (blur)="authService.changeName(name)"
-      />
-    </div>
-  </div>
-
-  <div *ngSwitchCase="'menu'" [@fade]>
+  <div *ngSwitchCase="'menu'" [@slideA] class="main-menu">
     <div>
       <button (click)="mode = 'newRoom'">New game</button>
     </div>
-
-    <!-- <button (click)="joinPublic()" [disabled]="searching">
+    <button (click)="joinPublic()" [disabled]="searching">
       <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
       Join a<br />public game
-    </button> -->
-
+    </button>
     <form (submit)="joinRoom()">
       <div class="field">
         <input
@@ -46,26 +35,46 @@
           autocomplete="off"
           spellcheck="false"
         />
-        <button action="submit" [disabled]="!roomCode">Join Game</button>
+        <button
+          action="submit"
+          [disabled]="!roomCode || roomCode?.length !== 4"
+        >
+          Join Game
+        </button>
       </div>
     </form>
   </div>
 
-  <div *ngSwitchCase="'newRoom'">
+  <div *ngSwitchCase="'newRoom'" [@slideB] class="menu-b">
+    <h3>New Game</h3>
     <div>
       <label>Public</label>
       <br />
       <switch [(switch)]="config.public"></switch>
-      <br />
-
-      <!-- <label>Size</label>
-      <input type="range" min="1" max="100" value="50" class="slider" id="myRange"> -->
-
-
     </div>
+    <!-- <br />
+    <label>Size</label>
+    <input type="range" min="2" max="5" value="3" class="slider"> -->
+
     <button (click)="newRoom()">Create room</button>
   </div>
 
+  <div *ngSwitchCase="'publicGame'" [@slideB] class="menu-b">
+    <h3>Public Games</h3>
+  </div>
+
+  <div *ngSwitchCase="'settings'" [@slideB] class="menu-b">
+    <h3>Settings</h3>
+    <div>
+      <label class="db">Nickname</label>
+      <input
+        type="text"
+        [(ngModel)]="name"
+        name="name"
+        (blur)="authService.changeName(name)"
+      />
+    </div>
+  </div>
 </main>
 
 <footer>

@@ -38,16 +38,16 @@ export class GameService implements OnDestroy {
       )
       .subscribe((u) => {
         this.fns.joinRoom$({ roomCode: roomCode.toUpperCase() }).subscribe(
-          (joinData: number) => {
+          joinData => {
             if (joinData === undefined) {
               this.leaveRoom();
             } else {
-              this.playerIdx = joinData;
-              console.log('joinData', joinData);
+              this.playerIdx = joinData.playerIdx;
+              console.log('joinData (my playerIdx)', joinData);
               this.subToRoom(roomCode);
             }
           },
-          (err) => {
+          err => {
             this.subToRoom(roomCode, true);
           }
         );

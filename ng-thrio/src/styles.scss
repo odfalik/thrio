@@ -1,4 +1,126 @@
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline; } article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; } body { line-height: 1; } ol, ul { list-style: none; } blockquote, q { quotes: none; } blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; } table { border-collapse: collapse; border-spacing: 0; }
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
 
 $white: rgb(253, 255, 252);
 $dark: #011627;
@@ -6,7 +128,8 @@ $p1: #2ec2b3;
 $p2: rgb(231, 29, 54);
 $p3: rgb(255, 159, 28);
 
-html, body {
+html,
+body {
   font-family: 'Karla', Helvetica, sans-serif;
   background: $dark;
   background: linear-gradient(110deg, #1b303f, $dark);
@@ -15,15 +138,12 @@ html, body {
   overflow: hidden;
 }
 
-main {
-  display: grid;
-}
-
-input, button {
+input,
+button {
   padding: 1em 1.5em;
   margin: 0;
   border: 1px solid rgba(253, 255, 252, 0.5);
-  border-radius: .25em;
+  border-radius: 0.25em;
   box-sizing: border-box;
 }
 
@@ -38,7 +158,7 @@ button {
   width: min-content;
   vertical-align: middle;
   user-select: none;
-  transition: .15s all;
+  transition: 0.15s all;
 
   &:hover {
     background: $p1;
@@ -50,7 +170,7 @@ button {
 *:disabled {
   cursor: default;
   pointer-events: none;
-  opacity: .40;
+  opacity: 0.4;
 }
 
 input {
@@ -75,11 +195,31 @@ input {
   }
 }
 
+a {
+  cursor: pointer;
+  // text-decoration: underline;
+  // text-decoration-color: rgba(253, 255, 252, 0.1);
+  transition: 0.5s ease all;
+  i {
+    margin-right: 0.25em;
+    transition: 0.5s ease all;
+  }
+  &:hover {
+    color: rgb(46, 194, 179);
+    i {
+      margin-right: 0.5em;
+    }
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
 i.clickable {
   font-size: 2em;
-  transition: .15s all;
+  transition: 0.15s all;
   &:hover {
-    cursor: pointer;
     color: rgb(46, 194, 179);
   }
 }
@@ -108,23 +248,21 @@ i.clickable {
     justify-content: center;
 
     .fa-times {
-      opacity: .6;
+      opacity: 0.6;
     }
   }
 }
 
-
-
 .slider {
-  -webkit-appearance: none;  /* Override default CSS styles */
+  -webkit-appearance: none; /* Override default CSS styles */
   appearance: none;
   width: 100%; /* Full-width */
   height: 25px; /* Specified height */
   background: #d3d3d3; /* Grey background */
   outline: none; /* Remove outline */
-  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-  transition: opacity .2s;
+  opacity: 0.6; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
+  transition: opacity 0.2s;
   /* Mouse-over effects */
   &:hover {
     opacity: 1; /* Fully shown on mouse-over */
@@ -136,14 +274,14 @@ i.clickable {
     appearance: none;
     width: 25px; /* Set a specific slider handle width */
     height: 25px; /* Slider handle height */
-    background: #4CAF50; /* Green background */
+    background: #4caf50; /* Green background */
     cursor: pointer; /* Cursor on hover */
   }
 
   &::-moz-range-thumb {
     width: 25px; /* Set a specific slider handle width */
     height: 25px; /* Slider handle height */
-    background: #4CAF50; /* Green background */
+    background: #4caf50; /* Green background */
     cursor: pointer; /* Cursor on hover */
   }
 }

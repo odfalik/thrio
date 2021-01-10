@@ -1,23 +1,15 @@
+import { slideAnim } from './../animations';
 import { FunctionsService } from './../functions.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { RoomConfig } from '../../../../Interfaces';
-import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-main-menu',
   templateUrl: './main-menu.component.html',
   styleUrls: ['./main-menu.component.scss'],
-  animations: [
-    trigger('fade', [
-      transition(':enter', [
-        style({ opacity: '0' }),
-        animate('300ms ease-in', style({ opacity: '1' })),
-      ]),
-      transition(':leave', [animate('300ms ease-in', style({ opacity: '0' }))]),
-    ]),
-  ],
+  animations: [slideAnim],
 })
 export class MainMenuComponent implements OnInit {
   roomCode = '';
@@ -46,7 +38,7 @@ export class MainMenuComponent implements OnInit {
 
   newRoom(): void {
     this.fns
-      .newRoom$({ name: this.name, config: this.config })
+      .newRoom$(this.config)
       .subscribe((roomCode: string) => {
         this.joinRoom(roomCode);
       });
@@ -54,8 +46,13 @@ export class MainMenuComponent implements OnInit {
 
   joinPublic(): void {
     this.searching = true;
-    setTimeout(() => {
-      this.searching = false;
-    }, 5000);
+    this.fns.joinRoom$().subscribe(
+      res => {
+        this.joinRoom(res.roomCode)
+      },
+      err => {
+        console.error('joinPublic err', err)
+      }
+    )
   }
 }

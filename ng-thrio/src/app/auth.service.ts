@@ -25,12 +25,6 @@ export class AuthService {
       this.auth.signInAnonymously();
     });
 
-    this.afMessaging.messages.subscribe(
-      (_messaging: AngularFireMessaging) => {
-      _messaging.onMessage = _messaging.onMessage.bind(_messaging);
-      _messaging.onTokenRefresh = _messaging.onTokenRefresh.bind(_messaging);
-    });
-
     this.auth.user.subscribe((u) => {
       this.user = u;
       // console.log('user', u);
