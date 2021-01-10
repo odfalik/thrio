@@ -19,11 +19,13 @@ export class TimeAgoPipe implements PipeTransform {
       };
       let counter: number;
       for (const i in intervals) {
-        counter = Math.floor(seconds / intervals[i]);
-        if (counter > 0)
-          return counter === 1
-            ? counter + ' ' + i + ' ago'
-            : counter + ' ' + i + 's ago';
+        if (i) {
+          counter = Math.floor(seconds / intervals[i]);
+          if (counter > 0)
+            return counter === 1
+              ? counter + ' ' + i + ' ago'
+              : counter + ' ' + i + 's ago';
+        }
       }
     }
     return value;

@@ -34,12 +34,11 @@
     </div>
   </div>
 
-  <div *ngSwitchCase="'newRoom'" [@slideB] class="menu-b">
+  <div *ngSwitchCase="'newRoom'" [@slideB] class="menu-b new-room">
     <h3>New Game</h3>
-    <div>
-      <label>Public</label>
-      <br />
+    <div class="field">
       <switch [(switch)]="config.public"></switch>
+      <label>Public</label>
     </div>
     <!-- <br />
     <label>Size</label>
@@ -60,20 +59,24 @@
       ></i>
     </h3>
 
-    <table>
-      <tr
-        *ngFor="let room of rooms"
-        class="clickable"
-        (click)="joinRoom(room.roomCode)"
-        [@slideV]
-      >
-        <td>{{ room.roomCode }}</td>
-        <td>{{ room.players.length }} / {{ room.config.players }}</td>
-        <td>{{ room.timestamp | timeAgo }}</td>
-      </tr>
-
-      <tr *ngIf="!rooms?.length"><td></td><td>No games found</td><td></td></tr>
-    </table>
+    <div class="room-list">
+      <table>
+        <tr
+          *ngFor="let room of rooms"
+          class="clickable"
+          (click)="joinRoom(room.roomCode)"
+          [@slideV]
+        >
+          <td>
+            <p>{{ room.roomCode }}</p>
+            <p>{{ room['hostName'] }}</p>
+          </td>
+          <td>{{ room.players.length }}/{{ room.config.players }}</td>
+          <td>{{ room.timestamp | timeAgo }}</td>
+        </tr>
+      </table>
+      <p *ngIf="!gettingRooms && !rooms?.length">No games found</p>
+    </div>
 
 
     <form (submit)="joinRoom()">

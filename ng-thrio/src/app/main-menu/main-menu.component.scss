@@ -46,9 +46,10 @@ main {
 
     .or { opacity: .2; }
 
-    input {
-      text-transform: uppercase;
-    }
+  }
+
+  input {
+    text-transform: uppercase;
   }
 
   .back-btn {
@@ -65,40 +66,53 @@ main {
       i.fa-sync-alt {
         font-size: 0.6em;
       }
-      table {
-        width: 100%;
-        border-spacing: 0 1em;
-        border-collapse: separate;
+      .room-list {
         padding: 1em 1.5em;
         border: 1px solid rgba(253, 255, 252, 0.5);
         border-radius: 0.25em;
+        height: 15em;
+        overflow-y: auto;
 
-        tr {
+        table {
+          width: 100%;
+          border-spacing: 0 1em;
+          border-collapse: separate;
 
-          &:hover {
-            color: #2ec2b3;
+          tr {
+
+            &:hover {
+              color: #2ec2b3;
+            }
+
+            >:nth-child(2) {
+              text-align: right;
+            }
+
+            >:nth-child(3) {
+              text-align: right;
+              opacity: .5;
+              font-weight: 100;
+            }
           }
 
-          :nth-child(2) {
-            text-align: right;
-          }
-
-          :nth-child(3) {
-            text-align: right;
-            opacity: .5;
-            font-weight: 100;
-          }
         }
-
       }
     }
 
+    &.new-room {
+      .field {
+        display: grid;
+        grid-template-columns: min-content auto;
+        align-items: center;
+        grid-gap: 1em;
+      }
+    }
   }
 
   h3 {
     font-size: 2.25em;
     font-weight: 100;
-    margin-bottom: 1em;
+    margin-bottom: .5em;
   }
 }
 

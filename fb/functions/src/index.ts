@@ -1,4 +1,4 @@
-import { Room, RoomConfig } from '../../../interfaces';
+import { Room, RoomConfig, RoomPublic } from '../../../interfaces';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
@@ -77,39 +77,18 @@ async function resetGame(
 }
 
 export const joinRoom = functions.https.onCall(
-  async (params: { roomCode?: string }, context) => {
-    if (!params) params = {};
-
+  async (params: { roomCode: string }, context) => {
     if (!context.auth)
       throw new functions.https.HttpsError(
         'unauthenticated',
         'Cannot join without auth'
       );
 
-    if (!params?.roomCode) {
-      const rooms: object = (
-        await admin
-          .database()
-          .ref('rooms')
-          .orderByChild('public/config/public')
-          .equalTo(true)
-          .get()
-      ).val();
-
-      const availableRooms: Room[] = Object.values(rooms);
-
-      const availableRoom = availableRooms?.find(
-        (room) => room.public.status === 'waiting'
+    if (!params?.roomCode)
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'No room code supplied'
       );
-      if (!availableRoom)
-        throw new functions.https.HttpsError(
-          'not-found',
-          'No available rooms found'
-        );
-      else {
-        params.roomCode = availableRoom.public.roomCode;
-      }
-    }
 
     const roomRef = admin.database().ref('rooms/' + params.roomCode);
     const room: Room = (await roomRef.get()).val();
@@ -132,8 +111,8 @@ export const joinRoom = functions.https.onCall(
       if (inRoom) {
         return { roomCode, playerIdx };
       } else {
-        /* Spectator */
         if (room.public.status !== 'waiting') {
+          // Joining a full room (make spectator)
           return { roomCode, playerIdx: -1 };
         }
 
@@ -145,14 +124,15 @@ export const joinRoom = functions.https.onCall(
           ]);
 
         let newPlayerName =
-          (await admin.auth().getUser(context.auth.uid)).displayName || 'Guest';
+          (await admin.auth().getUser(context.auth.uid)).displayName || 'GUEST';
+
         /* Check if another player with same name is in room */
         if (room.public.players?.some((p) => p.name === newPlayerName)) {
           newPlayerName += '2';
         }
 
         const status =
-          room.public?.players?.length === 3 ? 'playing' : 'waiting';
+          room.public?.players?.length === 3 - 1 ? 'playing' : 'waiting';
 
         const publicUpdate = {
           players: [
@@ -182,23 +162,29 @@ export const joinRoom = functions.https.onCall(
 );
 
 export const getRooms = functions.https.onCall(async (params: any, context) => {
-  const rooms: object = (
-    await admin
-      .database()
-      .ref('rooms')
-      .orderByChild('public/config/public')
-      .equalTo(true)
-      .get()
-  ).val();
+  const rooms: Room[] = Object.values(
+    (
+      await admin
+        .database()
+        .ref('rooms')
+        .orderByChild('public/status')
+        .equalTo('waiting')
+        .get()
+    ).val() || {}
+  );
 
-  const availableRooms: Room[] = Object.values(rooms);
-
-  const availableRoomPublics = availableRooms
-    .sort((a, b) => b.public.timestamp - a.public.timestamp)
-    .slice(0, 5)
-    .map((room: Room) => {
-      return { ...room.public };
-    });
+  const availableRoomPublics: RoomPublic[] = rooms
+    ? rooms
+        .filter((r) => r.public)
+        .sort((a, b) => b.public.timestamp - a.public.timestamp)
+        .slice(0, 15)
+        .map((room: any) => {
+          room.public['hostName'] = room.public.players?.find(
+            (p: any) => p.host
+          ).name;
+          return room.public;
+        })
+    : [];
 
   return availableRoomPublics;
 });
@@ -241,7 +227,9 @@ export const makeMove = functions.https.onCall(
         const victory = checkVictory(playerIdx, grid, params.x, y, params.z);
 
         const roomUpdate: any = {};
+        roomUpdate[`public/timestamp`] = Date.now();
         roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = nextPlayerIdx;
+        roomUpdate[`public/lastMove`] = { x: params.x, y, z: params.z };
         roomUpdate['public/nextPlayerIdx'] = victory
           ? -1
           : nextPlayerIdx + 1 === 3

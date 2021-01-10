@@ -60,6 +60,10 @@ export class MainMenuComponent implements OnInit {
         console.log('getRooms:', rooms);
         this.rooms = rooms;
         this.gettingRooms = false;
+      },
+      (err) => {
+        this.rooms = [];
+        this.gettingRooms = false;
       }
     );
   }
@@ -68,11 +72,11 @@ export class MainMenuComponent implements OnInit {
     this.searching = true;
     this.fns.joinRoom$().subscribe(
       res => {
-        this.joinRoom(res.roomCode)
+        this.joinRoom(res.roomCode);
       },
       err => {
-        console.error('joinPublic err', err)
+        console.error('joinPublic err', err);
       }
-    )
+    );
   }
 }

@@ -285,3 +285,17 @@ i.clickable {
     cursor: pointer; /* Cursor on hover */
   }
 }
+
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: none;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(253, 255, 252, 0.1);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(253, 255, 252, 0.5);
+}
