@@ -46,6 +46,7 @@ export class AuthService {
   }
 
   changeName(displayName: string): void {
+    displayName = displayName.toUpperCase().slice(0, 15);
     this.user.updateProfile({ displayName });
   }
 

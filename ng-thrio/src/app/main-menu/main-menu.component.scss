@@ -33,13 +33,21 @@ header {
 main {
 
   .main-menu {
-    margin-top: 3em;
     display: grid;
     justify-items: center;
-    grid-template-columns: repeat(auto-fit, minmax(12em, auto));
+    align-items: center;
+    grid-template-columns: repeat(3, auto);
     grid-gap: 2em;
-    @media screen and (max-width: 800px) {
+    margin: 3em 2em;
+
+    @media screen and (max-width: 500px) {
       grid-template-columns: auto;
+    }
+
+    .or { opacity: .2; }
+
+    input {
+      text-transform: uppercase;
     }
   }
 
@@ -86,10 +94,6 @@ main {
       }
     }
 
-  }
-
-  input {
-    text-transform: uppercase;
   }
 
   h3 {

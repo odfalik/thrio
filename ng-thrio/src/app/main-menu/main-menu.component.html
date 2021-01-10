@@ -22,31 +22,16 @@
 
 <main [ngSwitch]="mode">
   <div *ngSwitchCase="'menu'" [@slideA] class="main-menu">
-    <div>
-      <button (click)="mode = 'newRoom'">New game</button>
-    </div>
     <button (click)="mode = 'findGames'; getRooms()" [disabled]="searching">
       <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
-      Find games
+      find a game
     </button>
-    <form (submit)="joinRoom()">
-      <div class="field">
-        <input
-          type="text"
-          [(ngModel)]="roomCode"
-          name="roomCode"
-          placeholder="Enter a room code"
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <button
-          action="submit"
-          [disabled]="!roomCode || roomCode?.length !== 4"
-        >
-          Join Game
-        </button>
-      </div>
-    </form>
+
+    <p class="or">or</p>
+
+    <div>
+      <button (click)="mode = 'newRoom'">start new game</button>
+    </div>
   </div>
 
   <div *ngSwitchCase="'newRoom'" [@slideB] class="menu-b">
@@ -87,6 +72,26 @@
         <td>{{ room.timestamp | timeAgo }}</td>
       </tr>
     </table>
+
+
+    <form (submit)="joinRoom()">
+      <div class="field">
+        <input
+          type="text"
+          [(ngModel)]="roomCode"
+          name="roomCode"
+          placeholder="Enter a room code"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button
+          action="submit"
+          [disabled]="!roomCode || roomCode?.length !== 4"
+        >
+          Join Game
+        </button>
+      </div>
+    </form>
   </div>
 
   <div *ngSwitchCase="'settings'" [@slideB] class="menu-b">
