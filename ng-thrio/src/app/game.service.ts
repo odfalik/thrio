@@ -61,11 +61,15 @@ export class GameService implements OnDestroy {
   subToRoom(roomCode: string): void {
     if (this._room) this._room.unsubscribe();
     this._room = this.dbs.getRoom(roomCode).subscribe((room: RoomPublic) => {
-      if (!room) setTimeout(() => this.leaveRoom(), 2000); // room doesn't exist
+      console.log('subToRoom', room);
+
+
+      if (!room) return setTimeout(() => this.leaveRoom(), 2000); // room doesn't exist
 
       this.isNextPlayer = room?.nextPlayerIdx === this.playerIdx;
       this.room = room;
-      this.waiting = new Array(3 - this.room.players?.length);
+      if (this.room?.status === 'waiting' && this.room?.players)
+        this.waiting = new Array(3 - this.room.players.length);
       this.room$.next(this.room);
 
       console.log('room', this.room);
@@ -79,11 +83,7 @@ export class GameService implements OnDestroy {
   }
 
   makeMove(pos: { x: number; z: number }): void {
-    if (
-      !this.canMove ||
-      !this.isNextPlayer
-    )
-      return;
+    if (!this.canMove || !this.isNextPlayer) return;
     setTimeout(() => {
       this.canMove = true;
     }, 1000);

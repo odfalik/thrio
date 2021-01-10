@@ -4,7 +4,6 @@ export interface Player {
 }
 
 export interface Room {
-    timestamp: number,
     public: RoomPublic,
     secret?: {
         players: { uid: string }[]
@@ -19,6 +18,7 @@ export interface RoomPublic {
     victor?: number | null,
     status?: string,
     config?: RoomConfig,
+    timestamp: number,
 }
 
 export interface RoomConfig {

@@ -1,15 +1,15 @@
-import { slideAnim } from './../animations';
+import { slideAnim, slideVAnim } from './../animations';
 import { FunctionsService } from './../functions.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { RoomConfig } from '../../../../Interfaces';
+import { RoomConfig, RoomPublic } from '../../../../Interfaces';
 
 @Component({
   selector: 'app-main-menu',
   templateUrl: './main-menu.component.html',
   styleUrls: ['./main-menu.component.scss'],
-  animations: [slideAnim],
+  animations: [slideAnim, slideVAnim],
 })
 export class MainMenuComponent implements OnInit {
   roomCode = '';
@@ -22,6 +22,7 @@ export class MainMenuComponent implements OnInit {
     timer: '',
   };
   mode = 'menu';
+  rooms: RoomPublic[];
 
   constructor(
     public authService: AuthService,
@@ -42,6 +43,15 @@ export class MainMenuComponent implements OnInit {
       .subscribe((roomCode: string) => {
         this.joinRoom(roomCode);
       });
+  }
+
+  getRooms() {
+    this.fns.getRooms$({}).subscribe(
+      (rooms: RoomPublic[]) => {
+        console.log('getRooms:', rooms);
+        this.rooms = rooms;
+      }
+    )
   }
 
   joinPublic(): void {

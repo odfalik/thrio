@@ -40,3 +40,25 @@ export const slideAnim = [
     ]),
   ]),
 ];
+
+export const slideVAnim = [
+  trigger('slideV', [
+    transition(':enter', [
+      style({ transform: 'translateY(200%)', opacity: 0 }),
+      animate(
+        '250ms ease',
+        style({ transform: 'translateY(0%)', opacity: 1 })
+      ),
+    ]),
+    transition(':leave', [
+      animate(
+        '250ms ease',
+        style({
+          transform: 'translateY(200%)',
+          position: 'absolute',
+          opacity: 0
+        })
+      ),
+    ]),
+  ]),
+];

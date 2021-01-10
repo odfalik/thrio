@@ -59,8 +59,8 @@ async function resetGame(
   ];
 
   room = {
-    timestamp: Date.now(),
     public: {
+      timestamp: Date.now(),
       nextPlayerIdx: room?.public?.victor || 0,
       grid,
       victor: null,
@@ -77,7 +77,7 @@ async function resetGame(
 export const joinRoom = functions.https.onCall(
   async (params: { roomCode?: string }, context) => {
     if (!params) params = {};
-    
+
     if (!context.auth)
       throw new functions.https.HttpsError(
         'unauthenticated',
@@ -125,12 +125,9 @@ export const joinRoom = functions.https.onCall(
       );
       const inRoom = playerIdx !== undefined && playerIdx !== -1;
 
-      
-
       if (inRoom) {
         return { playerIdx };
       } else {
-
         /* Spectator */
         if (room.public.status !== 'waiting') {
           return { roomCode: room.public.roomCode, playerIdx: -1 };
@@ -168,7 +165,7 @@ export const joinRoom = functions.https.onCall(
           .child('public')
           .update(publicUpdate)
           .then(() => {
-            return { playerIdx: publicUpdate.players.length - 1 };
+            return { playerIdx: publicUpdate.players.length - 1, roomCode: room.public.roomCode };
           });
       }
     } else {
@@ -179,6 +176,28 @@ export const joinRoom = functions.https.onCall(
     }
   }
 );
+
+export const getRooms = functions.https.onCall(async (params: any, context) => {
+  const rooms: object = (
+    await admin
+      .database()
+      .ref('rooms')
+      .orderByChild('public/config/public')
+      .equalTo(true)
+      .get()
+  ).val();
+
+  const availableRooms: Room[] = Object.values(rooms);
+
+  const availableRoomPublics = availableRooms
+    .sort((a, b) => a.public.timestamp - b.public.timestamp)
+    .slice(0, 5)
+    .map((room: Room) => {
+      return { ...room.public };
+    });
+
+  return availableRoomPublics;
+});
 
 export const makeMove = functions.https.onCall(
   async (params: { roomCode: string; x: number; z: number }, context) => {
@@ -342,7 +361,7 @@ export const dailyJob = functions.https.onRequest((req, res) => {
   return admin
     .database()
     .ref('rooms')
-    .orderByChild('timestamp')
+    .orderByChild('public/timestamp')
     .endAt(Date.now() - 2 * 86400000) // Delete 2-day-old rooms
     .ref.remove()
     .then(() => {

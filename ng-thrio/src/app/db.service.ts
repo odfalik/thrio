@@ -11,10 +11,6 @@ export class DbService {
 
   public getRoom(roomCode: string): Observable<any> {
     return this.rtdb.object('rooms/' + roomCode + '/public').valueChanges();
-    // return this.rtdb
-    //   .list('rooms', (ref) => ref.orderByChild('roomCode').equalTo(roomCode))
-    //   .valueChanges()
-    //   .pipe(map((rooms: any[]) => (rooms?.length ? rooms[0] : null)));
   }
 
   public getUser(uid: string): Observable<User> {

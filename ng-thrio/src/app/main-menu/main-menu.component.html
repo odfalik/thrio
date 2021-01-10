@@ -21,9 +21,9 @@
     <div>
       <button (click)="mode = 'newRoom'">New game</button>
     </div>
-    <button (click)="joinPublic()" [disabled]="searching">
+    <button (click)="mode = 'publicGame'; getRooms()" [disabled]="searching">
       <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
-      Join a<br />public game
+      Find games
     </button>
     <form (submit)="joinRoom()">
       <div class="field">
@@ -61,6 +61,13 @@
 
   <div *ngSwitchCase="'publicGame'" [@slideB] class="menu-b">
     <h3>Public Games</h3>
+    <div class="roomList">
+
+      <div class="found-room clickable" *ngFor="let room of rooms" (click)="joinRoom(room.roomCode)"  [@slideV]>
+        {{ room.roomCode }} {{ room.timestamp | timeAgo }}
+      </div>
+
+    </div>
   </div>
 
   <div *ngSwitchCase="'settings'" [@slideB] class="menu-b">

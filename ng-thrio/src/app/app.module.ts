@@ -13,6 +13,7 @@ import { AngularFireMessagingModule } from '@angular/fire/messaging';
 import { FormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { SwitchComponent } from './switch/switch.component';
+import { TimeAgoPipe } from './time-ago.pipe';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { SwitchComponent } from './switch/switch.component';
     GameComponent,
     MainMenuComponent,
     SwitchComponent,
+    TimeAgoPipe,
   ],
   imports: [
     BrowserModule,
