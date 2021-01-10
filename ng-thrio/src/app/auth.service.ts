@@ -14,6 +14,7 @@ export class AuthService {
   private _dbUser: any;
   dbUser: User;
   pushRequest: boolean;
+  isNewUser = false;
 
   constructor(
     public auth: AngularFireAuth,
@@ -22,12 +23,14 @@ export class AuthService {
     private fns: FunctionsService
   ) {
     this.auth.setPersistence('local').then(() => {
-      this.auth.signInAnonymously();
+      this.auth.signInAnonymously().then((cred) => {
+        if (cred.additionalUserInfo.isNewUser) this.isNewUser = true;
+      });
     });
 
     this.auth.user.subscribe((u) => {
       this.user = u;
-      // console.log('user', u);
+      console.log('user', u);
 
       if (this._dbUser) this._dbUser.unsubscribe();
       if (this.user) {

@@ -1,14 +1,6 @@
 <header>
   <div class="top-left">
     <h1 routerLink="/" (click)="mode = 'menu'">THRIO<span>.app</span></h1>
-    <a
-      class="back-btn"
-      (click)="mode = 'menu'"
-      *ngIf="mode !== 'menu'"
-      [@slideB]
-    >
-      <i class="fas fa-caret-left"></i>main menu</a
-    >
   </div>
 
   <div
@@ -21,6 +13,10 @@
 </header>
 
 <main [ngSwitch]="mode">
+  <a class="back-btn" (click)="mode = 'menu'" *ngIf="mode !== 'menu'" [@slideB]>
+    <i class="fas fa-caret-left"></i>main menu</a
+  >
+
   <div *ngSwitchCase="'menu'" [@slideA] class="main-menu">
     <button (click)="mode = 'findGames'; getRooms()" [disabled]="searching">
       <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
@@ -79,7 +75,9 @@
               <p class="host">{{ room['hostName'] }}</p>
               <p class="room-code">{{ room.roomCode }}</p>
             </td>
-            <td class="players">{{ room.players.length }} / {{ room.config.players }}</td>
+            <td class="players">
+              {{ room.players.length }} / {{ room.config.players }}
+            </td>
             <td class="timestamp">{{ room.timestamp | timeAgo }}</td>
           </tr>
         </tbody>
@@ -87,14 +85,13 @@
       <p *ngIf="!gettingRooms && !rooms?.length">No games found</p>
     </div>
 
-
-    <form (submit)="joinRoom()">
+    <form (submit)="joinRoom()" class="join-form">
       <div class="field">
         <input
           type="text"
           [(ngModel)]="roomCode"
           name="roomCode"
-          placeholder="Enter a room code"
+          placeholder="room code"
           autocomplete="off"
           spellcheck="false"
         />
@@ -120,8 +117,26 @@
       />
     </div>
   </div>
+
+  <div *ngSwitchCase="'help'" [@slideB] class="menu-b">
+    <h3>How to play</h3>
+    <div>
+      <p>
+        This is basically connect four, but it's connect 3, with 3 players, and
+        3d
+      </p>
+      <p>Forgive me... I'll get to this soon</p>
+      <p>Figure it out lol</p>
+    </div>
+  </div>
 </main>
 
 <footer>
   <a href="https://odedfalik.com" target="_blank">by oded</a>
+  <a
+    class="clickable"
+    [class.new-user]="authService.isNewUser"
+    (click)="mode = 'help'"
+    >How to play</a
+  >
 </footer>

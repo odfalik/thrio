@@ -38,7 +38,8 @@ main {
     align-items: center;
     grid-template-columns: repeat(3, auto);
     grid-gap: 2em;
-    margin: 3em 2em;
+    margin: 3em auto;
+    max-width: 45em;
 
     @media screen and (max-width: 500px) {
       grid-template-columns: auto;
@@ -53,14 +54,17 @@ main {
   }
 
   .back-btn {
-    margin: 0 2em;
+    i { font-size: 0.7em; }
+    margin: 3em 2em 0 2em;
+    font-weight: 100;
   }
 
   .menu-b {
-    margin-top: 3em;
     padding: 0.25em 2em;
     display: grid;
     grid-gap: 1em;
+    margin: 0 auto;
+    max-width: 50em;
 
     &.find-games {
       i.fa-sync-alt {
@@ -98,8 +102,11 @@ main {
               font-weight: 100;
             }
           }
-
         }
+      }
+
+      .join-form input {
+        max-width: 10em;
       }
     }
 
@@ -125,11 +132,17 @@ footer {
   position: fixed;
   bottom: 2em;
   text-align: center;
-  opacity: .2;
   width: 100%;
 
   a {
     font-weight: lighter;
     color: white;
+    opacity: .2;
+    margin-right: 2em;
+
+    &.new-user {
+      opacity: 1 !important;
+      font-weight: bold;
+    }
   }
 }
