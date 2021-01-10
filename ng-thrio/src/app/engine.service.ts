@@ -217,7 +217,6 @@ export class EngineService implements OnDestroy {
   }
 
   public onRoom(room: RoomPublic): void {
-
     /* Balls */
     this.balls.forEach((ball) => {
       this.scene.remove(ball);
@@ -250,7 +249,8 @@ export class EngineService implements OnDestroy {
       this.scene.remove(sel);
     });
     this.selectors = [];
-    if (room.nextPlayerIdx === this.gs.playerIdx) {
+
+    if (this.gs.isNextPlayer) {
       const selectorMat = new THREE.MeshBasicMaterial({
         opacity: 0.4,
         transparent: true,
@@ -273,6 +273,5 @@ export class EngineService implements OnDestroy {
         }
       }
     }
-
   }
 }

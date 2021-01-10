@@ -18,16 +18,17 @@ export class GameService implements OnDestroy {
 
   rendererCanvas: ElementRef<HTMLCanvasElement>;
   canMove = true;
-  playerIdx: number;
-  spectating: boolean;
+  public playerIdx: number;
+  public spectating: boolean;
   pushRequest: boolean;
+  isNextPlayer: boolean;
 
   constructor(
     private router: Router,
     private fns: FunctionsService,
     private dbs: DbService,
     public auth: AngularFireAuth,
-    private afMessaging: AngularFireMessaging,
+    private afMessaging: AngularFireMessaging
   ) {}
 
   tryJoinRoom(roomCode: string): void {
@@ -38,16 +39,18 @@ export class GameService implements OnDestroy {
       )
       .subscribe((u) => {
         this.fns.joinRoom$({ roomCode: roomCode.toUpperCase() }).subscribe(
-          joinData => {
+          (joinData) => {
             if (joinData === undefined) {
               this.leaveRoom();
             } else {
               this.playerIdx = joinData.playerIdx;
+              this.isNextPlayer = this.playerIdx === joinData.playerIdx;
+              console.log();
               console.log('joinData (my playerIdx)', joinData);
               this.subToRoom(roomCode);
             }
           },
-          err => {
+          (err) => {
             this.subToRoom(roomCode, true);
           }
         );

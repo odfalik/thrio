@@ -18,6 +18,7 @@ export interface RoomPublic {
     players?: Player[],
     waiting?: any[],
     victor?: number | null,
+    status?: string,
     config?: RoomConfig,
 }
 

@@ -88,9 +88,9 @@ export const joinRoom = functions.https.onCall(
     if (!params?.roomCode) {
       const availableRooms: Room[] = (await admin.database().ref('rooms').orderByChild('public/config/public').equalTo(true).get()).val();
       const availableRoom = availableRooms.find(room => room.public.status === 'waiting')
-      if (!availableRooms?.length) throw new functions.https.HttpsError('not-found', 'No available rooms found');
+      if (!availableRoom) throw new functions.https.HttpsError('not-found', 'No available rooms found');
       else {
-        params.roomCode = availableRooms[0].public.roomCode;
+        params.roomCode = availableRoom.public.roomCode;
       }
     }
 
