@@ -130,7 +130,7 @@ export class EngineService implements OnDestroy {
       const intersects = raycaster.intersectObjects(this.scene.children);
       intersects.forEach((intersect) => {
         if (intersect.object.userData.selector) {
-          this.gs.makeMove({
+        this.gs.makeMove({
             x: intersect.object.userData.selector.x,
             z: intersect.object.userData.selector.z,
           });
@@ -249,7 +249,7 @@ export class EngineService implements OnDestroy {
       this.scene.remove(sel);
     });
     this.selectors = [];
-
+    console.log('onROom selectors', this.gs.isNextPlayer)
     if (this.gs.isNextPlayer) {
       const selectorMat = new THREE.MeshBasicMaterial({
         opacity: 0.4,

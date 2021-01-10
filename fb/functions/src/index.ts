@@ -5,10 +5,7 @@ import * as admin from 'firebase-admin';
 admin.initializeApp(functions.config().firebase);
 
 export const newRoom = functions.https.onCall(
-  async (
-    config: RoomConfig,
-    context
-  ): Promise<string> => {
+  async (config: RoomConfig, context): Promise<string> => {
     const roomCode = makeId(4);
     if (!context.auth)
       throw new functions.https.HttpsError(
@@ -86,15 +83,28 @@ export const joinRoom = functions.https.onCall(
       );
 
     if (!params?.roomCode) {
-      const availableRooms: Room[] = (await admin.database().ref('rooms').orderByChild('public/config/public').equalTo(true).get()).val();
-      const availableRoom = availableRooms.find(room => room.public.status === 'waiting')
-      if (!availableRoom) throw new functions.https.HttpsError('not-found', 'No available rooms found');
+      const availableRooms: Room[] = (
+        await admin
+          .database()
+          .ref('rooms')
+          .orderByChild('public/config/public')
+          .equalTo(true)
+          .get()
+      ).val();
+      const availableRoom = availableRooms?.find(
+        (room) => room.public.status === 'waiting'
+      );
+      if (!availableRoom)
+        throw new functions.https.HttpsError(
+          'not-found',
+          'No available rooms found'
+        );
       else {
         params.roomCode = availableRoom.public.roomCode;
       }
     }
 
-    const roomRef = await admin.database().ref('rooms/' + params.roomCode);
+    const roomRef = admin.database().ref('rooms/' + params.roomCode);
     const room: Room = (await roomRef.get()).val();
 
     if (room) {
@@ -118,7 +128,7 @@ export const joinRoom = functions.https.onCall(
       }
 
       if (inRoom) {
-        return playerIdx;
+        return { playerIdx };
       } else {
         await roomRef
           .child('secret/players')
@@ -127,29 +137,32 @@ export const joinRoom = functions.https.onCall(
             { uid: context.auth.uid },
           ]);
 
-        let newPlayerName = (await admin.auth().getUser(context.auth.uid)).displayName || 'Guest';
+        let newPlayerName =
+          (await admin.auth().getUser(context.auth.uid)).displayName || 'Guest';
         /* Check if another player with same name is in room */
-        if (room.public.players?.some(p => p.name === newPlayerName)) {
+        if (room.public.players?.some((p) => p.name === newPlayerName)) {
           newPlayerName += '2';
         }
+
+        const status = room.public?.players?.length === 3 ? 'playing' : 'waiting';
 
         const publicUpdate = {
           players: [
             // Add new player
             ...(room.public.players ? room.public.players : []),
             {
-              name: newPlayerName.trim()
+              name: newPlayerName.trim(),
             },
           ],
-          isFull: room.public.players
-            ? room.public.players.length === 3 - 1
-            : false,
+          status
         };
 
         return roomRef
           .child('public')
           .update(publicUpdate)
-          .then(() => publicUpdate.players.length - 1);
+          .then(() => {
+            return { playerIdx: publicUpdate.players.length - 1 };
+          });
       }
     } else {
       throw new functions.https.HttpsError(
@@ -323,7 +336,7 @@ export const dailyJob = functions.https.onRequest((req, res) => {
     .database()
     .ref('rooms')
     .orderByChild('timestamp')
-    .endAt(Date.now() - 2*86400000) // Delete 2-day-old rooms
+    .endAt(Date.now() - 2 * 86400000) // Delete 2-day-old rooms
     .ref.remove()
     .then(() => {
       res.status(200).send('OK');

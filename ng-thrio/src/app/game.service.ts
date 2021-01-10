@@ -19,9 +19,10 @@ export class GameService implements OnDestroy {
   rendererCanvas: ElementRef<HTMLCanvasElement>;
   canMove = true;
   public playerIdx: number;
-  public spectating: boolean;
-  pushRequest: boolean;
-  isNextPlayer: boolean;
+  public spectating = false;
+  pushRequest = false;
+  isNextPlayer = false;
+  waiting: any[];
 
   constructor(
     private router: Router,
@@ -44,13 +45,13 @@ export class GameService implements OnDestroy {
               this.leaveRoom();
             } else {
               this.playerIdx = joinData.playerIdx;
-              this.isNextPlayer = this.playerIdx === joinData.playerIdx;
               console.log();
-              console.log('joinData (my playerIdx)', joinData);
+              console.log('joinData (my playerIdx)', this.playerIdx);
               this.subToRoom(roomCode);
             }
           },
           (err) => {
+            console.error('joinRoom:', err);
             this.subToRoom(roomCode, true);
           }
         );
@@ -59,12 +60,13 @@ export class GameService implements OnDestroy {
 
   subToRoom(roomCode: string, spectating = false): void {
     if (this._room) this._room.unsubscribe();
-    this._room = this.dbs.getRoom(roomCode).subscribe((room) => {
+    this._room = this.dbs.getRoom(roomCode).subscribe((room: RoomPublic) => {
       if (!room) setTimeout(() => this.leaveRoom(), 2000); // room doesn't exist
 
       this.spectating = spectating;
+      this.isNextPlayer = room?.nextPlayerIdx === this.playerIdx;
       this.room = room;
-      this.room.waiting = new Array(3 - this.room.players?.length);
+      this.waiting = new Array(3 - this.room.players?.length);
       this.room$.next(this.room);
 
       console.log('room', this.room);
@@ -80,7 +82,7 @@ export class GameService implements OnDestroy {
   makeMove(pos: { x: number; z: number }): void {
     if (
       !this.canMove ||
-      this.room?.nextPlayerIdx !== this.playerIdx ||
+      !this.isNextPlayer ||
       this.spectating
     )
       return;

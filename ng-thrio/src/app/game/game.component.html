@@ -23,12 +23,12 @@
 </div>
 
 <div class="header" *ngIf="gs.room">
-  <p class="room-code" [class.lg]="!gs.room?.isFull">
+  <p class="room-code" [class.lg]="gs.room?.status === 'waiting'">
     <span *ngIf="gs.spectating">SPECTATING</span> {{ gs.room?.roomCode }}
     <i
       class="fas fa-share clickable"
       (click)="shareRoom()"
-      *ngIf="canShare && !gs.room.isFull"
+      *ngIf="canShare && gs.room?.status === 'waiting'"
     ></i>
   </p>
   <div class="players">
@@ -45,7 +45,7 @@
       <!-- <i class="fas fa-crown" *ngIf="player?.host"></i> -->
     </div>
 
-    <p *ngFor="let i of gs.room?.waiting" class="waiting">waiting for player</p>
+    <p *ngFor="let i of gs.waiting" class="waiting">waiting for player</p>
   </div>
 </div>
 
