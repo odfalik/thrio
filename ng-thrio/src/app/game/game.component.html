@@ -24,7 +24,7 @@
 
 <div class="header" *ngIf="gs.room">
   <p class="room-code" [class.lg]="gs.room?.status === 'waiting'">
-    <span *ngIf="gs.spectating">SPECTATING</span> {{ gs.room?.roomCode }}
+    <span *ngIf="gs.playerIdx < 0">SPECTATING</span> {{ gs.room?.roomCode }}
     <i
       class="fas fa-share clickable"
       (click)="shareRoom()"

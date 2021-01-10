@@ -76,6 +76,8 @@ async function resetGame(
 
 export const joinRoom = functions.https.onCall(
   async (params: { roomCode?: string }, context) => {
+    if (!params) params = {};
+    
     if (!context.auth)
       throw new functions.https.HttpsError(
         'unauthenticated',
@@ -83,7 +85,7 @@ export const joinRoom = functions.https.onCall(
       );
 
     if (!params?.roomCode) {
-      const availableRooms: Room[] = (
+      const rooms: object = (
         await admin
           .database()
           .ref('rooms')
@@ -91,6 +93,9 @@ export const joinRoom = functions.https.onCall(
           .equalTo(true)
           .get()
       ).val();
+
+      const availableRooms: Room[] = Object.values(rooms);
+
       const availableRoom = availableRooms?.find(
         (room) => room.public.status === 'waiting'
       );
@@ -120,16 +125,17 @@ export const joinRoom = functions.https.onCall(
       );
       const inRoom = playerIdx !== undefined && playerIdx !== -1;
 
-      if (!inRoom && room.public.players?.length === 3) {
-        throw new functions.https.HttpsError(
-          'invalid-argument',
-          'Room is full'
-        );
-      }
+      
 
       if (inRoom) {
         return { playerIdx };
       } else {
+
+        /* Spectator */
+        if (room.public.status !== 'waiting') {
+          return { roomCode: room.public.roomCode, playerIdx: -1 };
+        }
+
         await roomRef
           .child('secret/players')
           .update([
@@ -144,7 +150,8 @@ export const joinRoom = functions.https.onCall(
           newPlayerName += '2';
         }
 
-        const status = room.public?.players?.length === 3 ? 'playing' : 'waiting';
+        const status =
+          room.public?.players?.length === 3 ? 'playing' : 'waiting';
 
         const publicUpdate = {
           players: [
@@ -154,7 +161,7 @@ export const joinRoom = functions.https.onCall(
               name: newPlayerName.trim(),
             },
           ],
-          status
+          status,
         };
 
         return roomRef
