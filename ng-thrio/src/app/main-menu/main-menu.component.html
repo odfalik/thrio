@@ -25,7 +25,7 @@
     <div>
       <button (click)="mode = 'newRoom'">New game</button>
     </div>
-    <button (click)="mode = 'publicGame'; getRooms()" [disabled]="searching">
+    <button (click)="mode = 'findGames'; getRooms()" [disabled]="searching">
       <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
       Find games
     </button>
@@ -63,20 +63,30 @@
     <button (click)="newRoom()">Create room</button>
   </div>
 
-  <div *ngSwitchCase="'publicGame'" [@slideB] class="menu-b">
-    <h3>Public Games <i class="clickable fas fa-sync-alt" (click)="getRooms()"></i></h3>
-    <div class="room-list">
-      <div
-        class="found-room clickable"
+  <div *ngSwitchCase="'findGames'" [@slideB] class="menu-b find-games">
+    <h3>
+      Public Games
+      <i
+        class="clickable fas fa-sync-alt"
+        [class.fa-spin]="gettingRooms"
+        (click)="getRooms()"
+        *ngIf="gettingRooms || canGetRooms"
+        [@slideB]
+      ></i>
+    </h3>
+
+    <table>
+      <tr
         *ngFor="let room of rooms"
+        class="clickable"
         (click)="joinRoom(room.roomCode)"
         [@slideV]
       >
-        <span>{{ room.roomCode }}</span>
-        <span>{{ room.players.length }} / {{ room.config.players }}</span>
-        <span>{{ room.timestamp | timeAgo }}</span>
-      </div>
-    </div>
+        <td>{{ room.roomCode }}</td>
+        <td>{{ room.players.length }} / {{ room.config.players }}</td>
+        <td>{{ room.timestamp | timeAgo }}</td>
+      </tr>
+    </table>
   </div>
 
   <div *ngSwitchCase="'settings'" [@slideB] class="menu-b">

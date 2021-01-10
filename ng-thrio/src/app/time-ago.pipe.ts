@@ -14,8 +14,8 @@ export class TimeAgoPipe implements PipeTransform {
         week: 604800,
         day: 86400,
         hour: 3600,
-        minute: 60,
-        second: 1,
+        min: 60,
+        sec: 1,
       };
       let counter: number;
       for (const i in intervals) {

@@ -53,15 +53,39 @@ main {
     display: grid;
     grid-gap: 1em;
 
-    .room-list {
-      display: grid;
-      // grid-template-columns: repeat(3, 1fr);
-      grid-gap: 2em;
+    &.find-games {
+      i.fa-sync-alt {
+        font-size: 0.6em;
+      }
+      table {
+        width: 100%;
+        border-spacing: 0 1em;
+        border-collapse: separate;
+        padding: 1em 1.5em;
+        border: 1px solid rgba(253, 255, 252, 0.5);
+        border-radius: 0.25em;
+        font-size: 1.2em;
 
-      span {
-        margin: 0 2em;
+        tr {
+
+          &:hover {
+            color: #2ec2b3;
+          }
+
+          :nth-child(2) {
+            text-align: right;
+          }
+
+          :nth-child(3) {
+            text-align: right;
+            opacity: .5;
+            font-weight: 100;
+          }
+        }
+
       }
     }
+
   }
 
   input {

@@ -23,6 +23,8 @@ export class MainMenuComponent implements OnInit {
   };
   mode = 'menu';
   rooms: RoomPublic[];
+  gettingRooms = false;
+  canGetRooms = true;
 
   constructor(
     public authService: AuthService,
@@ -45,13 +47,21 @@ export class MainMenuComponent implements OnInit {
       });
   }
 
-  getRooms() {
+  getRooms(): void {
+    if (!this.canGetRooms) return;
+    this.gettingRooms = true;
+    this.canGetRooms = false;
+    setTimeout(() => {
+      this.canGetRooms = true;
+    }, 25000);
+
     this.fns.getRooms$({}).subscribe(
       (rooms: RoomPublic[]) => {
         console.log('getRooms:', rooms);
         this.rooms = rooms;
+        this.gettingRooms = false;
       }
-    )
+    );
   }
 
   joinPublic(): void {
