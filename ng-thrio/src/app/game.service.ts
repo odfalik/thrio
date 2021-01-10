@@ -25,7 +25,7 @@ export class GameService implements OnDestroy {
 
   constructor(
     private router: Router,
-    private fns: FunctionsService,
+    public fns: FunctionsService,
     private dbs: DbService,
     public auth: AngularFireAuth,
     private afMessaging: AngularFireMessaging
@@ -97,6 +97,12 @@ export class GameService implements OnDestroy {
         const token = await this.afMessaging.getToken.pipe(first()).toPromise();
         if (!token) this.pushRequest = true;
       });
+  }
+
+  resetRoom(): void {
+    this.fns.resetRoom$({ roomCode: this.room?.roomCode }).subscribe(res => {
+      console.log('reset res', res);
+    });
   }
 
   ngOnDestroy(): void {

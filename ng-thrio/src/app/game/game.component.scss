@@ -128,9 +128,12 @@ canvas {
   text-transform: uppercase;
   text-align: center;
   position: absolute;
-  top: 50vh;
+  top: 70vh;
   left: 50vw;
-  font-size: 3em;
   transform: translateX(-50%);
   max-width: 90vw;
+
+  h3 {
+    font-size: 3em;
+  }
 }

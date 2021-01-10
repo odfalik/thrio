@@ -106,6 +106,7 @@ main {
           }
 
           th {
+            pointer-events: none;
             opacity: .4;
             text-decoration: underline rgba(253, 255, 252, 0.5);
           }

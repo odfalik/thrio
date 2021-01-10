@@ -18,8 +18,19 @@
   </div>
 </div> -->
 
-<div class="gameover" *ngIf="gs.room?.players[gs.room?.victor]">
-  <h3>{{ gs.room?.players[gs.room?.victor].name }} won</h3>
+<div class="gameover" [@slideV] *ngIf="gs.room?.players[gs.room?.victor]">
+  <h3>
+    {{
+      gs.room?.victor === gs.playerIdx
+        ? 'You'
+        : gs.room?.players[gs.room?.victor]?.name
+    }}
+    won
+  </h3>
+  <button (click)="gs.resetRoom()" *ngIf="gs.playerIdx === 0; else showWaitingForReset">Rematch</button>
+  <ng-template #showWaitingForReset>
+    <p>Waiting on {{ gs.room?.players[0]?.name }} to rematch</p>
+  </ng-template>
 </div>
 
 <div class="header" *ngIf="gs.room">

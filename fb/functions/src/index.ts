@@ -33,10 +33,43 @@ export const newRoom = functions.https.onCall(
   }
 );
 
+export const resetRoom = functions.https.onCall(
+  async (params: { roomCode: string }, context): Promise<void> => {
+
+    if (!context?.auth?.uid)
+      throw new functions.https.HttpsError(
+        'unauthenticated',
+        'Must be authenticated to reset room'
+      );
+
+    if (!params?.roomCode)
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'Room code is required'
+      );
+
+    const roomRef = admin.database().ref('rooms/' + params.roomCode);
+
+    if ((await roomRef.child('public/status').get()).val() !== 'over')
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        "Can only reset a status:'over' room"
+      );
+
+    if ((await roomRef.child('secret/players/0/uid').get()).val() !== context.auth.uid)
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'Only host may reset room'
+      );
+
+    return resetGame(params.roomCode);
+  }
+);
+
 async function resetGame(
   roomCode: string,
-  publicOverwrites: any,
-  secretOverwrites: any
+  publicOverwrites?: any,
+  secretOverwrites?: any
 ): Promise<any> {
   const roomRef = admin.database().ref('rooms/' + roomCode);
   let room: Room = (await roomRef.get()).val();
@@ -61,14 +94,19 @@ async function resetGame(
 
   room = {
     public: {
+      config: room?.public?.config,
+      players: room?.public?.players || [],
       timestamp: Date.now(),
       nextPlayerIdx: room?.public?.victor || 0,
+      roomCode: room?.public?.roomCode,
       grid,
       victor: null,
-      status: 'reset',
+      lastMove: 'reset',
+      status: 'playing',
       ...publicOverwrites,
     },
     secret: {
+      players: room?.secret?.players || [],
       ...secretOverwrites,
     },
   };
@@ -236,6 +274,7 @@ export const makeMove = functions.https.onCall(
           ? 0
           : nextPlayerIdx + 1;
         roomUpdate['public/victor'] = victory ? playerIdx : null;
+        if (victory) roomUpdate['public/status'] = 'over';
 
         await roomRef.update(roomUpdate);
 

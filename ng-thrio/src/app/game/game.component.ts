@@ -1,3 +1,4 @@
+import { slideVAnim } from './../animations';
 import { GameService } from './../game.service';
 import {
   Component,
@@ -16,6 +17,7 @@ import { AuthService } from '../auth.service';
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss'],
+  animations: [slideVAnim],
 })
 export class GameComponent implements OnInit, OnDestroy {
   @ViewChild('rendererCanvas', { static: true })
@@ -50,7 +52,7 @@ export class GameComponent implements OnInit, OnDestroy {
     navigator.share({
       url: `https://thrio.app/play/${this.gs.room.roomCode}`,
       title: 'Play Thrio with me!',
-      text: 'You\'ve been invited to a Thrio game'
+      text: 'You\'ve been invited to a Thrio game',
     });
   }
 

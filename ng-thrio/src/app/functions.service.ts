@@ -12,11 +12,13 @@ export class FunctionsService {
 
   joinRoom$: (params?: { roomCode: string }) => Observable<{roomCode: string, playerIdx: number}> = this.fns.httpsCallable('joinRoom');
 
-  newRoom$: (data: RoomConfig) => Observable<any> = this.fns.httpsCallable('newRoom');
+  newRoom$: (params: RoomConfig) => Observable<any> = this.fns.httpsCallable('newRoom');
+
+  resetRoom$: (params: { roomCode: string }) => Observable<void> = this.fns.httpsCallable('resetRoom');
 
   makeMove$ = this.fns.httpsCallable('makeMove');
 
-  saveToken$: (data: {
+  saveToken$: (params: {
     token: string | boolean,
   }) => Observable<void> = this.fns.httpsCallable('saveToken');
 
