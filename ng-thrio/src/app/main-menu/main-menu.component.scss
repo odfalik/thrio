@@ -52,6 +52,16 @@ main {
     padding: 0.25em 4em;
     display: grid;
     grid-gap: 1em;
+
+    .room-list {
+      display: grid;
+      // grid-template-columns: repeat(3, 1fr);
+      grid-gap: 2em;
+
+      span {
+        margin: 0 2em;
+      }
+    }
   }
 
   input {

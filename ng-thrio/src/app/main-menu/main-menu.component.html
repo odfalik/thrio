@@ -1,7 +1,12 @@
 <header>
   <div class="top-left">
     <h1 routerLink="/" (click)="mode = 'menu'">THRIO<span>.app</span></h1>
-    <a class="back-btn" (click)="mode = 'menu'" *ngIf="mode !== 'menu'" [@slideB]>
+    <a
+      class="back-btn"
+      (click)="mode = 'menu'"
+      *ngIf="mode !== 'menu'"
+      [@slideB]
+    >
       <i class="fas fa-caret-left"></i>main menu</a
     >
   </div>
@@ -16,7 +21,6 @@
 </header>
 
 <main [ngSwitch]="mode">
-
   <div *ngSwitchCase="'menu'" [@slideA] class="main-menu">
     <div>
       <button (click)="mode = 'newRoom'">New game</button>
@@ -60,13 +64,18 @@
   </div>
 
   <div *ngSwitchCase="'publicGame'" [@slideB] class="menu-b">
-    <h3>Public Games</h3>
-    <div class="roomList">
-
-      <div class="found-room clickable" *ngFor="let room of rooms" (click)="joinRoom(room.roomCode)"  [@slideV]>
-        {{ room.roomCode }} {{ room.timestamp | timeAgo }}
+    <h3>Public Games <i class="clickable fas fa-sync-alt" (click)="getRooms()"></i></h3>
+    <div class="room-list">
+      <div
+        class="found-room clickable"
+        *ngFor="let room of rooms"
+        (click)="joinRoom(room.roomCode)"
+        [@slideV]
+      >
+        <span>{{ room.roomCode }}</span>
+        <span>{{ room.players.length }} / {{ room.config.players }}</span>
+        <span>{{ room.timestamp | timeAgo }}</span>
       </div>
-
     </div>
   </div>
 

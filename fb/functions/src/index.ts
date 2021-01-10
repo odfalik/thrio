@@ -22,6 +22,7 @@ export const newRoom = functions.https.onCall(
         config: {
           ...config,
         },
+        status: 'waiting',
       },
       {
         players: [{ uid: context.auth.uid }],
@@ -64,6 +65,7 @@ async function resetGame(
       nextPlayerIdx: room?.public?.victor || 0,
       grid,
       victor: null,
+      status: 'reset',
       ...publicOverwrites,
     },
     secret: {
@@ -125,12 +127,14 @@ export const joinRoom = functions.https.onCall(
       );
       const inRoom = playerIdx !== undefined && playerIdx !== -1;
 
+      const roomCode = room.public.roomCode;
+
       if (inRoom) {
-        return { playerIdx };
+        return { roomCode, playerIdx };
       } else {
         /* Spectator */
         if (room.public.status !== 'waiting') {
-          return { roomCode: room.public.roomCode, playerIdx: -1 };
+          return { roomCode, playerIdx: -1 };
         }
 
         await roomRef
@@ -165,7 +169,7 @@ export const joinRoom = functions.https.onCall(
           .child('public')
           .update(publicUpdate)
           .then(() => {
-            return { playerIdx: publicUpdate.players.length - 1, roomCode: room.public.roomCode };
+            return { playerIdx: publicUpdate.players.length - 1, roomCode };
           });
       }
     } else {
@@ -190,7 +194,7 @@ export const getRooms = functions.https.onCall(async (params: any, context) => {
   const availableRooms: Room[] = Object.values(rooms);
 
   const availableRoomPublics = availableRooms
-    .sort((a, b) => a.public.timestamp - b.public.timestamp)
+    .sort((a, b) => b.public.timestamp - a.public.timestamp)
     .slice(0, 5)
     .map((room: Room) => {
       return { ...room.public };

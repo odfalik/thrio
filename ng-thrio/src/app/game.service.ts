@@ -64,7 +64,7 @@ export class GameService implements OnDestroy {
       console.log('subToRoom', room);
 
 
-      if (!room) return setTimeout(() => this.leaveRoom(), 2000); // room doesn't exist
+      if (!room) this.leaveRoom(); // room doesn't exist
 
       this.isNextPlayer = room?.nextPlayerIdx === this.playerIdx;
       this.room = room;
