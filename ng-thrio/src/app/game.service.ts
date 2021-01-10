@@ -61,8 +61,6 @@ export class GameService implements OnDestroy {
   subToRoom(roomCode: string): void {
     if (this._room) this._room.unsubscribe();
     this._room = this.dbs.getRoom(roomCode).subscribe((room: RoomPublic) => {
-      console.log('subToRoom', room);
-
 
       if (!room) this.leaveRoom(); // room doesn't exist
 

@@ -84,11 +84,15 @@ main {
               color: #2ec2b3;
             }
 
-            >:nth-child(2) {
+            .room-code {
+              opacity: .4;
+            }
+
+            .players {
               text-align: right;
             }
 
-            >:nth-child(3) {
+            .timestamp{
               text-align: right;
               opacity: .5;
               font-weight: 100;

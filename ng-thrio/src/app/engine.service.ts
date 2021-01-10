@@ -102,12 +102,12 @@ export class EngineService implements OnDestroy {
     plane.rotateX(Math.PI / 2);
 
     /* Origin dot */
-    // const dotGeometry = new THREE.Geometry();
-    // dotGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    const dotGeometry = new THREE.Geometry();
+    dotGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
     // dotGeometry.vertices.push(new THREE.Vector3(1.5, 1.5, 1.5));
-    // const dotMaterial = new THREE.PointsMaterial({ size: .05, color: 0xffffff });
-    // const dot = new THREE.Points(dotGeometry, dotMaterial);
-    // this.scene.add(dot);
+    const dotMaterial = new THREE.PointsMaterial({ size: .05, color: 0xffffff });
+    const dot = new THREE.Points(dotGeometry, dotMaterial);
+    this.scene.add(dot);
   }
 
   onCanvasDown(e): void {
@@ -249,7 +249,6 @@ export class EngineService implements OnDestroy {
       this.scene.remove(sel);
     });
     this.selectors = [];
-    console.log('onRoom selectors', this.gs.isNextPlayer)
     if (this.gs.isNextPlayer) {
       const selectorMat = new THREE.MeshBasicMaterial({
         opacity: 0.4,

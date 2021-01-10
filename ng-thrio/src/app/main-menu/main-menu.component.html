@@ -61,19 +61,28 @@
 
     <div class="room-list">
       <table>
-        <tr
-          *ngFor="let room of rooms"
-          class="clickable"
-          (click)="joinRoom(room.roomCode)"
-          [@slideV]
-        >
-          <td>
-            <p>{{ room.roomCode }}</p>
-            <p>{{ room['hostName'] }}</p>
-          </td>
-          <td>{{ room.players.length }}/{{ room.config.players }}</td>
-          <td>{{ room.timestamp | timeAgo }}</td>
-        </tr>
+        <!-- <thead>
+          <tr>
+            <th>Host</th>
+            <th>Players</th>
+            <th></th>
+          </tr>
+        </thead> -->
+        <tbody>
+          <tr
+            *ngFor="let room of rooms"
+            class="clickable"
+            (click)="joinRoom(room.roomCode)"
+            [@slideV]
+          >
+            <td>
+              <p class="host">{{ room['hostName'] }}</p>
+              <p class="room-code">{{ room.roomCode }}</p>
+            </td>
+            <td class="players">{{ room.players.length }} / {{ room.config.players }}</td>
+            <td class="timestamp">{{ room.timestamp | timeAgo }}</td>
+          </tr>
+        </tbody>
       </table>
       <p *ngIf="!gettingRooms && !rooms?.length">No games found</p>
     </div>
