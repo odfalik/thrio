@@ -71,7 +71,7 @@ main {
         font-size: 0.6em;
       }
       .room-list {
-        padding: 1em 1.5em;
+        padding: 0 1.5em;
         border: 1px solid rgba(253, 255, 252, 0.5);
         border-radius: 0.25em;
         height: 15em;
@@ -82,7 +82,9 @@ main {
           border-spacing: 0 1em;
           border-collapse: separate;
 
-          tr {
+          tr, th {
+
+            text-align: left;
 
             &:hover {
               color: #2ec2b3;
@@ -93,7 +95,7 @@ main {
             }
 
             .players {
-              text-align: right;
+              text-align: center;
             }
 
             .timestamp{
@@ -101,6 +103,11 @@ main {
               opacity: .5;
               font-weight: 100;
             }
+          }
+
+          th {
+            opacity: .4;
+            text-decoration: underline rgba(253, 255, 252, 0.5);
           }
         }
       }

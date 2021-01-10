@@ -57,14 +57,15 @@
 
     <div class="room-list">
       <table>
-        <!-- <thead>
+        <thead>
           <tr>
             <th>Host</th>
-            <th>Players</th>
-            <th></th>
+            <th class="players">Players</th>
+            <th class="timestamp"></th>
           </tr>
-        </thead> -->
+        </thead>
         <tbody>
+
           <tr
             *ngFor="let room of rooms"
             class="clickable"
