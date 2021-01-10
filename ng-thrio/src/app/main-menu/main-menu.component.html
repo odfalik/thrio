@@ -71,6 +71,8 @@
         <td>{{ room.players.length }} / {{ room.config.players }}</td>
         <td>{{ room.timestamp | timeAgo }}</td>
       </tr>
+
+      <tr *ngIf="!rooms?.length"><td></td><td>No games found</td><td></td></tr>
     </table>
 
 
