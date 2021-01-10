@@ -128,14 +128,31 @@ $p1: #2ec2b3;
 $p2: rgb(231, 29, 54);
 $p3: rgb(255, 159, 28);
 
+@keyframes Gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 html,
 body {
   font-family: 'Karla', Helvetica, sans-serif;
   background: $dark;
-  background: linear-gradient(110deg, #1b303f, $dark);
   color: $white;
   height: 100%;
   overflow: hidden;
+}
+
+body {
+  background: linear-gradient(2900deg, $dark, #351b3f);
+  animation: Gradient 60s ease infinite;
+  background-size: 400% 400%;
 }
 
 input,
@@ -254,39 +271,6 @@ i.clickable {
   }
 }
 
-.slider {
-  -webkit-appearance: none; /* Override default CSS styles */
-  appearance: none;
-  width: 100%; /* Full-width */
-  height: 25px; /* Specified height */
-  background: #d3d3d3; /* Grey background */
-  outline: none; /* Remove outline */
-  opacity: 0.6; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
-  transition: opacity 0.2s;
-  /* Mouse-over effects */
-  &:hover {
-    opacity: 1; /* Fully shown on mouse-over */
-  }
-
-  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none; /* Override default look */
-    appearance: none;
-    width: 25px; /* Set a specific slider handle width */
-    height: 25px; /* Slider handle height */
-    background: #4caf50; /* Green background */
-    cursor: pointer; /* Cursor on hover */
-  }
-
-  &::-moz-range-thumb {
-    width: 25px; /* Set a specific slider handle width */
-    height: 25px; /* Slider handle height */
-    background: #4caf50; /* Green background */
-    cursor: pointer; /* Cursor on hover */
-  }
-}
-
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -299,4 +283,37 @@ i.clickable {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(253, 255, 252, 0.5);
+}
+
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.6;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #4caf50;
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #4caf50;
+    cursor: pointer;
+  }
 }

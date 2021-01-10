@@ -38,8 +38,14 @@ canvas {
       i {
         display: inline-block;
         font-size: 0.7em;
+        margin-top: -0.25em;
+        transform: translateY(-0.1em);
+
         &.next-marker {
           display: none;
+        }
+        &.side-i {
+          opacity: .4;
         }
       }
       p {

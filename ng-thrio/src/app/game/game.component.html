@@ -1,6 +1,6 @@
 <canvas #rendererCanvas id="renderCanvas"></canvas>
 
-<div class="vignette" [class.loading]="!gs.room">
+<div class="vignette" [class.loading]="!gs.room || gs.room?.status === 'over'">
   <h4 class="waiting">Loading</h4>
 </div>
 
@@ -53,7 +53,7 @@
       <p>
         {{ player.name }}
       </p>
-      <!-- <i class="fas fa-crown" *ngIf="player?.host"></i> -->
+      <i class="fas fa-star side-i" *ngIf="player?.host"></i>
     </div>
 
     <p *ngFor="let i of gs.waiting" class="waiting">waiting for player</p>

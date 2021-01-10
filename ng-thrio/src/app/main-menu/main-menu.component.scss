@@ -69,6 +69,7 @@ main {
     &.find-games {
       i.fa-sync-alt {
         font-size: 0.6em;
+        opacity: .5;
       }
       .room-list {
         padding: 0 1.5em;
@@ -91,23 +92,26 @@ main {
             }
 
             .room-code {
-              opacity: .4;
+              opacity: .5;
+              font-weight: lighter;
             }
 
             .players {
               text-align: center;
+              font-weight: lighter;
             }
 
             .timestamp{
               text-align: right;
               opacity: .5;
-              font-weight: 100;
+              font-weight: lighter;
             }
           }
 
           th {
+            font-weight: lighter;
             pointer-events: none;
-            opacity: .4;
+            opacity: .5;
             text-decoration: underline rgba(253, 255, 252, 0.5);
           }
         }
