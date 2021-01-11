@@ -20,6 +20,7 @@ export class EngineService implements OnDestroy {
   private frameId: number = null;
   private controls: any;
   private mouse = new THREE.Vector2();
+  private clock = new THREE.Clock();
 
   public constructor(private ngZone: NgZone, private gs: GameService) {
     this.gs.room$.subscribe((room) => {
@@ -208,26 +209,27 @@ export class EngineService implements OnDestroy {
     });
   }
 
-  public render(delta?: number): void {
-    this.frameId = requestAnimationFrame((d) => { this.render(d); });
+  public render(deltaTime?: number): void {
+    this.frameId = requestAnimationFrame((d) => {
+      this.render(this.clock.getDelta());
+    });
 
     this.controls.update();
 
-    if (delta) {
+    if (deltaTime) {
       let i = this.balls.length;
       while (i--) {
         const ball = this.balls[i];
-        if (ball.userData.dropOut || ball.userData.dropIn) {
-          ball.position.setY(ball.position.y - 0.00015 * delta);
+
+        if (ball.userData.dropIn || ball.userData.dropOut) {
+          ball.position.setY(ball.position.y - 15 * deltaTime);
 
           if (ball.position.y < ball.userData.y + .5) {  // Reached end of its fall
 
             if (ball.userData.dropIn) {
               ball.position.set(ball.userData.x + .5, ball.userData.y + .5, ball.userData.z + .5);
               ball.userData = { x: ball.userData.x, y: ball.userData.y, z: ball.userData.z };
-              console.log('stopped dropIn');
             } else if (ball.userData.dropOut) {
-              console.log('need to remove ball!');
               this.scene.remove(ball);
               this.balls.splice(i, 1);
             }
@@ -288,7 +290,7 @@ export class EngineService implements OnDestroy {
               y === room.lastMove?.y &&
               z === room.lastMove?.z
             ) {
-              sphere.position.setY(y + 5);
+              sphere.position.setY(y + 10);
               sphere.userData.dropIn = true;
             }
           }
