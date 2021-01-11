@@ -19,7 +19,7 @@ canvas {
     font-size: 1em;
     transition: 1s all;
     padding-bottom: 0.2em;
-    border-bottom: 1px solid rgba(253, 255, 252, 0.5);
+    border-bottom: 1px solid rgba(253, 255, 252, 0.2);
     margin-bottom: 0.25em;
     text-align: center;
     &.lg {
@@ -45,7 +45,7 @@ canvas {
           display: none;
         }
         &.side-i {
-          opacity: .4;
+
         }
       }
       p {

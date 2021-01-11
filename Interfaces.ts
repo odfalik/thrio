@@ -12,7 +12,7 @@ export interface Room {
 
 export interface RoomPublic {
     grid: number[][][],
-    lastMove?: { x: number, y: number, z: number }
+    lastMove?: { x: number, y: number, z: number } & string,
     nextPlayerIdx: number,
     roomCode?: string,
     players?: Player[],
