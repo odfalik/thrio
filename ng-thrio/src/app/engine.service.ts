@@ -81,10 +81,10 @@ export class EngineService implements OnDestroy {
     light.shadow.mapSize.width = 256; // default
     light.shadow.mapSize.height = 256; // default
 
-    light = new THREE.HemisphereLight(0xffffff, 0xe0c492, 0.5);
+    light = new THREE.HemisphereLight(0xffffff, 0xe0c492, 0.4);
     light.position.set(1, -3, -2);
     this.scene.add(light);
-    light = new THREE.PointLight(0xffffff, 0.8);
+    light = new THREE.PointLight(0xffffff, 0.4);
     light.position.set(5, 5, 5);
     this.scene.add(light);
 
