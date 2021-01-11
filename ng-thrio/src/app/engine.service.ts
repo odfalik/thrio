@@ -1,6 +1,8 @@
 import { ElementRef, Injectable, NgZone, OnDestroy } from '@angular/core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 import { RoomPublic } from '../../../Interfaces';
 import { GameService } from './game.service';
 
@@ -11,6 +13,7 @@ export class EngineService implements OnDestroy {
   public canvas: HTMLCanvasElement;
   public renderer: THREE.WebGLRenderer;
   public camera: THREE.PerspectiveCamera;
+  private composer: EffectComposer;
   public scene: THREE.Scene;
 
   public updateFns: (() => void)[];
@@ -50,6 +53,9 @@ export class EngineService implements OnDestroy {
 
     /* Scene */
     this.scene = new THREE.Scene();
+    // this.scene.fog = new THREE.Fog(0x00aaff, 8, 14);
+    // this.scene.background = new THREE.Color( 0xaaaaaa );
+
 
     /* Camera */
     this.camera = new THREE.PerspectiveCamera(
@@ -59,6 +65,13 @@ export class EngineService implements OnDestroy {
     this.camera.position.y = 4;
     this.camera.position.z = 10;
     this.scene.add(this.camera);
+
+    // this.composer = new EffectComposer( this.renderer );
+    // const ssaoPass = new SSAOPass(this.scene, this.camera, window.innerWidth, window.innerHeight);
+    // ssaoPass.kernelRadius = 1;
+    // ssaoPass.minDistance = 0.00088;
+    // ssaoPass.maxDistance = 0.016;
+    // this.composer.addPass(ssaoPass);
 
     /* Orbit controls */
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -75,26 +88,31 @@ export class EngineService implements OnDestroy {
     /* Lighting */
     let light: THREE.Light = new THREE.DirectionalLight(0xffffff, 1);
     light.castShadow = true;
-    light.position.set(-1, 7, 1);
+    light.position.set(-1, 15, 1);
+    light.shadow.mapSize.width = 512;
+    light.shadow.mapSize.height = 512;
     this.scene.add(light);
-
-    light.shadow.mapSize.width = 256; // default
-    light.shadow.mapSize.height = 256; // default
 
     light = new THREE.HemisphereLight(0xffffff, 0xe0c492, 0.4);
     light.position.set(1, -3, -2);
     this.scene.add(light);
-    light = new THREE.PointLight(0xffffff, 0.4);
+    light = new THREE.PointLight(0xffffff, 0.2);
     light.position.set(5, 5, 5);
     this.scene.add(light);
 
     /* Grid */
-    const planeMat = new THREE.MeshLambertMaterial({
+    const planeMat = new THREE.MeshPhongMaterial({
+      shininess: 100,
       opacity: 0.05,
-      transparent: true,
       color: 0xffffff,
+      specular: 0xffffff,
+      transparent: true,
       side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
+
+
     const planeGeom = new THREE.PlaneGeometry(3, 3, 1, 1);
     for (let i = 0; i < 4; i++) {
       const plane = new THREE.Mesh(planeGeom, planeMat);
@@ -224,6 +242,7 @@ export class EngineService implements OnDestroy {
       this.render(this.clock.getDelta());
     });
 
+    //  ender();
     this.controls.update();
 
     if (deltaTime) {
@@ -264,7 +283,8 @@ export class EngineService implements OnDestroy {
     this.renderer.render(this.scene, this.camera);
   }
 
-  public onRoom(room: RoomPublic): void {
+  public async onRoom(room: RoomPublic): void {
+
 
     /* Balls */
     this.balls.forEach((ball) => {
@@ -282,9 +302,20 @@ export class EngineService implements OnDestroy {
             else if (val === 1) color = 0xe71d36;
             else if (val === 2) color = 0xff9f1c;
 
-            const material = new THREE.MeshPhongMaterial({
+
+            const material = new THREE.MeshStandardMaterial({
               color,
-              shininess: 50,
+              envMap: (await new THREE.TextureLoader().loadAsync('assets/equirectangular.png').then((texture: THREE.Texture) => {
+                const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+                pmremGenerator.compileEquirectangularShader();
+                texture.encoding = THREE.sRGBEncoding;
+                const envMap = pmremGenerator.fromEquirectangular(texture);
+                texture.dispose();
+                return envMap;
+              })).texture,
+              envMapIntensity: 1,
+              metalness: 0.1,
+              roughness: 0.1,
             });
 
             const sphere = new THREE.Mesh(ballGeom, material);
