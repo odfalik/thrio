@@ -34,6 +34,10 @@ export class MainMenuComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  joinRoomWithTimer(): void {
+    setTimeout(() => this.joinRoom(), 1000);
+  }
+
   joinRoom(roomCode: string = this.roomCode): void {
     roomCode = roomCode.toUpperCase();
     this.router.navigate(['/play', roomCode]);

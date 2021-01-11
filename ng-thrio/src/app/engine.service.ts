@@ -181,8 +181,9 @@ export class EngineService implements OnDestroy {
         this.onCanvasDown.bind(this),
         false
       );
+
       this.canvas.addEventListener(
-        'mousedown',
+        'mouseup',
         this.onCanvasUp.bind(this),
         false
       );
@@ -191,6 +192,7 @@ export class EngineService implements OnDestroy {
         this.onCanvasUp.bind(this),
         false
       );
+
       this.canvas.addEventListener(
         'mousemove',
         this.onCanvasMove.bind(this),
@@ -292,9 +294,9 @@ export class EngineService implements OnDestroy {
               z === room.lastMove?.z &&
               (
                 !this.lastMove || (
-                  x === this.lastMove.x &&
-                  y === this.lastMove.y &&
-                  z === this.lastMove.z
+                  x !== this.lastMove.x ||
+                  y !== this.lastMove.y ||
+                  z !== this.lastMove.z
                 )
               )
             ) {
