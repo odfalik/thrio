@@ -10,6 +10,8 @@ import { GameService } from './game.service';
   providedIn: 'root',
 })
 export class EngineService implements OnDestroy {
+  private graphics = 1;
+
   public canvas: HTMLCanvasElement;
   public renderer: THREE.WebGLRenderer;
   public camera: THREE.PerspectiveCamera;
@@ -45,7 +47,7 @@ export class EngineService implements OnDestroy {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       alpha: true, // transparent background
-      antialias: true, // smooth edges
+      antialias: false, // smooth edges
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;
@@ -60,7 +62,9 @@ export class EngineService implements OnDestroy {
     /* Camera */
     this.camera = new THREE.PerspectiveCamera(
       50,
-      window.innerWidth / window.innerHeight
+      window.innerWidth / window.innerHeight,
+      1,
+      20
     );
     this.camera.position.y = 4;
     this.camera.position.z = 10;
@@ -85,12 +89,25 @@ export class EngineService implements OnDestroy {
     this.controls.dampingFactor = 0.1;
     this.controls.update();
 
+    // try {
+    //   const gl = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+    //   if (gl) {
+    //     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    //     console.log('2', debugInfo);
+    //     console.log('2', gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+    //     console.log('2', gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+    //   }
+    // } catch (e) {
+    //   console.error(e);
+    // }
+
     /* Lighting */
     let light: THREE.Light = new THREE.DirectionalLight(0xffffff, 1);
     light.castShadow = true;
     light.position.set(-1, 15, 1);
-    light.shadow.mapSize.width = 512;
-    light.shadow.mapSize.height = 512;
+    const shadowMapSize = this.graphics > 1 ? 512 : 215;
+    light.shadow.mapSize.width = shadowMapSize;
+    light.shadow.mapSize.height = shadowMapSize;
     this.scene.add(light);
 
     light = new THREE.HemisphereLight(0xffffff, 0xe0c492, 0.4);
@@ -106,7 +123,6 @@ export class EngineService implements OnDestroy {
       opacity: 0.05,
       color: 0xffffff,
       specular: 0xffffff,
-      transparent: true,
       side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
@@ -283,7 +299,7 @@ export class EngineService implements OnDestroy {
     this.renderer.render(this.scene, this.camera);
   }
 
-  public async onRoom(room: RoomPublic): void {
+  public async onRoom(room: RoomPublic): Promise<void> {
 
 
     /* Balls */
@@ -303,7 +319,7 @@ export class EngineService implements OnDestroy {
             else if (val === 2) color = 0xff9f1c;
 
 
-            const material = new THREE.MeshStandardMaterial({
+            const material = this.graphics > 1 ? new THREE.MeshStandardMaterial({
               color,
               envMap: (await new THREE.TextureLoader().loadAsync('assets/equirectangular.png').then((texture: THREE.Texture) => {
                 const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
@@ -316,6 +332,10 @@ export class EngineService implements OnDestroy {
               envMapIntensity: 1,
               metalness: 0.1,
               roughness: 0.1,
+            })
+            : new THREE.MeshPhongMaterial({
+              color,
+              shininess: 50,
             });
 
             const sphere = new THREE.Mesh(ballGeom, material);
@@ -327,8 +347,8 @@ export class EngineService implements OnDestroy {
               Math.random() * 365,
               Math.random() * 365
             );
-            sphere.castShadow = true;
-            sphere.receiveShadow = true;
+            sphere.castShadow = this.graphics > 0;
+            sphere.receiveShadow = this.graphics > 0;
             this.balls.push(sphere);
 
             if (
@@ -354,10 +374,11 @@ export class EngineService implements OnDestroy {
     });
     this.selectors = [];
     if (this.gs.isNextPlayer) {
-      const selectorMat = new THREE.MeshBasicMaterial({
+      const selectorMat = new THREE.MeshPhongMaterial({
         opacity: 0.4,
-        transparent: true,
         color: 0xffffff,
+        specular: 0xffffff,
+        blending: THREE.AdditiveBlending,
       });
       const selectorGeom = new THREE.ConeGeometry(0.3, 0.3, 4, 1);
       for (let x = 0; x < 3; x++) {
