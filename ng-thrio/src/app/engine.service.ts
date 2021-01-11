@@ -21,7 +21,7 @@ export class EngineService implements OnDestroy {
   private controls: any;
   private mouse = new THREE.Vector2();
   private clock = new THREE.Clock();
-  private lastMove: { x: number, y: number, z: number };
+  private lastMove: { x: number; y: number; z: number };
 
   public constructor(private ngZone: NgZone, private gs: GameService) {
     this.gs.room$.subscribe((room) => {
@@ -227,16 +227,24 @@ export class EngineService implements OnDestroy {
         if (ball.userData.dropIn || ball.userData.dropOut) {
           ball.position.setY(ball.position.y - 15 * deltaTime);
 
-          if (ball.position.y < ball.userData.y + .5) {  // Reached end of its fall
+          if (ball.position.y < ball.userData.y + 0.5) {
+            // Reached end of its fall
 
             if (ball.userData.dropIn) {
-              ball.position.set(ball.userData.x + .5, ball.userData.y + .5, ball.userData.z + .5);
-              ball.userData = { x: ball.userData.x, y: ball.userData.y, z: ball.userData.z };
+              ball.position.set(
+                ball.userData.x + 0.5,
+                ball.userData.y + 0.5,
+                ball.userData.z + 0.5
+              );
+              ball.userData = {
+                x: ball.userData.x,
+                y: ball.userData.y,
+                z: ball.userData.z,
+              };
             } else if (ball.userData.dropOut) {
               this.scene.remove(ball);
               this.balls.splice(i, 1);
             }
-
           }
         }
       }
@@ -292,13 +300,9 @@ export class EngineService implements OnDestroy {
               x === room.lastMove?.x &&
               y === room.lastMove?.y &&
               z === room.lastMove?.z &&
-              (
-                !this.lastMove || (
-                  x !== this.lastMove.x ||
-                  y !== this.lastMove.y ||
-                  z !== this.lastMove.z
-                )
-              )
+              (x !== this.lastMove?.x ||
+                y !== this.lastMove?.y ||
+                z !== this.lastMove?.z)
             ) {
               sphere.position.setY(y + 10);
               sphere.userData.dropIn = true;
