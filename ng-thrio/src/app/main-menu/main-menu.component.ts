@@ -25,6 +25,7 @@ export class MainMenuComponent implements OnInit {
   rooms: RoomPublic[];
   gettingRooms = false;
   canGetRooms = true;
+  creating: boolean;
 
   constructor(
     public authService: AuthService,
@@ -44,9 +45,11 @@ export class MainMenuComponent implements OnInit {
   }
 
   newRoom(): void {
+    this.creating = true;
     this.fns
       .newRoom$(this.config)
       .subscribe((roomCode: string) => {
+        this.creating = false;
         this.joinRoom(roomCode);
       });
   }

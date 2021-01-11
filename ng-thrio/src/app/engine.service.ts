@@ -45,6 +45,8 @@ export class EngineService implements OnDestroy {
       antialias: true, // smooth edges
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     /* Scene */
     this.scene = new THREE.Scene();
@@ -72,14 +74,19 @@ export class EngineService implements OnDestroy {
 
     /* Lighting */
     let light: THREE.Light = new THREE.DirectionalLight(0xffffff, 1);
+    light.castShadow = true;
     light.position.set(-1, 7, 1);
     this.scene.add(light);
-    light = new THREE.AmbientLight(0xffffff, 0.3);
+
+    light.shadow.mapSize.width = 256; // default
+    light.shadow.mapSize.height = 256; // default
+
+    light = new THREE.HemisphereLight(0xffffff, 0xe0c492, 0.5);
     light.position.set(1, -3, -2);
     this.scene.add(light);
-    // light = new THREE.PointLight(0xffffff, 0.8);
-    // light.position.set(5, 5, 5);
-    // this.scene.add(light);
+    light = new THREE.PointLight(0xffffff, 0.8);
+    light.position.set(5, 5, 5);
+    this.scene.add(light);
 
     /* Grid */
     const planeMat = new THREE.MeshLambertMaterial({
@@ -258,7 +265,6 @@ export class EngineService implements OnDestroy {
   }
 
   public onRoom(room: RoomPublic): void {
-    const reset = room.lastMove === 'reset';
 
     /* Balls */
     this.balls.forEach((ball) => {
@@ -283,20 +289,18 @@ export class EngineService implements OnDestroy {
 
             const sphere = new THREE.Mesh(ballGeom, material);
             this.scene.add(sphere);
-            sphere.userData = reset
-              ? { x: x - 10, y: y - 10, z: z - 10 }
-              : { x, y, z };
+            sphere.userData =  { x, y, z };
             sphere.position.set(x + 0.5, y + 0.5, z + 0.5);
             sphere.rotation.set(
               Math.random() * 365,
               Math.random() * 365,
               Math.random() * 365
             );
+            sphere.castShadow = true;
+            sphere.receiveShadow = true;
             this.balls.push(sphere);
 
-            if (reset) {
-              sphere.userData.dropOut = true;
-            } else if (
+            if (
               x === room.lastMove?.x &&
               y === room.lastMove?.y &&
               z === room.lastMove?.z &&

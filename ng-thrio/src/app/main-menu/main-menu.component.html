@@ -40,7 +40,8 @@
     <label>Size</label>
     <input type="range" min="2" max="5" value="3" class="slider"> -->
 
-    <button (click)="newRoom()">Create room</button>
+    <button (click)="newRoom()" [class.disabled]="creating"><i class="fas fa-circle-notch fa-spin" *ngIf="creating"></i>
+      Create room</button>
   </div>
 
   <div *ngSwitchCase="'findGames'" [@slideB] class="menu-b find-games">
@@ -86,7 +87,7 @@
       <p *ngIf="!gettingRooms && !rooms?.length">No games found</p>
     </div>
 
-    <form (submit)="joinRoom()" class="join-form">
+    <form (submit)="joinRoomWithTimer()" class="join-form">
       <div class="field">
         <input
           type="text"

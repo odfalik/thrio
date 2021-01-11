@@ -1,7 +1,7 @@
 <canvas #rendererCanvas id="renderCanvas"></canvas>
 
 <div class="vignette" [class.loading]="!gs.room || gs.room?.status === 'over'">
-  <h4 class="waiting">Loading</h4>
+  <h4 class="waiting" *ngIf="!gs.room">Loading</h4>
 </div>
 
 <!-- <div class="notif" *ngIf="!authService.dbUser?.token">
