@@ -21,6 +21,7 @@ export class EngineService implements OnDestroy {
   private controls: any;
   private mouse = new THREE.Vector2();
   private clock = new THREE.Clock();
+  private lastMove: { x: number, y: number, z: number };
 
   public constructor(private ngZone: NgZone, private gs: GameService) {
     this.gs.room$.subscribe((room) => {
@@ -288,10 +289,18 @@ export class EngineService implements OnDestroy {
             } else if (
               x === room.lastMove?.x &&
               y === room.lastMove?.y &&
-              z === room.lastMove?.z
+              z === room.lastMove?.z &&
+              (
+                !this.lastMove || (
+                  x === this.lastMove.x &&
+                  y === this.lastMove.y &&
+                  z === this.lastMove.z
+                )
+              )
             ) {
               sphere.position.setY(y + 10);
               sphere.userData.dropIn = true;
+              this.lastMove = { x, y, z };
             }
           }
         }

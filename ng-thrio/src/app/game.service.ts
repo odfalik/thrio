@@ -66,8 +66,7 @@ export class GameService implements OnDestroy {
 
       this.isNextPlayer = room?.nextPlayerIdx === this.playerIdx;
       this.room = room;
-      if (this.room?.status === 'waiting' && this.room?.players)
-        this.waiting = new Array(3 - this.room.players.length);
+
       this.room$.next(this.room);
 
       console.log('room', this.room);
