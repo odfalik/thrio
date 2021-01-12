@@ -1,7 +1,7 @@
 <canvas #rendererCanvas id="renderer-canvas"></canvas>
 
-<div class="vignette" [class.loading]="!gs.room || gs.room?.status === 'over'">
-  <h4 class="waiting" *ngIf="!gs.room">Loading</h4>
+<div class="vignette" [class.loading]="!rs.room || rs.room?.status === 'over'">
+  <h4 class="waiting" *ngIf="!rs.room">Loading</h4>
 </div>
 
 <!-- <div class="notif" *ngIf="!authService.dbUser?.token">
@@ -14,49 +14,49 @@
       class="fas fa-check clickable"
       (click)="authService.requestPermission()"
     ></i>
-    <i class="fas fa-times clickable" (click)="gs.pushRequest = false"></i>
+    <i class="fas fa-times clickable" (click)="rs.pushRequest = false"></i>
   </div>
 </div> -->
 
 <div
   class="gameover"
   [@fade]
-  *ngIf="gs.room?.status === 'over' && gs.room?.players[gs.room?.victor]"
+  *ngIf="rs.room?.status === 'over' && rs.room?.players[rs.room?.victor]"
 >
   <h3>
     {{
-      gs.room?.victor === gs.playerIdx
+      rs.room?.victor === rs.playerIdx
         ? 'You'
-        : gs.room?.players[gs.room?.victor]?.name
+        : rs.room?.players[rs.room?.victor]?.name
     }}
     won
   </h3>
   <button
-    (click)="gs.resetRoom()"
-    *ngIf="gs.playerIdx === 0; else showWaitingForReset"
+    (click)="rs.resetRoom()"
+    *ngIf="rs.playerIdx === 0; else showWaitingForReset"
   >
     Rematch
   </button>
   <ng-template #showWaitingForReset>
-    <p>Waiting on {{ gs.room?.players[0]?.name }} to rematch</p>
+    <p>Waiting on {{ rs.room?.players[0]?.name }} to rematch</p>
   </ng-template>
 </div>
 
-<div class="header" *ngIf="gs.room">
-  <p class="room-code" [class.lg]="gs.room?.status === 'waiting'">
-    <span *ngIf="gs.playerIdx < 0">SPECTATING</span> {{ gs.room?.roomCode }}
+<div class="header" *ngIf="rs.room">
+  <p class="room-code" [class.lg]="rs.room?.status === 'waiting'">
+    <span *ngIf="rs.playerIdx < 0">SPECTATING</span> {{ rs.room?.roomCode }}
     <i
       class="fas fa-share clickable"
       (click)="shareRoom()"
-      *ngIf="canShare && gs.room?.status === 'waiting'"
+      *ngIf="canShare && rs.room?.status === 'waiting'"
     ></i>
   </p>
   <div class="players">
     <div
-      *ngFor="let player of gs.room?.players; let i = index"
+      *ngFor="let player of rs.room?.players; let i = index"
       class="player"
-      [class.next]="gs.room?.nextPlayerIdx === i"
-      [class.me]="gs.playerIdx === i"
+      [class.next]="rs.room?.nextPlayerIdx === i"
+      [class.me]="rs.playerIdx === i"
     >
       <i class="fas fa-chevron-right next-marker"></i>
       <p>
@@ -65,13 +65,13 @@
       <i class="fas fa-star side-i" *ngIf="player?.host"></i>
     </div>
 
-    <p *ngFor="let i of gs.waiting" class="waiting">waiting for player</p>
+    <p *ngFor="let i of rs.waiting" class="waiting">waiting for player</p>
   </div>
 </div>
 
 <div class="controls">
   <i
     class="fas fa-home fa-flip-horizontal clickable"
-    (click)="gs.leaveRoom()"
+    (click)="rs.leaveRoom()"
   ></i>
 </div>

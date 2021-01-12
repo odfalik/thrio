@@ -1,5 +1,5 @@
 import { fadeAnim } from './../animations';
-import { GameService } from './../game.service';
+import { RoomService } from '../room.service';
 import {
   Component,
   ElementRef,
@@ -27,7 +27,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    public gs: GameService,
+    public rs: RoomService,
     public authService: AuthService,
     public engineService: EngineService
   ) {
@@ -35,9 +35,9 @@ export class GameComponent implements OnInit, OnDestroy {
       const roomCode = params.roomCode;
 
       if (roomCode) {
-        this.gs.tryJoinRoom(roomCode);
+        this.rs.tryJoinRoom(roomCode);
       } else {
-        setTimeout(() => this.gs.leaveRoom(), 3000); // no room code
+        setTimeout(() => this.rs.leaveRoom(), 3000); // no room code
       }
     });
     this.canShare = !!navigator.share;
@@ -50,7 +50,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   shareRoom(): void {
     navigator.share({
-      url: `https://thrio.app/play/${this.gs.room.roomCode}`,
+      url: `https://thrio.app/play/${this.rs.room.roomCode}`,
       title: 'Play Thrio with me!',
       text: 'You\'ve been invited to a Thrio game',
     });

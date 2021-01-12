@@ -1,4 +1,4 @@
-import { RoomPublic } from './../../../Interfaces';
+import { RoomPublic } from '../../../Interfaces';
 import { DbService } from './db.service';
 import { FunctionsService } from './functions.service';
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';
@@ -11,7 +11,7 @@ import { AngularFireMessaging } from '@angular/fire/messaging';
 @Injectable({
   providedIn: 'root',
 })
-export class GameService implements OnDestroy {
+export class RoomService implements OnDestroy {
   public room: RoomPublic;
   public room$ = new Subject<RoomPublic>();
   private _room: Subscription;

@@ -5,7 +5,7 @@
 header {
   display: grid;
   grid-template-columns: auto auto;
-  min-height: 10vh;
+  align-items: center;
 
   > * {
     height: min-content;
@@ -18,7 +18,7 @@ header {
 
     span {
       font-size: 1rem;
-      font-weight: normal;
+      font-weight: 100;
     }
   }
 
@@ -66,7 +66,7 @@ main {
     padding: 0.25em 2em;
     display: grid;
     grid-gap: 2em;
-    margin: 0 auto;
+    margin: 5em auto;
     max-width: 50em;
 
     &.find-games {

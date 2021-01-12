@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 import { RoomPublic } from '../../../Interfaces';
-import { GameService } from './game.service';
+import { RoomService } from './room.service';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -31,10 +31,10 @@ export class EngineService implements OnDestroy {
 
   public constructor(
     private ngZone: NgZone,
-    private gs: GameService,
+    private rs: RoomService,
     private authService: AuthService,
   ) {
-    this.gs.room$.subscribe((room) => {
+    this.rs.room$.subscribe((room) => {
       this.onRoom(room);
     });
   }
@@ -183,7 +183,7 @@ export class EngineService implements OnDestroy {
       const intersects = raycaster.intersectObjects(this.scene.children);
       intersects.forEach((intersect) => {
         if (intersect.object.userData.selector) {
-          this.gs.makeMove({
+          this.rs.makeMove({
             x: intersect.object.userData.selector.x,
             z: intersect.object.userData.selector.z,
           });
@@ -378,7 +378,7 @@ export class EngineService implements OnDestroy {
       this.scene.remove(sel);
     });
     this.selectors = [];
-    if (this.gs.isNextPlayer) {
+    if (this.rs.isNextPlayer) {
       const selectorMat = new THREE.MeshPhongMaterial({
         opacity: 0.4,
         color: 0xffffff,
