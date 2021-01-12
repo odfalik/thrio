@@ -1,12 +1,17 @@
 canvas {
   display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 
 .header,
 .controls {
   position: absolute;
-  padding: 2em;
+  padding: 1.5em;
   color: rgb(253, 255, 252);
 }
 
@@ -134,12 +139,12 @@ canvas {
   text-transform: uppercase;
   text-align: center;
   position: absolute;
-  top: 70vh;
+  top: 50vh;
   left: 50vw;
   transform: translateX(-50%);
   max-width: 90vw;
 
   h3 {
-    font-size: 3em;
+    font-size: 2.5em;
   }
 }

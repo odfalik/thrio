@@ -1,144 +1,176 @@
-<header>
-  <div class="top-left">
-    <h1 routerLink="/" (click)="mode = 'menu'">THRIO<span>.app</span></h1>
-  </div>
-
-  <div
-    class="top-right"
-    (click)="mode = mode === 'settings' ? 'menu' : 'settings'"
-  >
-    <span> {{ authService.user?.displayName }} </span>
-    <i class="fas fa-user-cog clickable"></i>
-  </div>
-</header>
-
-<main [ngSwitch]="mode">
-  <a class="back-btn" (click)="mode = 'menu'" *ngIf="mode !== 'menu'" [@slideB]>
-    <i class="fas fa-caret-left"></i>main menu</a
-  >
-
-  <div *ngSwitchCase="'menu'" [@slideA] class="main-menu">
-    <button (click)="mode = 'findGames'; getRooms()" [disabled]="searching">
-      <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
-      find a game
-    </button>
-
-    <p class="or">or</p>
-
-    <div>
-      <button (click)="mode = 'newRoom'">new game</button>
-    </div>
-  </div>
-
-  <div *ngSwitchCase="'newRoom'" [@slideB] class="menu-b new-room">
-    <h3>New Game</h3>
-    <div class="field">
-      <switch [(switch)]="config.public"></switch>
-      <label>Public</label>
-    </div>
-    <!-- <br />
-    <label>Size</label>
-    <input type="range" min="2" max="5" value="3" class="slider"> -->
-
-    <button (click)="newRoom()" [class.disabled]="creating"><i class="fas fa-circle-notch fa-spin" *ngIf="creating"></i>
-      Create room</button>
-  </div>
-
-  <div *ngSwitchCase="'findGames'" [@slideB] class="menu-b find-games">
-    <h3>
-      Public Games
-      <i
-        class="clickable fas fa-sync-alt"
-        [class.fa-spin]="gettingRooms"
-        (click)="getRooms()"
-        *ngIf="gettingRooms || canGetRooms"
-        [@slideB]
-      ></i>
-    </h3>
-
-    <div class="room-list">
-      <table>
-        <thead>
-          <tr>
-            <th>host</th>
-            <th class="players">players</th>
-            <th class="timestamp"></th>
-          </tr>
-        </thead>
-        <tbody>
-
-          <tr
-            *ngFor="let room of rooms"
-            class="clickable"
-            (click)="joinRoom(room.roomCode)"
-            [@slideV]
-          >
-            <td>
-              <p class="host">{{ room['hostName'] }}</p>
-              <p class="room-code">{{ room.roomCode }}</p>
-            </td>
-            <td class="players">
-              {{ room.players.length }} / {{ room.config.players }}
-            </td>
-            <td class="timestamp">{{ room.timestamp | timeAgo }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p *ngIf="!gettingRooms && !rooms?.length">No games found</p>
+<div class="main-menu-wrapper">
+  <header>
+    <div class="top-left">
+      <h1 routerLink="/" (click)="mode = 'menu'">THRIO<span>.app</span></h1>
     </div>
 
-    <form (submit)="joinRoomWithTimer()" class="join-form">
+    <div
+      class="top-right"
+      (click)="mode = mode === 'preferences' ? 'menu' : 'preferences'"
+    >
+      <span> {{ authService.user?.displayName }} </span>
+      <i class="fas fa-user-cog clickable"></i>
+    </div>
+  </header>
+
+  <main [ngSwitch]="mode">
+    <a class="back-btn" (click)="mode = 'menu'" *ngIf="mode !== 'menu'" [@slideB]>
+      <i class="fas fa-caret-left"></i>main menu</a
+    >
+
+    <div *ngSwitchCase="'menu'" [@slideA] class="main-menu">
+      <button (click)="mode = 'findGames'; getRooms()" [disabled]="searching">
+        <i class="fas fa-circle-notch fa-spin" *ngIf="searching"></i>
+        find a game
+      </button>
+
+      <p class="or">or</p>
+
+      <div>
+        <button (click)="mode = 'newRoom'">new game</button>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="'newRoom'" [@slideB] class="menu-b new-room">
+      <h3>New Game</h3>
       <div class="field">
+        <switch [(switch)]="config.public"></switch>
+        <label>Public</label>
+      </div>
+      <!-- <br />
+      <label>Size</label>
+      <input type="range" min="2" max="5" value="3" class="slider"> -->
+
+      <button (click)="newRoom()" [class.disabled]="creating">
+        <i class="fas fa-circle-notch fa-spin" *ngIf="creating"></i> Create room
+      </button>
+    </div>
+
+    <div *ngSwitchCase="'findGames'" [@slideB] class="menu-b find-games">
+      <h3>
+        Public Games
+        <i
+          class="clickable fas fa-sync-alt"
+          [class.fa-spin]="gettingRooms"
+          (click)="getRooms()"
+          *ngIf="gettingRooms || canGetRooms"
+          [@slideB]
+        ></i>
+      </h3>
+
+      <div class="room-list">
+        <table>
+          <thead>
+            <tr>
+              <th>host</th>
+              <th class="players">players</th>
+              <th class="timestamp"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let room of rooms"
+              class="clickable"
+              (click)="joinRoom(room.roomCode)"
+              [@slideV]
+            >
+              <td>
+                <p class="host">{{ room['hostName'] }}</p>
+                <p class="room-code">{{ room.roomCode }}</p>
+              </td>
+              <td class="players">
+                {{ room.players.length }} / {{ room.config.players }}
+              </td>
+              <td class="timestamp">{{ room.timestamp | timeAgo }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="!gettingRooms && !rooms?.length">No games found</p>
+      </div>
+
+      <form (submit)="joinRoomWithTimer()" class="join-form">
+        <div class="field horiz">
+          <input
+            type="text"
+            [(ngModel)]="roomCode"
+            name="roomCode"
+            placeholder="room code"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button
+            action="submit"
+            [disabled]="!roomCode || roomCode?.length !== 4"
+          >
+            Join Game
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngSwitchCase="'preferences'" [@slideB] class="menu-b">
+      <h3>Preferences</h3>
+      <div class="field">
+        <label class="db">Nickname</label>
         <input
           type="text"
-          [(ngModel)]="roomCode"
-          name="roomCode"
-          placeholder="room code"
-          autocomplete="off"
-          spellcheck="false"
+          [(ngModel)]="authService.tmpName"
+          name="name"
+          (ngModelChange)="authService.changeName(authService.tmpName)"
         />
-        <button
-          action="submit"
-          [disabled]="!roomCode || roomCode?.length !== 4"
-        >
-          Join Game
-        </button>
       </div>
-    </form>
-  </div>
-
-  <div *ngSwitchCase="'settings'" [@slideB] class="menu-b">
-    <h3>Settings</h3>
-    <div>
-      <label class="db">Nickname</label>
-      <input
-        type="text"
-        [(ngModel)]="name"
-        name="name"
-        (blur)="authService.changeName(name)"
-      />
+      <div class="field">
+        <label>Single-tap Select</label>
+        <switch [switch]="authService.prefs?.singleTap" (switchChange)="authService.setPrefs({ singleTap: true })"></switch>
+      </div>
+      <div class="field">
+        <label>Graphics</label>
+        <div>
+          <button
+            class="dib"
+            [class.active]="authService.prefs?.graphics === 0"
+            (click)="authService.setPrefs({ graphics: 0 })"
+          >
+            Low
+          </button>
+          <button
+            class="dib"
+            [class.active]="authService.prefs?.graphics === 1"
+            (click)="authService.setPrefs({ graphics: 1 })"
+          >
+            Medium
+          </button>
+          <button
+            class="dib"
+            [class.active]="authService.prefs?.graphics === 2"
+            (click)="authService.setPrefs({ graphics: 2 })"
+          >
+            High
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div *ngSwitchCase="'help'" [@slideB] class="menu-b">
-    <h3>How to play</h3>
-    <div>
-      <p>
-        This is basically connect four, but it's connect 3, with 3 players, and
-        3d
-      </p>
-      <p>Forgive me... I'll get to this soon</p>
-      <p>Figure it out lol</p>
+    <div *ngSwitchCase="'help'" [@slideB] class="menu-b">
+      <h3>How to play</h3>
+      <div>
+        <p>
+          This is basically connect four, but it's connect 3, with 3 players, and
+          3d
+        </p>
+        <p>Forgive me... I'll get to this soon</p>
+        <p>Figure it out lol</p>
+      </div>
     </div>
-  </div>
-</main>
+  </main>
 
-<footer>
-  <a href="https://odedfalik.com" target="_blank">by oded</a>
-  <a
-    class="clickable"
-    [class.new-user]="authService.isNewUser"
-    (click)="mode = 'help'"
-    >how to play</a
-  >
-</footer>
+  <footer>
+    <a href="https://odedfalik.com" target="_blank">by oded</a>
+    <a
+      class="clickable"
+      [class.new-user]="authService.isNewUser"
+      (click)="mode = 'help'"
+      >how to play</a
+    >
+  </footer>
+</div>

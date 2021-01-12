@@ -5,12 +5,13 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 import { RoomPublic } from '../../../Interfaces';
 import { GameService } from './game.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EngineService implements OnDestroy {
-  private graphics = 1;
+  private graphics = this.authService.prefs?.graphics === undefined ? 1 : this.authService.prefs.graphics;
 
   public canvas: HTMLCanvasElement;
   public renderer: THREE.WebGLRenderer;
@@ -28,7 +29,11 @@ export class EngineService implements OnDestroy {
   private clock = new THREE.Clock();
   private lastMove: { x: number; y: number; z: number };
 
-  public constructor(private ngZone: NgZone, private gs: GameService) {
+  public constructor(
+    private ngZone: NgZone,
+    private gs: GameService,
+    private authService: AuthService,
+  ) {
     this.gs.room$.subscribe((room) => {
       this.onRoom(room);
     });
@@ -47,7 +52,7 @@ export class EngineService implements OnDestroy {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       alpha: true, // transparent background
-      antialias: false, // smooth edges
+      antialias: this.graphics > 0, // smooth edges
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;

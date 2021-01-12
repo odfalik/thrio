@@ -1,4 +1,4 @@
-import { slideVAnim } from './../animations';
+import { fadeAnim } from './../animations';
 import { GameService } from './../game.service';
 import {
   Component,
@@ -17,7 +17,7 @@ import { AuthService } from '../auth.service';
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss'],
-  animations: [slideVAnim],
+  animations: [fadeAnim],
 })
 export class GameComponent implements OnInit, OnDestroy {
   @ViewChild('rendererCanvas', { static: true })

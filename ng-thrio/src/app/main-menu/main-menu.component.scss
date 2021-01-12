@@ -1,8 +1,11 @@
+.main-menu-wrapper {
+  padding: 1.5em;
+}
+
 header {
   display: grid;
   grid-template-columns: auto auto;
   min-height: 10vh;
-  padding: 2em;
 
   > * {
     height: min-content;
@@ -38,7 +41,7 @@ main {
     align-items: center;
     grid-template-columns: repeat(3, auto);
     grid-gap: 2em;
-    margin: 3em auto;
+    margin: 9em auto;
     max-width: 45em;
 
     @media screen and (max-width: 500px) {
@@ -55,14 +58,14 @@ main {
 
   .back-btn {
     i { font-size: 0.7em; }
-    margin: 3em 2em 0 2em;
+    margin-top: 3em;
     font-weight: 100;
   }
 
   .menu-b {
     padding: 0.25em 2em;
     display: grid;
-    grid-gap: 1em;
+    grid-gap: 2em;
     margin: 0 auto;
     max-width: 50em;
 
@@ -121,15 +124,6 @@ main {
         max-width: 10em;
       }
     }
-
-    &.new-room {
-      .field {
-        display: grid;
-        grid-template-columns: min-content auto;
-        align-items: center;
-        grid-gap: 1em;
-      }
-    }
   }
 
   h3 {
@@ -141,8 +135,9 @@ main {
 
 
 footer {
-  position: fixed;
-  bottom: 2em;
+  position: absolute;
+  bottom: 1.5em;
+  left: 0;
   text-align: center;
   width: 100%;
 

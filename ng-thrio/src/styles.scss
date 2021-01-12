@@ -177,11 +177,15 @@ button {
   user-select: none;
   transition: 0.15s all;
 
-  &:hover {
+  &:hover, &.active {
     background: $p1;
     color: $dark;
-    border: 1px solid $dark;
+    border: 1px solid $p1;
   }
+}
+
+.multi > button {
+  border-radius: none;
 }
 
 *:disabled {
@@ -198,17 +202,34 @@ input {
 .field {
   white-space: nowrap;
   height: 100%;
+  display: grid;
+  grid-template-columns: min-content;
+  align-items: center;
+  grid-gap: 0.5em;
 
-  input {
-    height: 100%;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+  &.horiz {
+    display: block;
+    input {
+      height: 100%;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+
+      + button {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
   }
-  button {
-    height: 100%;
-    border-left: none;
+
+
+  button:not(:first-of-type) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+  }
+
+  button:not(:last-of-type) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 }
 

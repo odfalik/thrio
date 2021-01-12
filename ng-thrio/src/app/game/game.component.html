@@ -1,4 +1,4 @@
-<canvas #rendererCanvas id="renderCanvas"></canvas>
+<canvas #rendererCanvas id="renderer-canvas"></canvas>
 
 <div class="vignette" [class.loading]="!gs.room || gs.room?.status === 'over'">
   <h4 class="waiting" *ngIf="!gs.room">Loading</h4>
@@ -18,7 +18,11 @@
   </div>
 </div> -->
 
-<div class="gameover" [@slideV] *ngIf="gs.room?.players[gs.room?.victor]">
+<div
+  class="gameover"
+  [@fade]
+  *ngIf="gs.room?.status === 'over' && gs.room?.players[gs.room?.victor]"
+>
   <h3>
     {{
       gs.room?.victor === gs.playerIdx
@@ -27,7 +31,12 @@
     }}
     won
   </h3>
-  <button (click)="gs.resetRoom()" *ngIf="gs.playerIdx === 0; else showWaitingForReset">Rematch</button>
+  <button
+    (click)="gs.resetRoom()"
+    *ngIf="gs.playerIdx === 0; else showWaitingForReset"
+  >
+    Rematch
+  </button>
   <ng-template #showWaitingForReset>
     <p>Waiting on {{ gs.room?.players[0]?.name }} to rematch</p>
   </ng-template>

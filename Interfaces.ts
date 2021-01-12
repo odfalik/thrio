@@ -31,4 +31,8 @@ export interface RoomConfig {
 
 export interface User {
     token?: string;
+    prefs?: {
+        graphics: number,
+        singleTap: boolean,
+    }
 }

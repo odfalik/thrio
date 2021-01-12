@@ -15,6 +15,12 @@ export class AuthService {
   dbUser: User;
   pushRequest: boolean;
   isNewUser = false;
+  tmpName = '';
+
+  prefs: User['prefs'] = {
+    graphics: 1,
+    singleTap: true,
+  };
 
   constructor(
     public auth: AngularFireAuth,
@@ -38,19 +44,23 @@ export class AuthService {
           .getUser(this.user.uid)
           .subscribe((dbUser: User) => {
             this.dbUser = dbUser;
+            if (dbUser?.prefs) this.prefs = dbUser.prefs;
           });
 
-        if (!this.user.displayName)
-          this.changeName(
-            'Guest' + Math.floor(Math.random() * Math.floor(10000))
-          );
+        this.tmpName = this.user.displayName;
       }
     });
   }
 
-  changeName(displayName: string): void {
+  changeName(displayName?: string): void {
     displayName = displayName.toUpperCase().slice(0, 15).trim();
+    if (!displayName) displayName = 'Guest' + Math.floor(Math.random() * Math.floor(10000));
     this.user.updateProfile({ displayName });
+  }
+
+  setPrefs(prefs: User['prefs']): Promise<void> {
+    this.prefs = { ...this.prefs, ...prefs };
+    return this.dbService.rtdb.object('users/' + this.user.uid + '/prefs').set(this.prefs);
   }
 
   requestPermission(): void {

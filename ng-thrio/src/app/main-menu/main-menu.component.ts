@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { RoomConfig, RoomPublic } from '../../../../Interfaces';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-main-menu',
@@ -29,8 +30,9 @@ export class MainMenuComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
+    public auth: AngularFireAuth,
     private fns: FunctionsService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {}
