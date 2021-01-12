@@ -19,7 +19,7 @@ export class AuthService {
 
   prefs: User['prefs'] = {
     graphics: 1,
-    doubleTap: true,
+    doubleTap: false,
   };
 
   constructor(
