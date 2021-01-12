@@ -120,8 +120,8 @@
         />
       </div>
       <div class="field">
-        <label>Single-tap Select</label>
-        <switch [switch]="authService.prefs?.singleTap" (switchChange)="authService.setPrefs({ singleTap: true })"></switch>
+        <label>Two-tap Select</label>
+        <switch [switch]="authService.prefs?.doubleTap" (switchChange)="authService.setPrefs({ doubleTap: $event })"></switch>
       </div>
       <div class="field">
         <label>Graphics</label>

@@ -11,7 +11,10 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class EngineService implements OnDestroy {
-  private graphics = this.authService.prefs?.graphics === undefined ? 1 : this.authService.prefs.graphics;
+  private graphics =
+    this.authService.prefs?.graphics === undefined
+      ? 1
+      : this.authService.prefs.graphics;
 
   public canvas: HTMLCanvasElement;
   public renderer: THREE.WebGLRenderer;
@@ -19,7 +22,6 @@ export class EngineService implements OnDestroy {
   private composer: EffectComposer;
   public scene: THREE.Scene;
 
-  public updateFns: (() => void)[];
   private balls: THREE.Mesh[] = [];
   private selectors = [];
 
@@ -28,11 +30,23 @@ export class EngineService implements OnDestroy {
   private mouse = new THREE.Vector2();
   private clock = new THREE.Clock();
   private lastMove: { x: number; y: number; z: number };
+  lastSelect: { x: number; z: number, selector: THREE.Mesh };
+
+  selectorMat = new THREE.MeshPhongMaterial({
+    opacity: 0.3,
+    color: 0xffffff,
+    specular: 0xffffff,
+    blending: THREE.AdditiveBlending,
+  });
+  selectorActiveMat = new THREE.MeshPhongMaterial({
+    opacity: 1,
+    color: 0xffffff,
+  });
 
   public constructor(
     private ngZone: NgZone,
     private rs: RoomService,
-    private authService: AuthService,
+    private authService: AuthService
   ) {
     this.rs.room$.subscribe((room) => {
       this.onRoom(room);
@@ -62,7 +76,6 @@ export class EngineService implements OnDestroy {
     this.scene = new THREE.Scene();
     // this.scene.fog = new THREE.Fog(0x00aaff, 8, 14);
     // this.scene.background = new THREE.Color( 0xaaaaaa );
-
 
     /* Camera */
     this.camera = new THREE.PerspectiveCamera(
@@ -133,7 +146,6 @@ export class EngineService implements OnDestroy {
       depthWrite: false,
     });
 
-
     const planeGeom = new THREE.PlaneGeometry(3, 3, 1, 1);
     for (let i = 0; i < 4; i++) {
       const plane = new THREE.Mesh(planeGeom, planeMat);
@@ -182,11 +194,21 @@ export class EngineService implements OnDestroy {
       raycaster.setFromCamera(this.mouse, this.camera);
       const intersects = raycaster.intersectObjects(this.scene.children);
       intersects.forEach((intersect) => {
-        if (intersect.object.userData.selector) {
-          this.rs.makeMove({
-            x: intersect.object.userData.selector.x,
-            z: intersect.object.userData.selector.z,
-          });
+        if (intersect.object.userData?.selector) {
+          const x = intersect.object.userData.selector.x;
+          const z = intersect.object.userData.selector.z;
+
+          if (
+            !this.authService.prefs.doubleTap ||
+            (this.lastSelect?.x === x && this.lastSelect.z === z)
+          ) {
+            delete this.lastSelect;
+            this.rs.makeMove({ x, z });
+          } else {
+            if (this.lastSelect) this.lastSelect.selector.material = this.selectorMat;
+            this.lastSelect = { x, z, selector: (intersect.object as THREE.Mesh) };
+            (intersect.object as THREE.Mesh).material = this.selectorActiveMat;
+          }
         }
       });
     }
@@ -297,16 +319,10 @@ export class EngineService implements OnDestroy {
       }
     }
 
-    // if (this.updateFns?.length) {
-    //   this.updateFns.forEach((fn) => fn());
-    // }
-
     this.renderer.render(this.scene, this.camera);
   }
 
   public async onRoom(room: RoomPublic): Promise<void> {
-
-
     /* Balls */
     this.balls.forEach((ball) => {
       this.scene.remove(ball);
@@ -323,29 +339,38 @@ export class EngineService implements OnDestroy {
             else if (val === 1) color = 0xe71d36;
             else if (val === 2) color = 0xff9f1c;
 
-
-            const material = this.graphics > 1 ? new THREE.MeshStandardMaterial({
-              color,
-              envMap: (await new THREE.TextureLoader().loadAsync('assets/equirectangular.png').then((texture: THREE.Texture) => {
-                const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-                pmremGenerator.compileEquirectangularShader();
-                texture.encoding = THREE.sRGBEncoding;
-                const envMap = pmremGenerator.fromEquirectangular(texture);
-                texture.dispose();
-                return envMap;
-              })).texture,
-              envMapIntensity: 1,
-              metalness: 0.1,
-              roughness: 0.1,
-            })
-            : new THREE.MeshPhongMaterial({
-              color,
-              shininess: 50,
-            });
+            const material =
+              this.graphics > 1
+                ? new THREE.MeshStandardMaterial({
+                    color,
+                    envMap: (
+                      await new THREE.TextureLoader()
+                        .loadAsync('assets/equirectangular.png')
+                        .then((texture: THREE.Texture) => {
+                          const pmremGenerator = new THREE.PMREMGenerator(
+                            this.renderer
+                          );
+                          pmremGenerator.compileEquirectangularShader();
+                          texture.encoding = THREE.sRGBEncoding;
+                          const envMap = pmremGenerator.fromEquirectangular(
+                            texture
+                          );
+                          texture.dispose();
+                          return envMap;
+                        })
+                    ).texture,
+                    envMapIntensity: 1,
+                    metalness: 0.1,
+                    roughness: 0.1,
+                  })
+                : new THREE.MeshPhongMaterial({
+                    color,
+                    shininess: 50,
+                  });
 
             const sphere = new THREE.Mesh(ballGeom, material);
             this.scene.add(sphere);
-            sphere.userData =  { x, y, z };
+            sphere.userData = { x, y, z };
             sphere.position.set(x + 0.5, y + 0.5, z + 0.5);
             sphere.rotation.set(
               Math.random() * 365,
@@ -379,17 +404,11 @@ export class EngineService implements OnDestroy {
     });
     this.selectors = [];
     if (this.rs.isNextPlayer) {
-      const selectorMat = new THREE.MeshPhongMaterial({
-        opacity: 0.4,
-        color: 0xffffff,
-        specular: 0xffffff,
-        blending: THREE.AdditiveBlending,
-      });
       const selectorGeom = new THREE.ConeGeometry(0.3, 0.3, 4, 1);
       for (let x = 0; x < 3; x++) {
         for (let z = 0; z < 3; z++) {
           if (room.grid[x][2][z] === -1) {
-            const selector = new THREE.Mesh(selectorGeom, selectorMat);
+            const selector = new THREE.Mesh(selectorGeom, this.selectorMat);
             this.scene.add(selector);
             selector.position.set(x + 0.5, 3.3, z + 0.5);
             selector.rotateX(-Math.PI);

@@ -22,6 +22,8 @@ export class RoomService implements OnDestroy {
   pushRequest = false;
   isNextPlayer = false;
   waiting: any[];
+  public chat: string[];
+  private _chat: Subscription;
 
   constructor(
     private router: Router,
@@ -74,6 +76,11 @@ export class RoomService implements OnDestroy {
 
       console.log('room', this.room);
     });
+
+    // if (this._chat) this._chat.unsubscribe();
+    // this._chat = this.dbs.getChat(roomCode).subscribe((chat: string[]) => {
+    //   this.chat = chat;
+    // });
   }
 
   leaveRoom(): void {
@@ -105,6 +112,10 @@ export class RoomService implements OnDestroy {
     this.fns.resetRoom$({ roomCode: this.room?.roomCode }).subscribe(res => {
       console.log('reset res', res);
     });
+  }
+
+  sendChat(): void {
+
   }
 
   ngOnDestroy(): void {
