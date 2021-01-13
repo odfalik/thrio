@@ -6,8 +6,6 @@ const apiRouter = Router();
 
 apiRouter.get('/get-rooms', async (req, res) => {
 
-  ['Hello World'];
-
   const rooms: Room[] = Object.values(
     (
       await admin
