@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  appengine: 'http://thrio-d87c1.appspot.com',
   firebaseConfig: {
     apiKey: 'AIzaSyCwIVPOH_-HkveN0bRgvPXvi6zazGj2WWM',
     authDomain: 'thrio-d87c1.firebaseapp.com',

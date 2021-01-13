@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { Observable } from 'rxjs';
+import { environment as env } from 'src/environments/environment';
 import { RoomConfig } from '../../../Interfaces';
 
 @Injectable({
@@ -8,7 +10,11 @@ import { RoomConfig } from '../../../Interfaces';
 })
 export class FunctionsService {
 
-  getRooms$ = this.fns.httpsCallable('getRooms');
+  api = env.appengine + '/api/';
+
+  getRooms$(params: any): Observable<any> {
+    return this.http.get(this.api + 'get-rooms');
+  }
 
   joinRoom$: (params?: { roomCode: string }) => Observable<{roomCode: string, playerIdx: number}> = this.fns.httpsCallable('joinRoom');
 
@@ -22,5 +28,5 @@ export class FunctionsService {
     token: string | boolean,
   }) => Observable<void> = this.fns.httpsCallable('saveToken');
 
-  constructor(private fns: AngularFireFunctions) {}
+  constructor(private fns: AngularFireFunctions, private http: HttpClient) {}
 }

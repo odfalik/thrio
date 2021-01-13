@@ -10,6 +10,7 @@ import { FunctionsService } from './functions.service';
   providedIn: 'root',
 })
 export class AuthService {
+  token: string;
   user: any;
   private _dbUser: any;
   dbUser: User;
@@ -37,6 +38,9 @@ export class AuthService {
     this.auth.user.subscribe((u) => {
       this.user = u;
       console.log('user', u);
+      this.user.getIdToken().then(token => {
+        this.token = token;
+      });
 
       if (this._dbUser) this._dbUser.unsubscribe();
       if (this.user) {
