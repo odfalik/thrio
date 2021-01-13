@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
 import apiRouter from './api';
-import logger from 'src/logger';
+import logger from './logger';
 import admin from './fb';
 import authenticate from './auth';
 import cors from 'cors';

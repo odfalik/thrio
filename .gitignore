@@ -2,7 +2,6 @@
 ng-thrio/dist
 ng-thrio/tmp
 ng-thrio/out-tsc
-server/dist
 
 # dependencies
 **/node_modules
