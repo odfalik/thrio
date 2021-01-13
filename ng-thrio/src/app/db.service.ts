@@ -15,13 +15,13 @@ export class DbService {
     return this.rtdb.object('rooms/' + roomCode + '/public').valueChanges();
   }
 
-  sendChat(roomCode: string, playerIdx: number, msg: string): Promise<void> {
+  sendChat(roomCode: string, playerIdx: number, msg: string): void {
     msg = msg?.slice(0, 50)?.trim();
-    if (msg?.length) return this.rtdb.object('rooms/' + roomCode + '/chat/' + playerIdx).set(msg);
+    if (msg?.length) this.rtdb.list('rooms/' + roomCode + '/chat/').push({ msg, playerIdx });
   }
 
   public getChat(roomCode: string): Observable<any> {
-    return this.rtdb.list('rooms/' + roomCode + '/chat').valueChanges();
+    return this.rtdb.list('rooms/' + roomCode + '/chat',  ref => ref.limitToLast(10)).valueChanges();
   }
 
   public getUser(uid: string): Observable<User> {

@@ -22,7 +22,7 @@ export class RoomService implements OnDestroy {
   pushRequest = false;
   isNextPlayer = false;
   waiting: any[];
-  public chat: string[];
+  public chat: any[];
   private _chat: Subscription;
 
   constructor(
@@ -77,10 +77,12 @@ export class RoomService implements OnDestroy {
       console.log('room', this.room);
     });
 
-    // if (this._chat) this._chat.unsubscribe();
-    // this._chat = this.dbs.getChat(roomCode).subscribe((chat: string[]) => {
-    //   this.chat = chat;
-    // });
+    if (this._chat) this._chat.unsubscribe();
+    this._chat = this.dbs.getChat(roomCode).subscribe((chat: any[]) => {
+      chat = [{ msg: 'Hello World', playerIdx: 0 }];
+      this.chat = chat;
+      console.log('chat', this.chat);
+    });
   }
 
   leaveRoom(): void {

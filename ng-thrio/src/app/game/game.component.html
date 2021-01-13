@@ -75,8 +75,16 @@
     (click)="rs.leaveRoom()"
   ></i>
 
-  <!-- <div>
-    <input *ngIf="chatOpen">
-    <i class="fas fa-comment clickable" (click)="chatOpen = true"></i>
-  </div> -->
+  <div class="chat" [class.open]="chatOpen">
+    <i class="fas fa-chevron-up clickable" (click)="chatOpen = !chatOpen"></i>
+    <p *ngIf="rs.chat?.length"></p>
+    <ng-container *ngIf="chatOpen">
+      <p *ngFor="let item of rs.chat"><span>{{ rs.room?.players[item.playerIdx]?.name }}</span> {{ item.msg }}</p>
+    </ng-container>
+  </div>
+
+</div>
+
+<div>
+  <!-- <input *ngIf="chatOpen"> -->
 </div>

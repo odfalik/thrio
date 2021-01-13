@@ -89,6 +89,22 @@ canvas {
     margin-right: 1em;
     display: inline-block;
   }
+
+  .chat {
+    transition: 0.3s all;
+
+    &.open {
+      i {
+        transform: rotate(180deg);
+      }
+
+      background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
+    }
+
+    i {
+      transition: 0.3s all;
+    }
+  }
 }
 
 .vignette {

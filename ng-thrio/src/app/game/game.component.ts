@@ -8,7 +8,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import * as THREE from 'three';
 import { EngineService } from '../engine.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth.service';
@@ -24,6 +23,7 @@ export class GameComponent implements OnInit, OnDestroy {
   public rendererCanvas: ElementRef<HTMLCanvasElement>;
   private _params: Subscription;
   canShare: boolean;
+  chatOpen: boolean;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -52,7 +52,7 @@ export class GameComponent implements OnInit, OnDestroy {
     navigator.share({
       url: `https://thrio.app/play/${this.rs.room.roomCode}`,
       title: 'Play Thrio with me!',
-      text: 'You\'ve been invited to a Thrio game',
+      text: 'You\'ve been invited to play Thrio',
     });
   }
 

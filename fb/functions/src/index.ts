@@ -213,7 +213,7 @@ export const getRooms = functions.https.onCall(async (params: any, context) => {
 
   const availableRoomPublics: RoomPublic[] = rooms
     ? rooms
-        .filter((r) => r.public)
+        .filter((r) => r.public.config?.public)
         .sort((a, b) => b.public.timestamp - a.public.timestamp)
         .slice(0, 15)
         .map((room: any) => {
