@@ -1,4 +1,4 @@
-import { Room, RoomPublic } from './../../interfaces';
+// import { Room, RoomPublic } from './../../interfaces';
 import { Router } from 'express';
 import * as admin from 'firebase-admin';
 
@@ -6,7 +6,7 @@ const apiRouter = Router();
 
 apiRouter.get('/get-rooms', async (req, res) => {
 
-  const rooms: Room[] = Object.values(
+  const rooms: any[] = Object.values(
     (
       await admin
         .database()
@@ -17,7 +17,7 @@ apiRouter.get('/get-rooms', async (req, res) => {
     ).val() || {}
   );
 
-  const availableRoomPublics: RoomPublic[] = rooms
+  const availableRoomPublics: any[] = rooms
     ? rooms
         .filter((r) => r.public.config?.public)
         .sort((a, b) => b.public.timestamp - a.public.timestamp)
