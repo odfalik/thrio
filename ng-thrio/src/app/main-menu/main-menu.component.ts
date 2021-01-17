@@ -50,9 +50,9 @@ export class MainMenuComponent implements OnInit {
     this.creating = true;
     this.fns
       .newRoom$(this.config)
-      .subscribe((roomCode: string) => {
+      .subscribe((res) => {
         this.creating = false;
-        this.joinRoom(roomCode);
+        this.joinRoom(res.roomCode);
       });
   }
 
@@ -64,7 +64,7 @@ export class MainMenuComponent implements OnInit {
       this.canGetRooms = true;
     }, 25000);
 
-    this.fns.getRooms$({}).subscribe(
+    this.fns.getRooms$().subscribe(
       (rooms: RoomPublic[]) => {
         console.log('getRooms:', rooms);
         this.rooms = rooms;
@@ -73,18 +73,6 @@ export class MainMenuComponent implements OnInit {
       (err) => {
         this.rooms = [];
         this.gettingRooms = false;
-      }
-    );
-  }
-
-  joinPublic(): void {
-    this.searching = true;
-    this.fns.joinRoom$().subscribe(
-      res => {
-        this.joinRoom(res.roomCode);
-      },
-      err => {
-        console.error('joinPublic err', err);
       }
     );
   }

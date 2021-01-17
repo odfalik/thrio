@@ -67,21 +67,6 @@ export class AuthService {
     return this.dbService.rtdb.object('users/' + this.user.uid + '/prefs').set(this.prefs);
   }
 
-  requestPermission(): void {
-    this.afMessaging.requestToken.subscribe(
-      (token) => {
-        this.fns.saveToken$({ token }).subscribe(() => {
-          this.pushRequest = false;
-        });
-      },
-      (error) => {
-        this.fns.saveToken$({ token: 'declined' }).subscribe(() => {
-          this.pushRequest = false;
-        });
-      }
-    );
-  }
-
   receiveMessage(): void {
     this.afMessaging.messages.subscribe((payload) => {
       console.log('new message received. ', payload);

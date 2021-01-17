@@ -327,7 +327,8 @@ export class EngineService implements OnDestroy {
       this.scene.remove(ball);
     });
     this.balls = [];
-    const ballGeom = new THREE.SphereGeometry(0.5, 16, 16);
+    const sphereGraphics = (this.graphics + 1) * 16;
+    const ballGeom = new THREE.SphereGeometry(0.5, sphereGraphics, sphereGraphics);
     for (let x = 0; x < 3; x++) {
       for (let y = 0; y < 3; y++) {
         for (let z = 0; z < 3; z++) {

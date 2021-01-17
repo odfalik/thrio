@@ -12,21 +12,25 @@ export class FunctionsService {
 
   api = env.appengine + '/api/';
 
-  getRooms$(params: any): Observable<any> {
-    return this.http.get(this.api + 'get-rooms');
+  getRooms$(): Observable<any> {
+    return this.http.get(this.api + `rooms`);
   }
 
-  joinRoom$: (params?: { roomCode: string }) => Observable<{roomCode: string, playerIdx: number}> = this.fns.httpsCallable('joinRoom');
+  newRoom$(params: RoomConfig) {
+    return this.http.post<{ roomCode: string }>(this.api + `rooms`, params);
+  }
 
-  newRoom$: (params: RoomConfig) => Observable<any> = this.fns.httpsCallable('newRoom');
+  joinRoom$(roomCode: string): Observable<any> {
+    return this.http.get(this.api + `rooms/${roomCode}/join`);
+  }
 
-  resetRoom$: (params: { roomCode: string }) => Observable<void> = this.fns.httpsCallable('resetRoom');
+  resetRoom$(roomCode: string): Observable<any> {
+    return this.http.get(this.api + `rooms/${roomCode}/reset`);
+  }
 
-  makeMove$ = this.fns.httpsCallable('makeMove');
+  makeMove$(roomCode: string, x: number, z: number): Observable<any> {
+    return this.http.post(this.api + `rooms/${roomCode}/move`, { x, z });
+  }
 
-  saveToken$: (params: {
-    token: string | boolean,
-  }) => Observable<void> = this.fns.httpsCallable('saveToken');
-
-  constructor(private fns: AngularFireFunctions, private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 }

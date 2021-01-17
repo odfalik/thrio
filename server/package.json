@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "start": "node -r module-alias/register ./dist --env=production",
+    "start": "node -r module-alias/register ./dist",
     "start:dev": "nodemon",
     "dev": "nodemon"
   },

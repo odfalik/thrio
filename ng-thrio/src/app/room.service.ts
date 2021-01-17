@@ -40,7 +40,7 @@ export class RoomService implements OnDestroy {
         first()
       )
       .subscribe((u) => {
-        this.fns.joinRoom$({ roomCode: roomCode.toUpperCase() }).subscribe(
+        this.fns.joinRoom$(roomCode.toUpperCase()).subscribe(
           (joinData) => {
             if (joinData === undefined) {
               this.leaveRoom();
@@ -63,7 +63,6 @@ export class RoomService implements OnDestroy {
   subToRoom(roomCode: string): void {
     if (this._room) this._room.unsubscribe();
     this._room = this.dbs.getRoom(roomCode).subscribe((room: RoomPublic) => {
-
       if (!room) this.leaveRoom(); // room doesn't exist
 
       this.isNextPlayer = room?.nextPlayerIdx === this.playerIdx;
@@ -99,11 +98,7 @@ export class RoomService implements OnDestroy {
     this.canMove = false;
 
     this.fns
-      .makeMove$({
-        roomCode: this.room.roomCode,
-        ...pos,
-        playerIdx: this.playerIdx,
-      })
+      .makeMove$(this.room.roomCode, pos.x, pos.z)
       .subscribe(async (res) => {
         const token = await this.afMessaging.getToken.pipe(first()).toPromise();
         if (!token) this.pushRequest = true;
@@ -111,14 +106,12 @@ export class RoomService implements OnDestroy {
   }
 
   resetRoom(): void {
-    this.fns.resetRoom$({ roomCode: this.room?.roomCode }).subscribe(res => {
+    this.fns.resetRoom$(this.room?.roomCode).subscribe((res) => {
       console.log('reset res', res);
     });
   }
 
-  sendChat(): void {
-
-  }
+  sendChat(): void {}
 
   ngOnDestroy(): void {
     if (this._room) this._room.unsubscribe();

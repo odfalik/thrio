@@ -1,7 +1,6 @@
-import './pre-start'; // Must be the first import
+// import './pre-start'; // Must be the first import
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import path from 'path';
 import helmet from 'helmet';
 import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
@@ -32,7 +31,6 @@ app.use('*', authenticate);
 app.use('/api', apiRouter);
 
 // Print API errors
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     logger.err(err, true);
     return res.status(400).json({
