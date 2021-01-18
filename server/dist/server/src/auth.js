@@ -16,19 +16,18 @@ const fb_1 = __importDefault(require("./fb"));
 const getAuthToken = (req, res, next) => {
     var _a;
     if (((_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[0]) === 'Bearer') {
-        req.authToken = req.headers.authorization.split(' ')[1];
+        res.locals.authToken = req.headers.authorization.split(' ')[1];
     }
     else {
-        req.authToken = null;
+        res.locals.authToken = null;
     }
     next();
 };
 const authenticate = (req, res, next) => {
     getAuthToken(req, res, () => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { authToken } = req;
-            const uid = (yield fb_1.default.auth().verifyIdToken(authToken)).uid;
-            req.user = yield fb_1.default.auth().getUser(uid);
+            const uid = (yield fb_1.default.auth().verifyIdToken(res.locals.authToken)).uid;
+            res.locals.user = yield fb_1.default.auth().getUser(uid);
             return next();
         }
         catch (e) {
