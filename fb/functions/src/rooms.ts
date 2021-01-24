@@ -1,6 +1,8 @@
 import { Player, Room, RoomConfig, RoomPublic } from '../../../interfaces';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { checkVictory, getDroppedY, makeId } from './helpers';
+import { decideMove } from './ai';
 
 export const app = admin.initializeApp(functions.config().firebase);
 
@@ -244,7 +246,7 @@ export async function getRooms() {
 
 export async function makeMove(
   params: { roomCode: string; x: number; z: number },
-  context: functions.https.CallableContext
+  context?: functions.https.CallableContext,
 ) {
   const roomRef = admin.database().ref('rooms/' + params.roomCode);
   const roomSnap = await roomRef.get();
@@ -254,24 +256,19 @@ export async function makeMove(
 
   const room: Room = await roomSnap.val();
 
-  const playerIdx = room.secret?.players.findIndex(
-    (p) => p.uid === context.auth?.uid
+  let playerIdx = room.secret?.players.findIndex(
+    (p) => p.uid === context?.auth?.uid
   );
 
-  const nextPlayerIdx: number = room.public.nextPlayerIdx;
+  if (room.secret?.players[room.public.nextPlayerIdx].uid === 'bot') {
+    playerIdx = room.public.nextPlayerIdx;
+  }
 
-  if (nextPlayerIdx === playerIdx) {
+  if (room.public.nextPlayerIdx === playerIdx) {
     const grid: number[][][] = room.public.grid;
 
     // check bottom up (gravity) if space in column
-    let y = -1;
-    for (let yCheck = 0; yCheck < 3; yCheck++) {
-      if (grid[params.x][yCheck][params.z] < 0) {
-        // unoccupied
-        y = yCheck;
-        break;
-      }
-    }
+    const y = getDroppedY(room.public, params.x, params.z);
 
     if (y === -1) {
       throw new functions.https.HttpsError(
@@ -280,45 +277,31 @@ export async function makeMove(
       );
     } else {
       const victory = checkVictory(playerIdx, grid, params.x, y, params.z);
+      room.public.nextPlayerIdx = victory
+        ? -1
+        : playerIdx + 1 === 3
+        ? 0
+        : playerIdx + 1;
 
       const roomUpdate: any = {};
       roomUpdate[`public/timestamp`] = Date.now();
-      roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = nextPlayerIdx;
+      roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = playerIdx;
       roomUpdate[`public/lastMove`] = { x: params.x, y, z: params.z };
-      roomUpdate['public/nextPlayerIdx'] = victory
-        ? -1
-        : nextPlayerIdx + 1 === 3
-        ? 0
-        : nextPlayerIdx + 1;
+      roomUpdate['public/nextPlayerIdx'] = room.public.nextPlayerIdx;
       roomUpdate['public/victor'] = victory ? playerIdx : null;
       if (victory) roomUpdate['public/status'] = 'over';
 
       await roomRef.update(roomUpdate);
 
-      /* Notify next player it's their turn */
-      /* const nextPlayerUid = room.secret?.players[nextPlayerIdx]?.uid;
-        if (nextPlayerUid) {
-          const nextPlayerToken = (
-            await admin
-              .database()
-              .ref('users/' + nextPlayerUid + '/token')
-              .get()
-          ).val();
-          if (nextPlayerToken && nextPlayerToken !== 'declined') {
-            admin.messaging().sendToDevice(nextPlayerToken, {
-              notification: {
-                title: `It's your turn`,
-                body: `The other players in ${room.public.roomCode} are waiting on you`,
-              },
-            });
-          }
-        } */
+      /* Process bots */
+      if (!victory && room.public.config?.bots && room.secret?.players[room.public.nextPlayerIdx].uid === 'bot') {
+        room.public.grid[params.x][y][params.z] = playerIdx; // update local grid for bot decision-making
+        const move = decideMove(room.public);
+        await makeMove({ roomCode: params.roomCode, ...move });
+      }
     }
   } else {
-    throw new functions.https.HttpsError(
-      'permission-denied',
-      `Not your turn, ${nextPlayerIdx}:${playerIdx}`
-    );
+    throw new functions.https.HttpsError('permission-denied', 'Not your turn');
   }
 }
 
@@ -332,77 +315,4 @@ export function dailyJob(req: any, res: any) {
     .then(() => {
       res.status(200).send('OK');
     });
-}
-
-export function checkVictory(
-  player: number,
-  grid: number[][][],
-  x: number,
-  y: number,
-  z: number
-): boolean {
-  const vectors: { x: number; y: number; z: number }[] = [];
-  vectors.push({ x: 0, y: 0, z: 1 }); // 1D
-  for (let _z = -1; _z <= 1; _z++) {
-    // 2D
-    vectors.push({ x: 1, y: 0, z: _z });
-  }
-  for (let _x = -1; _x <= 1; _x++) {
-    // Top hemisphere
-    for (let _z = -1; _z <= 1; _z++) {
-      vectors.push({ x: _x, y: 1, z: _z });
-    }
-  }
-
-  return vectors?.some((v) => {
-    let counter = 1;
-
-    countMatches(false);
-    countMatches(true);
-
-    return counter === grid.length;
-
-    function countMatches(invert: boolean) {
-      const m = invert ? -1 : 1;
-      let cx = x + v.x * m;
-      let cy = y + v.y * m;
-      let cz = z + v.z * m;
-
-      while (
-        checkExists(grid.length, cx, cy, cz) &&
-        grid[cx][cy][cz] === player
-      ) {
-        cx += v.x * m;
-        cy += v.y * m;
-        cz += v.z * m;
-        counter++;
-      }
-
-      function checkExists(
-        sideLen: number,
-        _x: number,
-        _y: number,
-        _z: number
-      ): boolean {
-        return (
-          _x >= 0 &&
-          _x < sideLen &&
-          _y >= 0 &&
-          _y < sideLen &&
-          _z >= 0 &&
-          _z < sideLen
-        );
-      }
-    }
-  });
-}
-
-export function makeId(len = 3) {
-  let result = '';
-  const characters = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < len; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
 }

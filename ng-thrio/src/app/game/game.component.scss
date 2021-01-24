@@ -111,7 +111,7 @@ canvas {
   }
 
   &.loading {
-    pointer-events: all;
+    // pointer-events: all;
     box-shadow: 0 0 150px rgba(0, 0, 0, 1) inset;
 
     h4 {
