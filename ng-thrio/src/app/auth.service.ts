@@ -37,10 +37,11 @@ export class AuthService {
     this.auth.user.subscribe((u) => {
       this.user = u;
       console.log('user', u);
-      if (!this.user.displayName) this.changeName();
 
       if (this._dbUser) this._dbUser.unsubscribe();
       if (this.user) {
+        if (!this.user.displayName) this.changeName();
+
         this._dbUser = this.dbService
           .getUser(this.user.uid)
           .subscribe((dbUser: User) => {
@@ -56,7 +57,7 @@ export class AuthService {
   changeName(displayName?: string): void {
     displayName = displayName?.toUpperCase().slice(0, 15).trim();
     if (!displayName) displayName = 'Guest' + Math.floor(Math.random() * Math.floor(10000));
-    if (displayName === 'SIGNOUT') {
+    else if (displayName === 'SIGNOUT') {
       this.signOut();
       return;
     }
