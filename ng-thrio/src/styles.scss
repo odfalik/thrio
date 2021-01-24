@@ -307,34 +307,38 @@ i.clickable {
 }
 
 
-.slider {
+input[type=range] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
   height: 25px;
-  background: #d3d3d3;
+  background: #2ec2b3;
   outline: none;
-  opacity: 0.6;
-  -webkit-transition: 0.2s;
-  transition: opacity 0.2s;
+  border-radius: 34px;
+  min-width: 12em;
+  height: 34px;
+  padding: 0 5px;
+  cursor: pointer;
 
-  &:hover {
-    opacity: 1;
+  transition: .2s ease-out all;
+  &.zero {
+    background-color: #ccc;
   }
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 25px;
-    height: 25px;
-    background: #4caf50;
-    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgb(253, 255, 252);
   }
 
   &::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    background: #4caf50;
-    cursor: pointer;
+    appearance: none;
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    background: rgb(253, 255, 252);
   }
 }

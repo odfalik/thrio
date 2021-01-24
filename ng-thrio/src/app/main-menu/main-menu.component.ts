@@ -21,6 +21,7 @@ export class MainMenuComponent implements OnInit {
     dimensions: 3,
     players: 3,
     timer: '',
+    bots: 0,
   };
   mode = 'menu';
   rooms: RoomPublic[];

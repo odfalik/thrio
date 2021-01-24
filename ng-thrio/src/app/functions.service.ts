@@ -18,9 +18,5 @@ export class FunctionsService {
 
   makeMove$ = this.fns.httpsCallable('makeMove');
 
-  saveToken$: (params: {
-    token: string | boolean,
-  }) => Observable<void> = this.fns.httpsCallable('saveToken');
-
   constructor(private fns: AngularFireFunctions) {}
 }

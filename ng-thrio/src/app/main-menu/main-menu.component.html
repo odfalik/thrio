@@ -33,13 +33,16 @@
 
     <div *ngSwitchCase="'newRoom'" [@slideB] class="menu-b new-room">
       <h3>New Game</h3>
+
       <div class="field">
-        <switch [(switch)]="config.public"></switch>
         <label>Public</label>
+        <switch [(switch)]="config.public"></switch>
       </div>
-      <!-- <br />
-      <label>Size</label>
-      <input type="range" min="2" max="5" value="3" class="slider"> -->
+
+      <div class="field">
+        <label>{{config.bots}} Bot<ng-container *ngIf="config.bots !== 1">s</ng-container></label>
+        <input type="range" min="0" max="2" [(ngModel)]="config.bots" [class.zero]="!config.bots">
+      </div>
 
       <button (click)="newRoom()" [class.disabled]="creating">
         <i class="fas fa-circle-notch fa-spin" *ngIf="creating"></i> Create room

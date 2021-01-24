@@ -1,6 +1,7 @@
 export interface Player {
     name: string,
     host?: boolean,
+    bot?: boolean,
 }
 
 export interface Room {
@@ -17,7 +18,7 @@ export interface RoomPublic {
     roomCode?: string,
     players?: Player[],
     victor?: number | null,
-    status?: string,
+    status?: string,        // "waiting", "playing"
     config?: RoomConfig,
     timestamp: number,
 }
@@ -25,7 +26,8 @@ export interface RoomPublic {
 export interface RoomConfig {
     public: boolean,
     dimensions: number,
-    players: number,
+    players: number,    // number of humans + number of bots
+    bots?: number,
     timer: string,
 }
 

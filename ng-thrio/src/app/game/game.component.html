@@ -4,33 +4,21 @@
   <h4 class="waiting" *ngIf="!rs.room">Loading</h4>
 </div>
 
-<!-- <div class="notif" *ngIf="!authService.dbUser?.token">
-  <p>
-    Would you like to be notified <br />
-    when it's your turn again?
-  </p>
-  <div class="options">
-    <i
-      class="fas fa-check clickable"
-      (click)="authService.requestPermission()"
-    ></i>
-    <i class="fas fa-times clickable" (click)="rs.pushRequest = false"></i>
-  </div>
-</div> -->
-
 <div
   class="gameover"
   [@fade]
-  *ngIf="rs.room?.status === 'over' && rs.room?.players[rs.room?.victor]"
+  *ngIf="rs.room?.status === 'over'"
 >
-  <h3>
-    {{
-      rs.room?.victor === rs.playerIdx
-        ? 'You'
-        : rs.room?.players[rs.room?.victor]?.name
-    }}
-    won
-  </h3>
+  <h3 *ngIf="rs.room?.victor === -1; else notDraw"> It's a draw </h3>
+  <ng-template #notDraw><h3>
+      {{
+        rs.room?.victor === rs.playerIdx
+          ? 'You'
+          : rs.room?.players[rs.room?.victor]?.name
+      }}
+      won
+  </h3></ng-template>
+
   <button
     (click)="rs.resetRoom()"
     *ngIf="rs.playerIdx === 0; else showWaitingForReset"

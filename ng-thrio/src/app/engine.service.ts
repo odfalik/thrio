@@ -163,16 +163,14 @@ export class EngineService implements OnDestroy {
     bottomPlane.position.set(1.5, 0, 1.5);
     bottomPlane.rotateX(Math.PI / 2);
 
-    /* Origin dot */
-    const dotGeometry = new THREE.Geometry();
-    dotGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    // dotGeometry.vertices.push(new THREE.Vector3(1.5, 1.5, 1.5));
-    const dotMaterial = new THREE.PointsMaterial({
-      size: 0.02,
-      color: 0xffffff,
-    });
-    const dot = new THREE.Points(dotGeometry, dotMaterial);
-    this.scene.add(dot);
+    /* Origin axis lines */
+    const lineMat = new THREE.LineBasicMaterial({ linewidth: 1, color: 0xaaaaaa });
+    let line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([ new THREE.Vector3(0, 0, 0), new THREE.Vector3(0.25, 0, 0)]), lineMat);
+    this.scene.add(line);
+    line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([ new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0.25, 0)]), lineMat);
+    this.scene.add(line);
+    line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([ new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0.25)]), lineMat);
+    this.scene.add(line);
   }
 
   onCanvasDown(e): void {
