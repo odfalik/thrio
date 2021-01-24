@@ -25,6 +25,8 @@ export class RoomService implements OnDestroy {
   public chat: string[];
   private _chat: Subscription;
 
+  loadingRematch: boolean;
+
   constructor(
     private router: Router,
     public fns: FunctionsService,
@@ -108,7 +110,9 @@ export class RoomService implements OnDestroy {
   }
 
   resetRoom(): void {
+    this.loadingRematch = true;
     this.fns.resetRoom$({ roomCode: this.room?.roomCode }).subscribe(res => {
+      this.loadingRematch = false;
       console.log('reset res', res);
     });
   }

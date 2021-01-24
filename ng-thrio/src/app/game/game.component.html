@@ -34,7 +34,9 @@
   <button
     (click)="rs.resetRoom()"
     *ngIf="rs.playerIdx === 0; else showWaitingForReset"
+    [disabled]="rs.loadingRematch"
   >
+    <i class="fas fa-circle-notch fa-spin" *ngIf="rs.loadingRematch"></i>
     Rematch
   </button>
   <ng-template #showWaitingForReset>
