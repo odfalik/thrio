@@ -47,7 +47,6 @@ export class RoomService implements OnDestroy {
             } else {
               roomCode = joinData.roomCode;
               this.playerIdx = joinData.playerIdx;
-              console.log();
               console.log('joinData (my playerIdx)', this.playerIdx);
               this.subToRoom(roomCode);
             }

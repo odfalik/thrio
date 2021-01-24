@@ -33,7 +33,6 @@ export class GameComponent implements OnInit, OnDestroy {
   ) {
     this._params = this.activatedRoute.params.subscribe((params) => {
       const roomCode = params.roomCode;
-
       if (roomCode) {
         this.rs.tryJoinRoom(roomCode);
       } else {
