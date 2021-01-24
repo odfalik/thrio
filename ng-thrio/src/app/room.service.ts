@@ -72,7 +72,7 @@ export class RoomService implements OnDestroy {
 
       this.room$.next(this.room);
 
-      if (this.room?.status === 'waiting' && this.room?.players)
+      if (this.room?.players)
         this.waiting = new Array(3 - this.room.players.length);
 
       console.log('room', this.room);
