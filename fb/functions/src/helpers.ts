@@ -90,3 +90,7 @@ export function getRandInt(min: number, max: number) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
+
+export function delay(ms: number){
+  return new Promise(resolve => setTimeout(resolve, ms))
+ }

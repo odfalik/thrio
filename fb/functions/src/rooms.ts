@@ -1,7 +1,7 @@
 import { Player, Room, RoomConfig, RoomPublic } from '../../../interfaces';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { checkVictory, getDroppedY, makeId } from './helpers';
+import { checkVictory, delay, getDroppedY, makeId } from './helpers';
 import { decideMove } from './ai';
 
 export const app = admin.initializeApp(functions.config().firebase);
@@ -296,7 +296,8 @@ export async function makeMove(
       /* Process bots */
       if (!victory && room.public.config?.bots && room.secret?.players[room.public.nextPlayerIdx].uid === 'bot') {
         room.public.grid[params.x][y][params.z] = playerIdx; // update local grid for bot decision-making
-        const move = decideMove(room.public);
+        const move = await decideMove(room.public);
+        await delay(2000);
         await makeMove({ roomCode: params.roomCode, ...move });
       }
     }
