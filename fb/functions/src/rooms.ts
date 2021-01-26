@@ -1,8 +1,8 @@
 import { Player, Room, RoomConfig, RoomPublic } from '../../../interfaces';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { checkVictory, delay, getDroppedY, getNextPlayer, makeId } from './helpers';
-import { decideMove } from './ai';
+import { checkDraw, checkVictory, delay, getDroppedY, getNextPlayer, makeId } from './helpers';
+import { decideMove, randomValidMove } from './ai';
 
 export const app = admin.initializeApp(functions.config().firebase);
 
@@ -50,7 +50,7 @@ export async function resetGame(
   roomCode: string,
   publicOverwrites?: any,
   secretOverwrites?: any
-): Promise<any> {
+): Promise<void> {
   const roomRef = admin.database().ref('rooms/' + roomCode);
   let room: Room = (await roomRef.get()).val();
 
@@ -91,7 +91,12 @@ export async function resetGame(
     },
   };
 
-  return roomRef.set(room);
+  await roomRef.set(room).then(async () => {
+    if (room.secret?.players[room.public.nextPlayerIdx]?.uid === 'bot') {
+      console.log('First move is a bot')
+      await makeMove({roomCode, ...randomValidMove(room.public.grid)});
+    }
+  });
 }
 
 export async function resetRoom(
@@ -277,14 +282,15 @@ export async function makeMove(
       );
     } else {
       const victory = checkVictory(playerIdx, grid, params.x, y, params.z);
-      room.public.nextPlayerIdx = victory ? -1 : getNextPlayer(room.public.config?.players, playerIdx);
+      const draw = checkDraw(grid);
+      room.public.nextPlayerIdx = (victory || draw) ? -1 : getNextPlayer(room.public.config?.players, playerIdx);
 
       const roomUpdate: any = {};
       roomUpdate[`public/timestamp`] = Date.now();
       roomUpdate[`public/grid/${params.x}/${y}/${params.z}`] = playerIdx;
       roomUpdate[`public/lastMove`] = { x: params.x, y, z: params.z };
       roomUpdate['public/nextPlayerIdx'] = room.public.nextPlayerIdx;
-      roomUpdate['public/victor'] = victory ? playerIdx : null;
+      roomUpdate['public/victor'] = victory ? playerIdx : (draw ? -1 : null);
       if (victory) roomUpdate['public/status'] = 'over';
 
       await roomRef.update(roomUpdate);

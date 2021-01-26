@@ -1,5 +1,10 @@
 import { RoomPublic } from "../../../interfaces";
 
+export function checkDraw(grid: RoomPublic['grid']): boolean {
+  if (grid.every((x) => x.every((y) => y.every((val) => val !== -1)))) return true;
+  return false
+}
+
 
 export function checkVictory(
   player: number,

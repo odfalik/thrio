@@ -7,43 +7,15 @@ import {
   getRandInt,
 } from './helpers';
 
-export function decideMove(room: RoomPublic): { x: number; z: number } {
+export function decideMove(
+  room: RoomPublic
+): { x: number; z: number } {
   const playerIdx = room.nextPlayerIdx;
 
   console.log('decideMove player', playerIdx);
 
   // Should we build an n-turn minimax tree???
   return decideMinimax(room.grid, playerIdx);
-
-  // Check for any immediate threats
-  // for (let x = 0; x < 3; x++) {
-  //   for (let z = 0; z < 3; z++) {
-  //     const y = getDroppedY(room.grid, x, z);
-  //     if (y !== -1) {
-  //       const nextPlayerIdx = getNextPlayer(room.config?.players, playerIdx);
-  //       const grid = simulateMove(room.grid, x, z, nextPlayerIdx);
-
-  //       if (checkVictory(nextPlayerIdx, grid, x, y, z)) {
-  //         console.log(
-  //           `Immediate threat by p${nextPlayerIdx} at `,
-  //           { x, y, z },
-  //           grid
-  //         );
-  //         return { x, z };
-  //       }
-  //     }
-  //   }
-  // }
-
-  // Random (valid) choice
-  const choice = { x: 0, z: 0 };
-  do {
-    choice.x = getRandInt(0, 2);
-    choice.z = getRandInt(0, 2);
-  } while (getDroppedY(room.grid, choice.x, choice.z) === -1);
-
-  console.log('Making random move', choice);
-  return choice;
 }
 
 function simulateMove(
@@ -67,106 +39,53 @@ function decideMinimax(
   grid: RoomPublic['grid'],
   playerIdx: number
 ): { x: number; z: number } {
-  console.log('BBBB');
-  const [_eval, move] = minimax(
-    grid,
-    2,
-    -Infinity,
-    Infinity,
-    playerIdx,
-    playerIdx,
-    -1,
-    -1,
-    -1,
-    true
-  );
+  console.log('decideMinimax');
+  const [_eval, move] = minimax2(grid, 0, playerIdx, playerIdx);
   console.log('_eval', _eval, move);
-  return move || { x: 0, z: 0};
+  return move;
 }
 
-function minimax(
+function minimax2(
   grid: RoomPublic['grid'],
   depth: number,
-  alpha: number = Infinity,
-  beta: number = -Infinity,
   player: number,
-  maximizingPlayer: number,
-  x: number,
-  y: number,
-  z: number,
-  isRoot?: boolean
-): [number, { x: number, z: number }?] {
-  console.log('minimax(', { depth, player, x, y, z }, ')');
-  
-  /** Calculate static evaluation for current node state */
-  if (!isRoot) {
-    let staticEval = 0;
-    let gameOver = false;
-    // console.log(grid);
-    if (checkVictory(player, grid, x, y, z)) {
-      gameOver = true;
-      if (player === maximizingPlayer) staticEval = 1.5;
-      else staticEval = -1;
-    }
-    if (depth === 0 || gameOver) {
-      console.log({ staticEval, x, y, z, player, gameOver });
-      return [staticEval, { x, z }];
+  maximizingPlayer: number
+): [number, { x: number; z: number }] {
+  let bestOption: [number, { x: number; z: number }] = [
+    0,
+    randomValidMove(grid),
+  ];
+
+  for (let x = 0; x < 3; x++) {
+    for (let z = 0; z < 3; z++) {
+      const y = getDroppedY(grid, x, z);
+      if (y !== -1) {
+        if (checkVictory(player, grid, x, y, z)) {
+          return [1, { x, z }];
+        } else {
+          if (depth >= 5) return [0, { x, z }];
+
+          const option = minimax2(
+            simulateMove(grid, x, z, player),
+            depth + 1,
+            getNextPlayer(3, player),
+            maximizingPlayer
+          );
+
+          if (option[0] > bestOption[0]) bestOption = option;
+        }
+      }
     }
   }
 
-  const potentialMoves: { x: number; y: number, z: number }[] = [];
-  for (let _x = 0; _x < 3; _x++) {
-    for (let _z = 0; _z < 3; _z++) {
-      const y = getDroppedY(grid, _x, _z);
-      if (y !== -1)
-        potentialMoves.push({ x: _x, y, z: _z });
-    }
-  }
+  return bestOption;
+}
 
-  const nextPlayer = isRoot ? maximizingPlayer : getNextPlayer(3, player);
-  if (player === maximizingPlayer) {
-    let maxMove;
-    let maxEval = -Infinity;
-    for (let m = 0; m < potentialMoves.length; m++) {
-      const move = potentialMoves[m];
-      const child = simulateMove(grid, move.x, move.z, nextPlayer);
-      const res = minimax(
-        child,
-        depth - 1,
-        alpha,
-        beta,
-        nextPlayer,
-        maximizingPlayer,
-        move.x,
-        move.y,
-        move.z
-      );
-      if (isRoot) maxMove = maxEval < res[0] ? { x: move.x, z: move.z } : maxMove;
-      maxEval = Math.max(maxEval, res[0]);
-      if (beta <= alpha) break;
-    }
-    return [maxEval, maxMove];
-  } else {
-    let minMove;
-    let minEval = Infinity;
-    for (let m = 0; m < potentialMoves.length; m++) {
-      const move = potentialMoves[m];
-      const child = simulateMove(grid, move.x, move.z, nextPlayer);
-      const res = minimax(
-        child,
-        depth - 1,
-        alpha,
-        beta,
-        nextPlayer,
-        maximizingPlayer,
-        move.x,
-        move.y,
-        move.z
-      );
-      if (isRoot) minMove = minEval < res[0] ? minMove : { x: move.x, z: move.z };
-      minEval = Math.min(minEval, res[0]);
-      if (beta <= alpha) break;
-    }
-    return [minEval, minMove];
-  }
+export function randomValidMove(grid: number[][][]) {
+  let choice;
+  const numLoops = 0;
+  do {
+    choice = { x: getRandInt(0, 2), z: getRandInt(0, 2) };
+  } while (getDroppedY(grid, choice.x, choice.z) === -1 && numLoops < 25);
+  return choice;
 }
