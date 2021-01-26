@@ -25,7 +25,7 @@ export interface RoomPublic {
 
 export interface RoomConfig {
     public: boolean,
-    dimensions: number,
+    gridsize: number,
     players: number,    // number of humans + number of bots
     bots?: number,
     timer: string,

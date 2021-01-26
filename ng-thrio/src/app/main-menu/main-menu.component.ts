@@ -18,7 +18,7 @@ export class MainMenuComponent implements OnInit {
   searching: boolean;
   config: RoomConfig = {
     public: true,
-    dimensions: 3,
+    gridsize: 3,
     players: 3,
     timer: '',
     bots: 0,

@@ -1,8 +1,9 @@
 import { RoomPublic } from "../../../interfaces";
 
+
 export function checkVictory(
   player: number,
-  grid: RoomPublic['grid'],
+  grid: RoomPublic['grid'], // assumed to already contain the move we're checking
   x: number,
   y: number,
   z: number
@@ -63,16 +64,35 @@ export function checkVictory(
   });
 }
 
-/** check bottom up (gravity) if space in column */
-export function getDroppedY(room: RoomPublic, x: number, z: number) {
+export function getNextPlayer(numPlayers: number = 3, playerIdx: number) {
+  return playerIdx + 1 === numPlayers
+    ? 0
+    : playerIdx + 1
+}
+
+
+/** Check bottom up (gravity) for space in column
+ * @return y value; -1 if no space
+ * */
+export function getDroppedY(grid: RoomPublic['grid'], x: number, z: number): number {
   for (let yCheck = 0; yCheck < 3; yCheck++) {
-    if (room.grid[x][yCheck][z] < 0) {
+    if (grid[x][yCheck][z] < 0) {
       // unoccupied
       return yCheck;
     }
   }
   return -1;
 }
+
+export function cloneGrid(grid: RoomPublic['grid']): RoomPublic['grid'] {
+  return JSON.parse(JSON.stringify(grid));
+  const len = grid.length,
+  copy = new Array(len);
+  for (var i = 0; i < len; ++i)
+    copy[i] = grid[i].slice(0);
+  return copy;
+}
+
 
 export function makeId(len = 3) {
   let result = '';
@@ -91,6 +111,7 @@ export function getRandInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
 
+
 export function delay(ms: number){
   return new Promise(resolve => setTimeout(resolve, ms))
- }
+}

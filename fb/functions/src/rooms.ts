@@ -1,7 +1,7 @@
 import { Player, Room, RoomConfig, RoomPublic } from '../../../interfaces';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { checkVictory, delay, getDroppedY, makeId } from './helpers';
+import { checkVictory, delay, getDroppedY, getNextPlayer, makeId } from './helpers';
 import { decideMove } from './ai';
 
 export const app = admin.initializeApp(functions.config().firebase);
@@ -260,7 +260,7 @@ export async function makeMove(
     (p) => p.uid === context?.auth?.uid
   );
 
-  if (room.secret?.players[room.public.nextPlayerIdx].uid === 'bot') {
+  if (room.secret?.players[room.public.nextPlayerIdx]?.uid === 'bot') {
     playerIdx = room.public.nextPlayerIdx;
   }
 
@@ -268,7 +268,7 @@ export async function makeMove(
     const grid: number[][][] = room.public.grid;
 
     // check bottom up (gravity) if space in column
-    const y = getDroppedY(room.public, params.x, params.z);
+    const y = getDroppedY(room.public.grid, params.x, params.z);
 
     if (y === -1) {
       throw new functions.https.HttpsError(
@@ -277,11 +277,7 @@ export async function makeMove(
       );
     } else {
       const victory = checkVictory(playerIdx, grid, params.x, y, params.z);
-      room.public.nextPlayerIdx = victory
-        ? -1
-        : playerIdx + 1 === 3
-        ? 0
-        : playerIdx + 1;
+      room.public.nextPlayerIdx = victory ? -1 : getNextPlayer(room.public.config?.players, playerIdx);
 
       const roomUpdate: any = {};
       roomUpdate[`public/timestamp`] = Date.now();
@@ -294,10 +290,10 @@ export async function makeMove(
       await roomRef.update(roomUpdate);
 
       /* Process bots */
-      if (!victory && room.public.config?.bots && room.secret?.players[room.public.nextPlayerIdx].uid === 'bot') {
+      if (!victory && room.public.config?.bots && room.secret?.players[room.public.nextPlayerIdx]?.uid === 'bot') {
         room.public.grid[params.x][y][params.z] = playerIdx; // update local grid for bot decision-making
         const move = await decideMove(room.public);
-        await delay(2000);
+        await delay(1500);
         await makeMove({ roomCode: params.roomCode, ...move });
       }
     }

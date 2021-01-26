@@ -331,6 +331,7 @@ input[type=range] {
     width: 26px;
     height: 26px;
     border-radius: 50%;
+    border: none;
     background: rgb(253, 255, 252);
   }
 
@@ -338,6 +339,7 @@ input[type=range] {
     appearance: none;
     height: 26px;
     width: 26px;
+    border: none;
     border-radius: 50%;
     background: rgb(253, 255, 252);
   }
