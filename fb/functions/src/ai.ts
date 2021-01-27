@@ -45,11 +45,9 @@ function minimax(
   depth: number,
   player: number,
   maximizingPlayer: number
-): [number, { x: number; z: number }] {
-  let bestOption: [number, { x: number; z: number }] = [
-    -Infinity,
-    randomValidMove(grid),
-  ];
+): [number[], { x: number; z: number }] {
+  let bestOption: [number[], { x: number; z: number }] = [[], { x: 0, z: 0 }];
+  let bestOptionVal = -Infinity;
 
   for (let x = 0; x < 3; x++) {
     for (let z = 0; z < 3; z++) {
@@ -58,15 +56,17 @@ function minimax(
         const optionGrid = simulateMove(grid, x, z, player);
 
         if (checkVictory(player, optionGrid, x, y, z)) {
-          const victoryOption: [number, { x: number; z: number }] = [
-            100 / depth,
+          const valArr = [-10, -10, -10];
+          valArr[player] = 10;
+          const victoryOption: [number[], { x: number; z: number }] = [
+            valArr,
             { x, z },
           ];
-          log(depth, `P${player} victory found`, victoryOption);
+          // log(depth, `P${player} victory found`, victoryOption);
           return victoryOption;
         } else {
-          if (depth >= 3) {
-            return [0, { x, z }];
+          if (depth >= 6) {
+            return [[0, 0, 0], { x, z }];
           }
 
           const option = minimax(
@@ -75,19 +75,29 @@ function minimax(
             getNextPlayer(3, player),
             maximizingPlayer
           );
-          option[0] = -option[0];          
 
-          if (option[0] > bestOption[0]) {
-            bestOption = option;
-            log(depth, 'New best option: ', bestOption);
+          option[0] = option[0].map((val) => val / 2);
+          const optionVal = tupleToVal(player, option[0]);
+
+          if (optionVal > bestOptionVal) {
+            bestOptionVal = optionVal;
+            bestOption = [option[0], { x, z }];
+            // log(depth, 'New best option: ', optionVal, bestOption);
           }
         }
       }
     }
   }
 
-  log(depth, { player, bestOption });
+  // log(depth, { player, bestOption });
   return bestOption;
+}
+
+function tupleToVal(player: number, tuple: number[]): number {
+  return tuple.reduce(
+    (accumulator, curr, idx) => accumulator + (idx === player ? curr : -curr),
+    0
+  );
 }
 
 export function randomValidMove(grid: number[][][]) {
