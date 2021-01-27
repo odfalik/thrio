@@ -98,7 +98,7 @@ export class EngineService implements OnDestroy {
     /* Orbit controls */
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(1.5, 1.5, 1.5);
-    this.controls.autoRotateSpeed = -0.25;
+    this.controls.autoRotateSpeed = -0.1;
     this.controls.autoRotate = true;
     this.controls.enableKeys = true;
     this.controls.enablePan = false;

@@ -7,15 +7,14 @@ import {
   getRandInt,
 } from './helpers';
 
-export function decideMove(
-  room: RoomPublic
-): { x: number; z: number } {
+export function decideMove(room: RoomPublic): { x: number; z: number } {
   const playerIdx = room.nextPlayerIdx;
+  console.log('decideMove player', playerIdx, '--------');
+  console.log(room.grid);
 
-  console.log('decideMove player', playerIdx);
-
-  // Should we build an n-turn minimax tree???
-  return decideMinimax(room.grid, playerIdx);
+  const option = minimax(room.grid, 0, playerIdx, playerIdx);
+  console.log('Final option', option);
+  return option[1];
 }
 
 function simulateMove(
@@ -35,24 +34,20 @@ function simulateMove(
   }
 }
 
-function decideMinimax(
-  grid: RoomPublic['grid'],
-  playerIdx: number
-): { x: number; z: number } {
-  console.log('decideMinimax');
-  const [_eval, move] = minimax2(grid, 0, playerIdx, playerIdx);
-  console.log('_eval', _eval, move);
-  return move;
+let counter = 0;
+function log(depth: number, ...args: any[]) {
+  console.log(counter, '- '.repeat(depth), ...args);
+  counter++;
 }
 
-function minimax2(
+function minimax(
   grid: RoomPublic['grid'],
   depth: number,
   player: number,
   maximizingPlayer: number
 ): [number, { x: number; z: number }] {
   let bestOption: [number, { x: number; z: number }] = [
-    0,
+    -Infinity,
     randomValidMove(grid),
   ];
 
@@ -60,24 +55,38 @@ function minimax2(
     for (let z = 0; z < 3; z++) {
       const y = getDroppedY(grid, x, z);
       if (y !== -1) {
-        if (checkVictory(player, grid, x, y, z)) {
-          return [1, { x, z }];
-        } else {
-          if (depth >= 5) return [0, { x, z }];
+        const optionGrid = simulateMove(grid, x, z, player);
 
-          const option = minimax2(
-            simulateMove(grid, x, z, player),
+        if (checkVictory(player, optionGrid, x, y, z)) {
+          const victoryOption: [number, { x: number; z: number }] = [
+            100 / depth,
+            { x, z },
+          ];
+          log(depth, `P${player} victory found`, victoryOption);
+          return victoryOption;
+        } else {
+          if (depth >= 3) {
+            return [0, { x, z }];
+          }
+
+          const option = minimax(
+            optionGrid,
             depth + 1,
             getNextPlayer(3, player),
             maximizingPlayer
           );
+          option[0] = -option[0];          
 
-          if (option[0] > bestOption[0]) bestOption = option;
+          if (option[0] > bestOption[0]) {
+            bestOption = option;
+            log(depth, 'New best option: ', bestOption);
+          }
         }
       }
     }
   }
 
+  log(depth, { player, bestOption });
   return bestOption;
 }
 

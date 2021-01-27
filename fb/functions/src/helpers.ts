@@ -93,7 +93,7 @@ export function cloneGrid(grid: RoomPublic['grid']): RoomPublic['grid'] {
   return JSON.parse(JSON.stringify(grid));
   const len = grid.length,
   copy = new Array(len);
-  for (var i = 0; i < len; ++i)
+  for (let i = 0; i < len; ++i)
     copy[i] = grid[i].slice(0);
   return copy;
 }
