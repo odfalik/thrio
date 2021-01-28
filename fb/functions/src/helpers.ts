@@ -90,12 +90,10 @@ export function getDroppedY(grid: RoomPublic['grid'], x: number, z: number): num
 }
 
 export function cloneGrid(grid: RoomPublic['grid']): RoomPublic['grid'] {
-  return JSON.parse(JSON.stringify(grid));
-  const len = grid.length,
-  copy = new Array(len);
-  for (let i = 0; i < len; ++i)
-    copy[i] = grid[i].slice(0);
-  return copy;
+  return cloneArray(grid);
+  function cloneArray(a: any): any {
+    return a.map((e: any) => Array.isArray(e) ? cloneArray(e) : e);
+  };
 }
 
 

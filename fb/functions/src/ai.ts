@@ -82,7 +82,7 @@ function minimax(
   return bestOption;
 }
 
-function chaos(amt = 0.1) {
+function chaos(amt = 1) {
   return (Math.random() * amt) - (amt / 2);
 }
 
