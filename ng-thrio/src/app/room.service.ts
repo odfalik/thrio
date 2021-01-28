@@ -111,10 +111,11 @@ export class RoomService implements OnDestroy {
 
   resetRoom(): void {
     this.loadingRematch = true;
-    this.fns.resetRoom$({ roomCode: this.room?.roomCode }).subscribe(res => {
-      this.loadingRematch = false;
-      console.log('reset res', res);
-    });
+    this.fns.resetRoom$({ roomCode: this.room?.roomCode }).subscribe(
+      null,
+      null,
+      () => { this.loadingRematch = false; }
+    );
   }
 
   sendChat(): void {
