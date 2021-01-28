@@ -9,11 +9,9 @@ import {
 
 export function decideMove(room: RoomPublic): { x: number; z: number } {
   const playerIdx = room.nextPlayerIdx;
-  console.log('decideMove player', playerIdx, '--------');
-  console.log(room.grid);
 
   const option = minimax(room.grid, 0, playerIdx, playerIdx);
-  console.log('Final option', option);
+  console.log('Player', playerIdx, option[0][playerIdx], ':', option);
   return option[1];
 }
 
@@ -32,12 +30,6 @@ function simulateMove(
     clonedGrid[x][y][z] = playerIdx;
     return clonedGrid;
   }
-}
-
-let counter = 0;
-function log(depth: number, ...args: any[]) {
-  console.log(counter, '- '.repeat(depth), ...args);
-  counter++;
 }
 
 function minimax(
@@ -62,11 +54,10 @@ function minimax(
             valArr,
             { x, z },
           ];
-          // log(depth, `P${player} victory found`, victoryOption);
           return victoryOption;
         } else {
-          if (depth >= 6) {
-            return [[0, 0, 0], { x, z }];
+          if (depth >= 7) {
+            return [[chaos(), chaos(), chaos()], { x, z }];
           }
 
           const option = minimax(
@@ -77,23 +68,27 @@ function minimax(
           );
 
           option[0] = option[0].map((val) => val / 2);
-          const optionVal = tupleToVal(player, option[0]);
+          const optionVal = tupleToVal(player, option[0]) + chaos();
 
           if (optionVal > bestOptionVal) {
             bestOptionVal = optionVal;
             bestOption = [option[0], { x, z }];
-            // log(depth, 'New best option: ', optionVal, bestOption);
           }
         }
       }
     }
   }
 
-  // log(depth, { player, bestOption });
   return bestOption;
 }
 
+function chaos(amt = 0.1) {
+  return (Math.random() * amt) - (amt / 2);
+}
+
 function tupleToVal(player: number, tuple: number[]): number {
+  
+
   return tuple.reduce(
     (accumulator, curr, idx) => accumulator + (idx === player ? curr : -curr),
     0

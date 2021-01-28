@@ -9,6 +9,9 @@ export const joinRoom = functions.https.onCall(rooms.joinRoom);
 
 export const getRooms = functions.https.onCall(rooms.getRooms);
 
-export const makeMove = functions.https.onCall(rooms.makeMove);
+export const makeMove = functions.runWith({
+    timeoutSeconds: 300,
+    memory: '1GB'
+}).https.onCall(rooms.makeMove);
 
 export const dailyJob = functions.https.onRequest(rooms.dailyJob);
